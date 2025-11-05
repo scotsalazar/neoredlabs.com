@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JZJXX57GXW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JZJXX57GXW');
+</script>
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact Neo Redlabs. Get in touch with our team to discuss projects, partnerships or career opportunities.">
+  <title>Contact Us | Neo Redlabs</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Assuming you use Bootstrap or similar for form-control, btn, etc. -->
+  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <div class="nav-container">
+      <div class="logo">Neo&nbsp;Redlabs</div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="careers.html">Careers</a></li>
+          <li><a href="about.html">About&nbsp;Us</a></li>
+          <li><a href="contact.html" class="active">Contact&nbsp;Us</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero" style="background-image: url('images/contact.png'); height: 50vh;">
+    <div class="hero-content">
+      <h1>Contact Us</h1>
+      <p>We'd love to hear from you. Reach out to us for inquiries, partnerships, or career opportunities.</p>
+    </div>
+  </section>
+
+  <!-- Contact Details -->
+  <section id="contact-details">
+    <h2 class="section-title">Connect With Us</h2>
+    <div class="contact-container">
+      <div class="contact-info">
+        <h3>Corporate Headquarters</h3>
+        <p>Makati City, Metro Manila, Philippines<img src="images/philippines-flag.png" alt="Philippine flag" class="flag-icon"></p>
+        <p>Email: <a href="mailto:info@neoredlabs.com">info@neoredlabs.com</a></p>
+        <p>Phone: +63&nbsp;(02)&nbsp;1234&nbsp;5678</p>
+        <p>Office Hours: Monday – Friday, 9:00&nbsp;AM – 6:00&nbsp;PM (Asia/Manila)</p>
+      </div>
+      <div class="contact-form">
+        <h3>Send Us a Message</h3>
+        <!-- IMPORTANT: Update the 'action' URL and 'name' attributes below -->
+        <!-- The 'action' URL is your Google Form's 'formResponse' endpoint -->
+        <!-- The 'name' attributes must be the 'entry.ID's you found in Step 1 -->
+        <form action="https://docs.google.com/forms/d/e/1FAIpQLScT4Lf5Ldkyp1gD6dUScItgxMWTb52kAy8zpPezglSWVfzr-Q/formResponse" method="POST" target="_blank">
+          <label for="name">Name</label>
+          <!-- REPLACE 'entry.YOUR_NAME_ID' with your actual ID -->
+          <input type="text" id="name" name="entry.1845715320" placeholder="Your Name" required>
+
+          <label for="email">Email</label>
+          <!-- REPLACE 'entry.YOUR_EMAIL_ID' with your actual ID -->
+          <input type="email" id="email" name="entry.1634268134" placeholder="Your Email" required>
+
+          <label for="subject">Subject</label>
+          <!-- REPLACE 'entry.YOUR_SUBJECT_ID' with your actual ID -->
+          <input type="text" id="subject" name="entry.1852400455" placeholder="Subject" required>
+
+          <label for="message">Message</label>
+          <!-- REPLACE 'entry.YOUR_MESSAGE_ID' with your actual ID -->
+          <textarea id="message" name="entry.1322903222" placeholder="Your Message" required></textarea>
+
+          <button type="submit" class="btn">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <p>&copy; 2024 Neo Redlabs. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#"><img src="images/facebook-icon.png" alt="Facebook"></a>
+        <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
+        <a href="#"><img src="images/linkedin-icon.png" alt="LinkedIn"></a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

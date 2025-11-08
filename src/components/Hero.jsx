@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import heroImage from '../assets/images/hero.png';
+import heroImage from '../assets/images/hero.webp';
 import { Link } from 'react-router-dom';
 
 /**

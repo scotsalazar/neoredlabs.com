@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import heroImage from '../assets/images/hero.png';
+import { Link } from 'react-router-dom';
 
 // Animation variants for container and items
 const containerVariants = {
@@ -58,14 +59,11 @@ const Hero = () => (
       >
         Crafting cutting-edge technologies and digital solutions for a changing world.
       </motion.p>
-      <motion.a
-        href="/careers"
-        className="btn-primary mt-8"
-        aria-label="Join Our Team"
-        variants={itemVariants}
-      >
-        Join Our Team
-      </motion.a>
+      <motion.div className="mt-8" variants={itemVariants}>
+        <Link to="/careers" className="btn-primary" aria-label="Join Our Team">
+          Join Our Team
+        </Link>
+      </motion.div>
     </motion.div>
   </motion.section>
 );

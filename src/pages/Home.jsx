@@ -26,7 +26,9 @@ const Home = () => (
             We currently have openings for an Executive Assistant and a No-code Developer. If you're ready to make an impact and
             work with cutting-edge technologies, explore our careers page.
           </p>
-          <a href="/careers" className="btn-primary mt-8">Explore Careers</a>
+          <Link to="/careers" className="btn-primary mt-8">
+            Explore Careers
+          </Link>
         </div>
         <img
           src={careersImage}

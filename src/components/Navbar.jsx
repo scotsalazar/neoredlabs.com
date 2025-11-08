@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 const navLinks = [
   { label: 'Home', to: '/', end: true },
-  { label: 'Careers', href: '/careers' },
+  { label: 'Careers', to: '/careers' },
   { label: 'About Us', to: '/about' },
   { label: 'Contact Us', to: '/contact' }
 ];
@@ -22,28 +22,19 @@ const Navbar = () => (
         <ul className="flex items-center gap-6 text-sm font-medium md:text-base">
           {navLinks.map((link) => (
             <li key={link.label}>
-              {link.to ? (
-                <NavLink
-                  to={link.to}
-                  end={link.end}
-                  className={({ isActive }) =>
-                    `relative pb-1 transition-colors duration-200 hover:text-primary focus:outline-none focus-visible:text-primary ${
-                      isActive
-                        ? "text-secondary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-secondary after:content-['']"
-                        : ''
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ) : (
-                <a
-                  className="hover:text-primary focus:outline-none focus-visible:text-primary"
-                  href={link.href}
-                >
-                  {link.label}
-                </a>
-              )}
+              <NavLink
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  `relative pb-1 transition-colors duration-200 hover:text-primary focus:outline-none focus-visible:text-primary ${
+                    isActive
+                      ? "text-secondary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-secondary after:content-['']"
+                      : ''
+                  }`
+                }
+              >
+                {link.label}
+              </NavLink>
             </li>
           ))}
         </ul>

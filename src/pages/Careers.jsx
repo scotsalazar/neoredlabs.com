@@ -22,7 +22,8 @@ const jobOpenings = [
     bullets: [
       'Develop modern, data‑driven marketing campaigns',
       'Collaborate with sales team for strategy alignment',
-      'Build the company’s digital presence and brand'
+      'Build the company’s digital presence and brand',
+      'Explore and co-develop AI-powered marketing tools to enhance campaign efficiency and engagement'
     ]
   },
   {
@@ -30,7 +31,8 @@ const jobOpenings = [
     bullets: [
       'Handle leads and close deals effectively',
       'Manage and grow client relationships',
-      'Commission‑based rewards for successful contracts'
+      'Commission‑based rewards for successful contracts',
+      'Identify and pursue sales opportunities for software applications and AI-driven products'
     ]
   }
 ];

@@ -14,6 +14,14 @@ export default defineConfig({
       'react-helmet': resolve(__dirname, 'src/lib/helmet')
     }
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true
+      }
+    }
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,

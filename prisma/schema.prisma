@@ -1,0 +1,33 @@
+// Prisma schema defining persistence for appointment scheduling
+// Uses SQLite by default. Override DATABASE_URL to target Postgres or another provider.
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model SlotAvailability {
+  id           Int            @id @default(autoincrement())
+  slotDate     DateTime
+  slot         String
+  capacity     Int            @default(1)
+  createdAt    DateTime       @default(now())
+  appointments Appointment[]
+
+  @@unique([slotDate, slot])
+}
+
+model Appointment {
+  id                 Int              @id @default(autoincrement())
+  fullName           String
+  email              String
+  notes              String?
+  slotAvailabilityId Int
+  createdAt          DateTime         @default(now())
+
+  slotAvailability SlotAvailability @relation(fields: [slotAvailabilityId], references: [id], onDelete: Cascade)
+}

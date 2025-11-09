@@ -9,8 +9,10 @@ import { motion } from 'framer-motion';
 
 /**
  * A responsive carousel displaying client logos
- * Logos are displayed in grayscale by default and animate to full colour on hover.
- * The grid is horizontally scrollable on small screens and the logos are enlarged for greater prominence.
+ *
+ * Each logo is shown in grayscale by default and animates to full colour
+ * and a slightly larger size on hover. The grid is horizontally
+ * scrollable on small screens and centred on larger breakpoints.
  */
 const clients = [
   { name: '1PLS Logistics Solutions', logo: logo1pls },
@@ -18,7 +20,7 @@ const clients = [
   { name: 'Kiapat', logo: logoKiapat },
   { name: 'IAM Tech', logo: logoIamTech },
   { name: 'NorthSouth4023', logo: logoNorthSouth4023 },
-  { name: 'Kalye Billiards', logo: logoKalyeBilliards },
+  { name: 'Kalye Billiards', logo: logoKalyeBilliards }
 ];
 
 const ClientCarousel = () => (
@@ -28,11 +30,16 @@ const ClientCarousel = () => (
       <div className="mt-10 overflow-x-auto">
         <div className="flex items-center justify-center gap-12">
           {clients.map((client) => (
-            <motion.div key={client.name} className="flex-shrink-0">
+            <motion.div
+              key={client.name}
+              className="flex-shrink-0"
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
               <img
                 src={client.logo}
                 alt={`${client.name} logo`}
-                className="h-32 w-auto object-contain mix-blend-screen opacity-60 transition hover:grayscale-0 hover:opacity-100"
+                className="h-32 w-auto object-contain mix-blend-screen opacity-60 transition-transform duration-300 hover:grayscale-0 hover:opacity-100"
               />
             </motion.div>
           ))}

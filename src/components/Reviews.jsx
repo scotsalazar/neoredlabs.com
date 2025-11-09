@@ -1,7 +1,8 @@
 import React from 'react';
 import logo1pls from '../assets/images/logo-1pls.png';
 import logoGPFresh from '../assets/images/logo-gpfresh.png';
-import logoKiapat from '../assets/images/logo-kiapat.png';
+import logoKiapatApp from '../assets/images/8dbbfc73-2878-4538-8f5b-2f09dac70db2.png';
+
 
 /**
  * Testimonials section displaying succinct impact statements from
@@ -24,7 +25,7 @@ const testimonials = [
   },
   {
     name: 'Kiapat App',
-    logo: logoKiapat,
+   logo: logoKiapatApp,
     quote:
       'The custom ERP dashboard built by NeoLabs transformed our inventory management.'
   }

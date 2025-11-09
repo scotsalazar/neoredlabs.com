@@ -25,9 +25,48 @@ const contactDetails = [
 ];
 
 const socialLinks = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/neolabs' },
-  { label: 'Twitter', href: 'https://twitter.com/neolabs' },
-  { label: 'Facebook', href: 'https://www.facebook.com/neolabs' }
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/neolabs',
+    icon: (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-5 w-5"
+        fill="currentColor"
+      >
+        <path d="M4.983 3.5a2.5 2.5 0 1 1-.001 5.001 2.5 2.5 0 0 1 .001-5.001ZM3 9h3.968v12H3zM9.691 9h3.804v1.733h.054c.53-1.004 1.825-2.06 3.756-2.06 4.016 0 4.758 2.645 4.758 6.083V21H18V15.5c0-1.309-.024-2.993-1.824-2.993-1.827 0-2.107 1.43-2.107 2.902V21H9.691z" />
+      </svg>
+    )
+  },
+  {
+    label: 'X',
+    href: 'https://twitter.com/neolabs',
+    icon: (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-5 w-5"
+        fill="currentColor"
+      >
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.089-6.658-5.823 6.658H1.95l7.73-8.838L1.5 2.25h7.598l4.6 6.034 4.546-6.034Zm-1.161 18.31h1.833L7.045 4.072H5.077l12.006 16.488Z" />
+      </svg>
+    )
+  },
+  {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/neolabs',
+    icon: (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-5 w-5"
+        fill="currentColor"
+      >
+        <path d="M13.5 9H16l.5-3h-3V4.5a1.5 1.5 0 0 1 1.5-1.5H16V0h-2.5A3.5 3.5 0 0 0 10 3.5V6H7.5v3H10v12h3.5z" />
+      </svg>
+    )
+  }
 ];
 
 const Footer = () => (
@@ -62,10 +101,11 @@ const Footer = () => (
                 key={link.label}
                 href={link.href}
                 target="_blank"
-                rel="noreferrer"
-                className="rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-light hover:bg-primary/20 transition-colors"
+                rel="noreferrer noopener"
+                aria-label={`Visit NeoLabs on ${link.label}`}
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-light transition-colors hover:bg-primary/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-dark"
               >
-                {link.label}
+                {link.icon}
               </a>
             ))}
           </div>

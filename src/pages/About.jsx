@@ -36,40 +36,35 @@ const About = () => (
           <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Expertise</h2>
           <ul className="mt-6 space-y-4 text-lg leading-relaxed text-light/80">
             <li>
-              <strong className="text-light">Seasoned Leadership:</strong> Partners with <strong>30+ years</strong> in
-              successful business building and operations. We guide organizations toward AI-powered, scalable systems.
+              <strong className="text-light">Proven Leadership:</strong> With over <strong>30 years</strong> of success in
+              business development and operations, we guide organizations in building intelligent, scalable systems
+              powered by AI and innovation.
             </li>
             <li>
-              <strong className="text-light">Elite Engineering Team:</strong> <strong>20+ years</strong> combined experience
-              delivering end-to-end solutions. We design and deploy <strong>custom apps and digital ecosystems</strong> that
-              improve speed, accuracy, and outcomes.
+              <strong className="text-light">Expert Engineering:</strong> Our team of seasoned engineers—adept in the latest
+              AI models, automation frameworks, and modern technologies—delivers end-to-end digital solutions that drive
+              efficiency, precision, and sustainable growth.
             </li>
             <li>
-              <strong className="text-light">Gateway to the Future:</strong> From SMEs to enterprises, we help you adopt AI,
-              automation, and data-driven workflows to future-proof your operations.
+              <strong className="text-light">Strategic Consultation:</strong> Our consultation-driven approach ensures every
+              solution is built around your business DNA. We work closely with you to design personalized, AI-enabled
+              systems that streamline operations, connect data, and future-proof your growth.
             </li>
           </ul>
         </div>
         <div>
           <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Mission</h2>
           <p className="mt-4 text-lg leading-relaxed text-light/80">
-            Empower Filipino entrepreneurs and growing SMEs with <strong>personalized apps</strong> and <strong>AI-driven
-            automation</strong>—moving from manual, paper-based work to agile, data-first operations.
+            Empowering Filipino entrepreneurs and SMEs to evolve into future-ready businesses through personalized apps,
+            AI automation, and expert consultation—bridging the gap between traditional operations and intelligent,
+            data-driven growth.
           </p>
         </div>
         <div>
           <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Vision</h2>
           <p className="mt-4 text-lg leading-relaxed text-light/80">
-            Be the <strong>most trusted technology partner</strong> for modern businesses seeking to innovate, transform,
-            and lead in a digital-first world.
-          </p>
-        </div>
-        <div>
-          <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">API-First Integration</h2>
-          <p className="mt-4 text-lg leading-relaxed text-light/80">
-            We build your <strong>own API base</strong> that connects your systems in <strong>real time</strong>—enabling secure,
-            efficient integrations, event-driven automations, and seamless data flow across ERP, e-commerce, finance,
-            logistics, and analytics.
+            To shape a new generation of Filipino businesses that compete globally through digital empowerment, AI
+            integration, and continuous innovation.
           </p>
         </div>
         <div>

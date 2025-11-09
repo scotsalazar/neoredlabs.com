@@ -60,15 +60,14 @@ const Home = () => (
           decoding="async"
         />
         <div>
-          <h2 className="section-title">Schedule a Call</h2>
+          <h2 className="section-title">Schedule a Demo</h2>
           <p className="mt-6 text-lg leading-relaxed text-light/80">
-            Ready to explore how NeoLabs can accelerate your roadmap?
-            Book dedicated time with our team to discuss your goals,
-            walk through capabilities, and map the next steps toward
-            launch.
+            Ready to see NeoLabs in action? Reserve time with our team for
+            a tailored walkthrough of the platform, align on your goals,
+            and co-design the path to launch.
           </p>
           <Link to="/contact#schedule-call" className="btn-primary mt-8">
-            Schedule a Call
+            Schedule a Demo
           </Link>
         </div>
       </div>

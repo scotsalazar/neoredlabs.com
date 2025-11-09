@@ -67,8 +67,8 @@ const Hero = () => (
         for modern enterprises.
       </motion.p>
       <motion.div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row" variants={itemVariants}>
-        <Link to="/contact" className="btn-primary" aria-label="Get Started">
-          Get Started
+        <Link to="/contact#schedule-call" className="btn-primary" aria-label="Schedule a Call">
+          Schedule a Call
         </Link>
         <Link to="/about" className="btn-primary bg-secondary text-dark" aria-label="Learn More">
           Learn More

@@ -68,14 +68,6 @@ const About = () => (
           </p>
         </div>
         <div>
-          <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">API-First Integration</h2>
-          <p className="mt-4 text-lg leading-relaxed text-light/80">
-            We build your <strong>own API base</strong> that connects your systems in <strong>real time</strong>—enabling secure,
-            efficient integrations, event-driven automations, and seamless data flow across ERP, e-commerce, finance,
-            logistics, and analytics.
-          </p>
-        </div>
-        <div>
           <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Clients</h2>
           <div className="mt-6 flex flex-wrap justify-center gap-12">
             <a href="#" className="block h-20">

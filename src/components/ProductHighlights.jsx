@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import perfImage from '../assets/images/revenue-dashboard.png';
 import monitorImage from '../assets/images/monitoring-dashboard.png';
 import workflowImage from '../assets/images/workflow.png';
+import integrationImage from '../assets/images/integration.png';
 
 /**
  * Displays NeoLabs solutions as vertically stacked spotlight cards with
@@ -26,6 +27,12 @@ const products = [
     description:
       'Streamline your processes with powerful automation workflows.',
     image: workflowImage
+  },
+  {
+    title: 'API-First Integration',
+    description:
+      'We build your own API base that connects your systems in real time—enabling secure, efficient integrations, event-driven automations, and seamless data flow across ERP, e-commerce, finance, logistics, and analytics.',
+    image: integrationImage
   }
 ];
 

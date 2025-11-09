@@ -19,7 +19,7 @@ const clients = [
 const ClientCarousel = () => (
   <section className="bg-dark py-20" id="clients">
     <div className="section-container">
-      <h2 className="section-title text-center">Trusted by Hundreds of SMEs Nationwide.</h2>
+      <h2 className="section-title text-center">Trusted by SMEs Nationwide.</h2>
       <div className="mt-10 overflow-x-auto">
         <div className="flex items-center justify-center gap-12">
           {clients.map((client) => (

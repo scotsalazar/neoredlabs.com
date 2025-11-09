@@ -1,9 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import perfImage from '../assets/images/revenue-dashboard.png';
-import monitorImage from '../assets/images/monitoring-dashboard.png';
-import workflowImage from '../assets/images/workflow.png';
-import integrationImage from '../assets/images/integration.png';
 
 /**
  * Displays NeoLabs solutions as vertically stacked spotlight cards with
@@ -14,25 +10,31 @@ const products = [
     title: 'Performance Dashboard',
     description:
       'Visualise key metrics and revenue streams with interactive dashboards.',
-    image: perfImage
+    image: '/assets/images/solutions/performance-dashboard.png'
   },
   {
     title: 'Monitoring & Tracking',
     description:
       'Track systems and operations in real time with intuitive monitoring.',
-    image: monitorImage
+    image: '/assets/images/solutions/monitoring-tracking.png'
   },
   {
     title: 'Automation Workflow',
     description:
       'Streamline your processes with powerful automation workflows.',
-    image: workflowImage
+    image: '/assets/images/solutions/automation-workflow.png'
   },
   {
-    title: 'API-First Integration',
+    title: 'Data Consolidation & Insights',
     description:
-      'We build your own API base that connects your systems in real time—enabling secure, efficient integrations, event-driven automations, and seamless data flow across ERP, e-commerce, finance, logistics, and analytics.',
-    image: integrationImage
+      'Unify your business data from sales, operations, and finance into a single analytics hub—turning raw data into real-time insights for faster, smarter decisions.',
+    image: '/assets/images/solutions/data-consolidation-insights.png'
+  },
+  {
+    title: 'Customer Engagement Systems',
+    description:
+      'Build CRM and loyalty solutions powered by AI—helping you understand, engage, and grow your customer base.',
+    image: '/assets/images/solutions/customer-engagement-systems.png'
   }
 ];
 

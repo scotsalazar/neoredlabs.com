@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Global styles for the NeoLabs site.
+ *
+ * We enable a dark mode by default and set up base typography using
+ * the Inter and Sora font families.  Utility classes from Tailwind
+ * handle the majority of styling, with a few custom classes defined
+ * here to enforce consistent spacing, headings and button styling.
+ */
+
+body {
+  @apply bg-dark text-light antialiased font-sans;
+}
+
+.section-container {
+  @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+.section-title {
+  @apply text-3xl md:text-4xl font-bold tracking-tight font-heading text-light;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 font-medium text-dark shadow-lg transition-colors duration-300 hover:bg-secondary hover:text-dark focus:outline-none;
+}
+
+/* Glassmorphism effect for containers like the navigation bar */
+.glass {
+  @apply backdrop-blur-md bg-dark/70 border border-white/10;
+}

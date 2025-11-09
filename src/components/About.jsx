@@ -53,14 +53,14 @@ const About = () => (
       </div>
 
       <div className="mt-16">
-        <h3 className="text-center text-2xl font-semibold text-dark md:text-3xl">Our Values</h3>
+        <h3 className="text-center text-2xl font-heading font-semibold text-dark md:text-3xl">Our Values</h3>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           {values.map((value) => (
             <article
               key={value.title}
               className="rounded-xl bg-white p-6 text-center shadow-md transition-transform duration-200 hover:-translate-y-1"
             >
-              <h4 className="text-xl font-semibold text-dark">{value.title}</h4>
+              <h4 className="text-xl font-heading font-semibold text-dark">{value.title}</h4>
               <p className="mt-3 text-base text-slate-700">{value.description}</p>
             </article>
           ))}

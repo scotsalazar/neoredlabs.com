@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,7 +8,7 @@
  * Global styles for the NeoLabs site.
  *
  * We enable a dark mode by default and set up base typography using
- * the Inter and Sora font families.  Utility classes from Tailwind
+ * the Manrope font family for both headings and body copy.  Utility classes from Tailwind
  * handle the majority of styling, with a few custom classes defined
  * here to enforce consistent spacing, headings and button styling.
  */

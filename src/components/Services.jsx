@@ -46,7 +46,7 @@ const Services = () => (
           >
             <img src={service.image} alt={service.alt} className="h-48 w-full object-cover" />
             <div className="flex flex-1 flex-col p-6 text-center">
-              <h3 className="text-xl font-semibold text-dark">{service.title}</h3>
+              <h3 className="text-xl font-heading font-semibold text-dark">{service.title}</h3>
               <p className="mt-3 text-base text-slate-700">{service.description}</p>
             </div>
           </article>

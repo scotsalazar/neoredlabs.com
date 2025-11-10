@@ -62,41 +62,44 @@ const Contact = () => {
       setStatus({ state: 'error', message: 'Please review the highlighted fields.' });
       return;
     }
-  setStatus({ state: 'submitting', message: '' });
 
- 
-try {
-  const formWebhookURL = import.meta.env.VITE_GOOGLE_FORM_WEBHOOK_URL;
-  const response = await fetch(formWebhookURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email: formValues.email,
-      companySize: formValues.companySize,
-      message: formValues.message,
-    }),
-  });
+    setStatus({ state: 'submitting', message: '' });
 
-  if (!response.ok) {
-    throw new Error('Failed to submit form');
-  }
+    try {
+      const formWebhookURL = import.meta.env.VITE_GOOGLE_FORM_WEBHOOK_URL;
+      const response = await fetch(formWebhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formValues.email,
+          companySize: formValues.companySize,
+          message: formValues.message,
+        }),
+      });
 
-  setStatus({
-    state: 'success',
-    message: 'Thank you for contacting NeoLabs. Our team will reach out to you soon.',
-  });
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
 
-  setFormValues({ email: '', companySize: '', message: '' });
-} catch (error) {
-  console.error('Error submitting form data:', error);
-  setStatus({
-    state: 'error',
-    message: 'We were unable to submit your details. Please try again later.',
-  });
-}
-      <Layout
+      setStatus({
+        state: 'success',
+        message: 'Thank you for contacting NeoLabs. Our team will reach out to you soon.',
+      });
+
+      setFormValues({ email: '', companySize: '', message: '' });
+    } catch (error) {
+      console.error('Error submitting form data:', error);
+      setStatus({
+        state: 'error',
+        message: 'We were unable to submit your details. Please try again later.',
+      });
+    }
+  };
+
+  return (
+    <Layout
       title="Contact Us | NeoLabs"
       description="Partner with NeoLabs for enterprise software, AI, and automation initiatives."
     >

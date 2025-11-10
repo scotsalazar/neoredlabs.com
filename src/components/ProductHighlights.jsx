@@ -2,39 +2,27 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 /**
- * Displays NeoLabs solutions as vertically stacked spotlight cards with
+ * Displays NeoLabs solutions as horizontally aligned spotlight cards with
  * neon-accented imagery and animated hover states.
  */
 const products = [
   {
-    title: 'Performance Dashboard',
+    title: 'Intelligent Operations',
     description:
-      'Visualise key metrics and revenue streams with interactive dashboards.',
-    image: '/assets/images/solutions/performance-dashboard.png'
+      'Track, monitor, and automate your systems seamlessly—boosting efficiency through real-time visibility and intelligent workflows.',
+    image: '/assets/images/solutions/intelligent-operations.png'
   },
   {
-    title: 'Monitoring & Tracking',
+    title: 'Insightful Dashboards',
     description:
-      'Track systems and operations in real time with intuitive monitoring.',
-    image: '/assets/images/solutions/monitoring-tracking.png'
+      'Visualize KPIs, unify business data, and uncover actionable insights with powerful, interactive dashboards.',
+    image: '/assets/images/solutions/insightful-dashboards.png'
   },
   {
-    title: 'Automation Workflow',
+    title: 'Smart Customer Systems',
     description:
-      'Streamline your processes with powerful automation workflows.',
-    image: '/assets/images/solutions/automation-workflow.png'
-  },
-  {
-    title: 'Data Consolidation & Insights',
-    description:
-      'Unify your business data from sales, operations, and finance into a single analytics hub—turning raw data into real-time insights for faster, smarter decisions.',
-    image: '/assets/images/solutions/data-consolidation-insights.png'
-  },
-  {
-    title: 'Customer Engagement Systems',
-    description:
-      'Build CRM and loyalty solutions powered by AI—helping you understand, engage, and grow your customer base.',
-    image: '/assets/images/solutions/customer-engagement-systems.png'
+      'Empower your CRM with AI-driven tools to personalize engagement, automate retention, and deepen customer relationships.',
+    image: '/assets/images/solutions/smart-customer-systems.png'
   }
 ];
 
@@ -70,7 +58,7 @@ const ProductHighlights = () => (
   <section className="bg-dark py-20" id="solutions">
     <div className="section-container">
       <h2 className="section-title text-center">Our Solutions</h2>
-      <div className="mx-auto mt-12 flex w-full max-w-4xl flex-col gap-10">
+      <div className="mx-auto mt-12 grid w-full max-w-6xl grid-cols-1 md:grid-cols-3 gap-10">
         {products.map((product) => (
           <SolutionCard key={product.title} {...product} />
         ))}

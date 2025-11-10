@@ -62,28 +62,41 @@ const Contact = () => {
       setStatus({ state: 'error', message: 'Please review the highlighted fields.' });
       return;
     }
+  setStatus({ state: 'submitting', message: '' });
 
-    setErrors({});
-    setStatus({ state: 'submitting', message: '' });
+ 
+try {
+  const formWebhookURL = import.meta.env.VITE_GOOGLE_FORM_WEBHOOK_URL;
+  const response = await fetch(formWebhookURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: formValues.email,
+      companySize: formValues.companySize,
+      message: formValues.message,
+    }),
+  });
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+  if (!response.ok) {
+    throw new Error('Failed to submit form');
+  }
 
-      setStatus({
-        state: 'success',
-        message: 'Thank you for contacting NeoLabs. Our team will reach out to you soon.',
-      });
-      setFormValues({ email: '', companySize: '', message: '' });
-    } catch (error) {
-      setStatus({
-        state: 'error',
-        message: 'We were unable to submit your details. Please try again.',
-      });
-    }
-  };
+  setStatus({
+    state: 'success',
+    message: 'Thank you for contacting NeoLabs. Our team will reach out to you soon.',
+  });
 
-  return (
-    <Layout
+  setFormValues({ email: '', companySize: '', message: '' });
+} catch (error) {
+  console.error('Error submitting form data:', error);
+  setStatus({
+    state: 'error',
+    message: 'We were unable to submit your details. Please try again later.',
+  });
+}
+      <Layout
       title="Contact Us | NeoLabs"
       description="Partner with NeoLabs for enterprise software, AI, and automation initiatives."
     >

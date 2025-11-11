@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import Careers from './pages/Careers.jsx';
-import Contact from './pages/Contact.jsx';
+import Contact from './pages/Contact';
 
 /**
  * Application routes for the NeoLabs website.

@@ -8,7 +8,7 @@ const Contact = () => {
   const [formValues, setFormValues] = useState({
     email: '',
     companySize: '',
-    scheduleCall: '',
+    callDate: '',
     message: '',
   });
   const [errors, setErrors] = useState({});
@@ -29,7 +29,7 @@ const Contact = () => {
     const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
-    if (status.state !== 'idle') {
+    if (status.state === 'error') {
       setStatus({ state: 'idle', message: '' });
     }
   };
@@ -45,6 +45,10 @@ const Contact = () => {
 
     if (!formValues.companySize) {
       validationErrors.companySize = 'Please select your company size.';
+    }
+
+    if (!formValues.callDate) {
+      validationErrors.callDate = 'Please select a preferred call time.';
     }
 
     if (!formValues.message.trim()) {
@@ -67,8 +71,7 @@ const Contact = () => {
     setStatus({ state: 'submitting', message: '' });
 
     try {
-      const formWebhookURL = import.meta.env.VITE_GOOGLE_FORM_WEBHOOK_URL;
-      const response = await fetch(formWebhookURL, {
+      const response = await fetch('https://shezzo.app.n8n.cloud/webhook/contact-form', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +79,7 @@ const Contact = () => {
         body: JSON.stringify({
           email: formValues.email,
           companySize: formValues.companySize,
-          scheduleCall: formValues.scheduleCall,
+          callDate: formValues.callDate,
           message: formValues.message,
         }),
       });
@@ -90,7 +93,7 @@ const Contact = () => {
         message: 'Thank you for contacting NeoLabs. Our team will reach out to you soon.',
       });
 
-      setFormValues({ email: '', companySize: '', scheduleCall: '', message: '' });
+      setFormValues({ email: '', companySize: '', callDate: '', message: '' });
     } catch (error) {
       console.error('Error submitting form data:', error);
       setStatus({
@@ -191,29 +194,31 @@ const Contact = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium text-light" htmlFor="scheduleCall">
-                  Schedule Call
+                <label className="text-sm font-medium text-light" htmlFor="callDate">
+                  Preferred Call Time<span className="ml-1 text-primary">*</span>
                 </label>
-                <select
-                  id="scheduleCall"
-                  name="scheduleCall"
-                  value={formValues.scheduleCall}
+                <input
+                  id="callDate"
+                  name="callDate"
+                  type="datetime-local"
+                  value={formValues.callDate}
                   onChange={handleChange}
-                  className="w-full appearance-none rounded-xl border border-slate-700/80 bg-slate-900/80 px-4 py-3 text-base text-light focus:outline-none focus:ring-2 focus:ring-primary/60"
-                  aria-describedby="schedule-call-help"
-                >
-                  <option value="" disabled>
-                    Let us know if you want to schedule a call
-                  </option>
-                  <option value="Yes, please schedule a call" className="bg-dark text-light">
-                    Yes, please schedule a call
-                  </option>
-                  <option value="No, email follow-up is fine" className="bg-dark text-light">
-                    No, email follow-up is fine
-                  </option>
-                </select>
-                <p id="schedule-call-help" className="text-xs text-light/60">
-                  Choose your preferred follow-up option. We'll coordinate the details in our reply.
+                  className={`w-full rounded-xl border px-4 py-3 text-base text-light focus:outline-none focus:ring-2 focus:ring-primary/60 ${
+                    errors.callDate
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/60'
+                      : 'border-slate-700/80 bg-slate-900/80 focus:border-primary'
+                  }`}
+                  required
+                  aria-invalid={Boolean(errors.callDate)}
+                  aria-describedby={errors.callDate ? 'call-date-error' : undefined}
+                />
+                {errors.callDate && (
+                  <p id="call-date-error" className="text-sm text-red-400">
+                    {errors.callDate}
+                  </p>
+                )}
+                <p className="text-xs text-light/60">
+                  Select a time that works best for you. We'll confirm or propose alternatives in our reply.
                 </p>
               </div>
 

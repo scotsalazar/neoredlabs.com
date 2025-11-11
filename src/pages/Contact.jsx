@@ -8,6 +8,7 @@ const Contact = () => {
   const [formValues, setFormValues] = useState({
     email: '',
     companySize: '',
+    scheduleCall: '',
     message: '',
   });
   const [errors, setErrors] = useState({});
@@ -66,14 +67,21 @@ const Contact = () => {
     setErrors({});
     setStatus({ state: 'submitting', message: '' });
 
+    const submissionPayload = {
+      email: formValues.email.trim(),
+      companySize: formValues.companySize,
+      scheduleCall: formValues.scheduleCall,
+      message: formValues.message.trim(),
+    };
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      await new Promise((resolve) => setTimeout(resolve, 600, submissionPayload));
 
       setStatus({
         state: 'success',
         message: 'Thank you for contacting NeoLabs. Our team will reach out to you soon.',
       });
-      setFormValues({ email: '', companySize: '', message: '' });
+      setFormValues({ email: '', companySize: '', scheduleCall: '', message: '' });
     } catch (error) {
       setStatus({
         state: 'error',
@@ -170,6 +178,20 @@ const Contact = () => {
                     {errors.companySize}
                   </p>
                 )}
+              </div>
+
+              <div className="space-y-1" id="schedule-call">
+                <label className="text-sm font-medium text-light" htmlFor="scheduleCall">
+                  Schedule Call <span className="text-light/50">(Optional)</span>
+                </label>
+                <input
+                  id="scheduleCall"
+                  name="scheduleCall"
+                  type="datetime-local"
+                  value={formValues.scheduleCall}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-4 py-3 text-base text-light placeholder:text-light/40 focus:outline-none focus:ring-2 focus:ring-primary/60 focus:border-primary"
+                />
               </div>
 
               <div className="space-y-1">

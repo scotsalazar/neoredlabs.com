@@ -8,6 +8,7 @@ const Contact = () => {
   const [formValues, setFormValues] = useState({
     email: '',
     companySize: '',
+    scheduleCall: '',
     message: '',
   });
   const [errors, setErrors] = useState({});
@@ -75,6 +76,7 @@ const Contact = () => {
         body: JSON.stringify({
           email: formValues.email,
           companySize: formValues.companySize,
+          scheduleCall: formValues.scheduleCall,
           message: formValues.message,
         }),
       });
@@ -88,7 +90,7 @@ const Contact = () => {
         message: 'Thank you for contacting NeoLabs. Our team will reach out to you soon.',
       });
 
-      setFormValues({ email: '', companySize: '', message: '' });
+      setFormValues({ email: '', companySize: '', scheduleCall: '', message: '' });
     } catch (error) {
       console.error('Error submitting form data:', error);
       setStatus({
@@ -189,8 +191,41 @@ const Contact = () => {
               </div>
 
               <div className="space-y-1">
+                <label className="text-sm font-medium text-light" htmlFor="scheduleCall">
+                  Schedule Call
+                </label>
+                <select
+                  id="scheduleCall"
+                  name="scheduleCall"
+                  value={formValues.scheduleCall}
+                  onChange={handleChange}
+                  className="w-full appearance-none rounded-xl border border-slate-700/80 bg-slate-900/80 px-4 py-3 text-base text-light focus:outline-none focus:ring-2 focus:ring-primary/60"
+                  aria-describedby="schedule-call-help"
+                >
+                  <option value="" disabled>
+                    Let us know if you want to schedule a call
+                  </option>
+                  <option value="Yes, please schedule a call" className="bg-dark text-light">
+                    Yes, please schedule a call
+                  </option>
+                  <option value="No, email follow-up is fine" className="bg-dark text-light">
+                    No, email follow-up is fine
+                  </option>
+                </select>
+                <p id="schedule-call-help" className="text-xs text-light/60">
+                  Choose your preferred follow-up option. We'll coordinate the details in our reply.
+                </p>
+              </div>
+
+              <div className="space-y-1">
                 <label className="text-sm font-medium text-light" htmlFor="message">
                   Message / Inquiry<span className="ml-1 text-primary">*</span>
+                  <span
+                    className="ml-2 cursor-help text-xs font-normal text-light/60"
+                    title="Include your preferred call time or mobile number in the message if you'd like a direct message or call."
+                  >
+                    Need a direct message or call?
+                  </span>
                 </label>
                 <textarea
                   id="message"

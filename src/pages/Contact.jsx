@@ -173,7 +173,11 @@ const Contact = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium text-light" htmlFor="message">
+                <label
+                  className="text-sm font-medium text-light"
+                  htmlFor="message"
+                  title="You may include your preferred time or mobile number for a direct follow-up."
+                >
                   Message / Inquiry<span className="ml-1 text-primary">*</span>
                 </label>
                 <textarea
@@ -182,6 +186,7 @@ const Contact = () => {
                   rows="5"
                   value={formValues.message}
                   onChange={handleChange}
+                  title="You may include your preferred time or mobile number for a direct follow-up."
                   className={`w-full rounded-xl border px-4 py-3 text-base text-light placeholder:text-light/40 focus:outline-none focus:ring-2 focus:ring-primary/60 ${
                     errors.message
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/60'

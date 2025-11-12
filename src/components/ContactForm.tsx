@@ -273,7 +273,21 @@ const ContactForm = (): JSX.Element => {
 
       <div className="min-h-[1.5rem]" aria-live="polite">
         {status.state === 'success' && (
-          <p className="text-sm font-medium text-primary/90">{status.message}</p>
+          <div className="flex items-center gap-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-emerald-200">
+            <svg
+              className="h-4 w-4 text-emerald-300"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.704 5.29a1 1 0 0 1 0 1.42l-7.5 7.5a1 1 0 0 1-1.414 0l-3.5-3.5a1 1 0 0 1 1.414-1.42l2.793 2.793 6.793-6.793a1 1 0 0 1 1.414 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <p className="text-sm font-medium">{status.message}</p>
+          </div>
         )}
         {status.state === 'error' && <p className="text-sm text-red-400">{status.message}</p>}
       </div>

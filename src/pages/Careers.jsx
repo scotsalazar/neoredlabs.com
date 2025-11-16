@@ -234,160 +234,165 @@ const Careers = () => {
       </section>
 
       {showApplicationForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6">
-          <div className="w-full max-w-xl rounded-2xl bg-dark p-8 shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-primary">AI interview pre-step</p>
-                <h2 className="mt-2 text-2xl font-heading font-semibold text-light">Tell us about you</h2>
-                <p className="mt-2 text-sm text-light/70">
-                  This quick form helps us tailor the upcoming AI-led conversation. We will add the AI backend next.
-                </p>
-              </div>
-              <button
-                type="button"
-                className="text-light/60 transition hover:text-secondary"
-                aria-label="Close application form"
-                onClick={() => {
-                  setShowApplicationForm(false);
-                  resetForm();
-                }}
-              >
-                ✕
-              </button>
-            </div>
-
+        <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto bg-black/70 px-4 py-10 backdrop-blur">
+          <div className="w-full max-w-3xl rounded-3xl border border-white/10 bg-dark/95 shadow-2xl">
             <form
-              className="mt-6 space-y-5 text-left"
+              className="flex max-h-[calc(100vh-4rem)] flex-col gap-6 overflow-hidden p-8 text-left"
               onSubmit={handleSubmit}
+              role="dialog"
+              aria-modal="true"
             >
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="space-y-2 text-sm text-light/80">
-                  <span className="block font-semibold text-light">Full Name</span>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formState.name}
-                    onChange={handleInputChange('name')}
-                    placeholder="Alex Johnson"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
-                  />
-                  {errors.name && <p className="text-xs text-secondary">{errors.name}</p>}
-                </label>
-                <label className="space-y-2 text-sm text-light/80">
-                  <span className="block font-semibold text-light">Email</span>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formState.email}
-                    onChange={handleInputChange('email')}
-                    placeholder="alex@company.com"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
-                  />
-                  {errors.email && <p className="text-xs text-secondary">{errors.email}</p>}
-                </label>
-              </div>
-
-              <label className="space-y-2 text-sm text-light/80">
-                <span className="block font-semibold text-light">Role</span>
-                <select
-                  name="role"
-                  value={formState.role}
-                  onChange={handleInputChange('role')}
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light focus:border-secondary focus:outline-none"
-                >
-                  <option value="" disabled hidden>
-                    Select a role
-                  </option>
-                  <option>Software Engineer</option>
-                  <option>Sales Executive</option>
-                  <option>Marketing Specialist</option>
-                </select>
-                {errors.role && <p className="text-xs text-secondary">{errors.role}</p>}
-              </label>
-
-              {currentQuestions.length > 0 && (
-                <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-primary">Role-based questions</h3>
-                  {currentQuestions.map((question, index) => {
-                    const key = `q${index + 1}`;
-                    return (
-                      <label key={key} className="space-y-2 text-sm text-light/80">
-                        <span className="block font-semibold text-light">{question}</span>
-                        <textarea
-                          name={key}
-                          value={formState.answers[key]}
-                          onChange={handleAnswerChange(key)}
-                          rows={3}
-                          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
-                          placeholder="Your answer"
-                        />
-                        {errors[key] && <p className="text-xs text-secondary">{errors[key]}</p>}
-                      </label>
-                    );
-                  })}
+              <header className="flex items-start justify-between gap-4 border-b border-white/5 pb-4">
+                <div className="space-y-2">
+                  <p className="text-xs uppercase tracking-[0.25em] text-primary">AI interview pre-step</p>
+                  <h2 className="text-2xl font-heading font-semibold text-light">Tell us about you</h2>
+                  <p className="text-sm text-light/70">
+                    A short form to tailor the upcoming AI-led conversation. We will add the AI backend next.
+                  </p>
                 </div>
-              )}
-
-              <label className="space-y-2 text-sm text-light/80">
-                <span className="block font-semibold text-light">Upload CV</span>
-                <input
-                  type="file"
-                  name="cv"
-                  accept=".pdf,.doc,.docx"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    setFormState((prev) => ({ ...prev, cvFile: file ?? null }));
-                  }}
-                  className="w-full cursor-pointer rounded-lg border border-dashed border-white/20 bg-white/5 px-4 py-3 text-light file:mr-4 file:rounded file:border-0 file:bg-secondary file:px-4 file:py-2 file:font-semibold file:text-dark hover:border-secondary"
-                />
-                <span className="block text-xs text-light/60">PDF or Word documents are welcome.</span>
-                {errors.cvFile && <p className="text-xs text-secondary">{errors.cvFile}</p>}
-              </label>
-
-              <fieldset className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
-                <legend className="px-2 text-sm font-semibold text-light">How would you like to connect?</legend>
-                <p className="text-xs text-light/60">
-                  Choose whether to speak with a voice AI agent or chat with a text-based assistant.
-                </p>
-                <div className="mt-2 grid gap-3 md:grid-cols-2">
-                  <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light/80 transition hover:border-secondary">
-                    <input type="radio" name="conversationMode" value="voice" required />
-                    <div>
-                      <p className="font-semibold text-light">Voice conversation</p>
-                      <p className="text-xs text-light/60">Talk with an AI agent for a quick screen.</p>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light/80 transition hover:border-secondary">
-                    <input type="radio" name="conversationMode" value="text" required />
-                    <div>
-                      <p className="font-semibold text-light">Text chat</p>
-                      <p className="text-xs text-light/60">Chat with an AI chatbot about your experience.</p>
-                    </div>
-                  </label>
-                </div>
-              </fieldset>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <button type="submit" className="btn-primary" disabled={submitting}>
-                  {submitting ? 'Sending...' : 'Send application'}
-                </button>
                 <button
                   type="button"
-                  className="btn-primary bg-white/10 text-light hover:bg-white/20"
+                  className="rounded-full bg-white/5 p-2 text-light/80 transition hover:bg-white/10 hover:text-secondary"
+                  aria-label="Close application form"
                   onClick={() => {
                     setShowApplicationForm(false);
                     resetForm();
                   }}
                 >
-                  Cancel
+                  ✕
                 </button>
-                <span className="text-xs text-light/60">We will connect this flow to the AI backend soon.</span>
+              </header>
+
+              <div className="flex-1 space-y-6 overflow-y-auto pr-1">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="space-y-2 text-sm text-light/80">
+                    <span className="block font-semibold text-light">Full Name</span>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formState.name}
+                      onChange={handleInputChange('name')}
+                      placeholder="Alex Johnson"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
+                    />
+                    {errors.name && <p className="text-xs text-secondary">{errors.name}</p>}
+                  </label>
+                  <label className="space-y-2 text-sm text-light/80">
+                    <span className="block font-semibold text-light">Email</span>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formState.email}
+                      onChange={handleInputChange('email')}
+                      placeholder="alex@company.com"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
+                    />
+                    {errors.email && <p className="text-xs text-secondary">{errors.email}</p>}
+                  </label>
+                </div>
+
+                <label className="space-y-2 text-sm text-light/80">
+                  <span className="block font-semibold text-light">Role</span>
+                  <select
+                    name="role"
+                    value={formState.role}
+                    onChange={handleInputChange('role')}
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light focus:border-secondary focus:outline-none"
+                  >
+                    <option value="" disabled hidden>
+                      Select a role
+                    </option>
+                    <option>Software Engineer</option>
+                    <option>Sales Executive</option>
+                    <option>Marketing Specialist</option>
+                  </select>
+                  {errors.role && <p className="text-xs text-secondary">{errors.role}</p>}
+                </label>
+
+                {currentQuestions.length > 0 && (
+                  <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-primary">Role-based questions</h3>
+                    {currentQuestions.map((question, index) => {
+                      const key = `q${index + 1}`;
+                      return (
+                        <label key={key} className="space-y-2 text-sm text-light/80">
+                          <span className="block font-semibold text-light">{question}</span>
+                          <textarea
+                            name={key}
+                            value={formState.answers[key]}
+                            onChange={handleAnswerChange(key)}
+                            rows={3}
+                            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
+                            placeholder="Your answer"
+                          />
+                          {errors[key] && <p className="text-xs text-secondary">{errors[key]}</p>}
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <label className="space-y-2 text-sm text-light/80">
+                  <span className="block font-semibold text-light">Upload CV</span>
+                  <input
+                    type="file"
+                    name="cv"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      setFormState((prev) => ({ ...prev, cvFile: file ?? null }));
+                    }}
+                    className="w-full cursor-pointer rounded-lg border border-dashed border-white/20 bg-white/5 px-4 py-3 text-light file:mr-4 file:rounded file:border-0 file:bg-secondary file:px-4 file:py-2 file:font-semibold file:text-dark hover:border-secondary"
+                  />
+                  <span className="block text-xs text-light/60">PDF or Word documents are welcome.</span>
+                  {errors.cvFile && <p className="text-xs text-secondary">{errors.cvFile}</p>}
+                </label>
+
+                <fieldset className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
+                  <legend className="px-2 text-sm font-semibold text-light">How would you like to connect?</legend>
+                  <p className="text-xs text-light/60">
+                    Choose whether to speak with a voice AI agent or chat with a text-based assistant.
+                  </p>
+                  <div className="mt-2 grid gap-3 md:grid-cols-2">
+                    <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light/80 transition hover:border-secondary">
+                      <input type="radio" name="conversationMode" value="voice" required />
+                      <div>
+                        <p className="font-semibold text-light">Voice conversation</p>
+                        <p className="text-xs text-light/60">Talk with an AI agent for a quick screen.</p>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light/80 transition hover:border-secondary">
+                      <input type="radio" name="conversationMode" value="text" required />
+                      <div>
+                        <p className="font-semibold text-light">Text chat</p>
+                        <p className="text-xs text-light/60">Chat with an AI chatbot about your experience.</p>
+                      </div>
+                    </label>
+                  </div>
+                </fieldset>
               </div>
 
-              {submissionMessage && (
-                <p className="text-sm font-semibold text-primary">{submissionMessage}</p>
-              )}
+              <div className="flex flex-wrap items-center gap-3 border-t border-white/5 pt-4">
+                <div className="flex flex-wrap gap-3">
+                  <button type="submit" className="btn-primary" disabled={submitting}>
+                    {submitting ? 'Sending...' : 'Send application'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-primary bg-white/10 text-light hover:bg-white/20"
+                    onClick={() => {
+                      setShowApplicationForm(false);
+                      resetForm();
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <span className="text-xs text-light/60">We will connect this flow to the AI backend soon.</span>
+                {submissionMessage && (
+                  <p className="text-sm font-semibold text-primary">{submissionMessage}</p>
+                )}
+              </div>
             </form>
           </div>
         </div>

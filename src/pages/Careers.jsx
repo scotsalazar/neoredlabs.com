@@ -237,7 +237,7 @@ const Careers = () => {
         <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto bg-black/70 px-4 py-10 backdrop-blur">
           <div className="w-full max-w-3xl rounded-3xl border border-white/10 bg-dark/95 shadow-2xl">
             <form
-              className="flex max-h-[calc(100vh-4rem)] flex-col gap-6 overflow-hidden p-8 text-left"
+              className="flex flex-col gap-6 p-8 text-left"
               onSubmit={handleSubmit}
               role="dialog"
               aria-modal="true"
@@ -263,7 +263,7 @@ const Careers = () => {
                 </button>
               </header>
 
-              <div className="flex-1 space-y-6 overflow-y-auto pr-1">
+              <div className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="space-y-2 text-sm text-light/80">
                     <span className="block font-semibold text-light">Full Name</span>
@@ -297,7 +297,8 @@ const Careers = () => {
                     name="role"
                     value={formState.role}
                     onChange={handleInputChange('role')}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light focus:border-secondary focus:outline-none"
+                    className="w-full rounded-lg border border-white/10 bg-dark/80 px-4 py-3 text-light focus:border-secondary focus:outline-none"
+                    style={{ colorScheme: 'dark' }}
                   >
                     <option value="" disabled hidden>
                       Select a role
@@ -347,29 +348,6 @@ const Careers = () => {
                   <span className="block text-xs text-light/60">PDF or Word documents are welcome.</span>
                   {errors.cvFile && <p className="text-xs text-secondary">{errors.cvFile}</p>}
                 </label>
-
-                <fieldset className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
-                  <legend className="px-2 text-sm font-semibold text-light">How would you like to connect?</legend>
-                  <p className="text-xs text-light/60">
-                    Choose whether to speak with a voice AI agent or chat with a text-based assistant.
-                  </p>
-                  <div className="mt-2 grid gap-3 md:grid-cols-2">
-                    <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light/80 transition hover:border-secondary">
-                      <input type="radio" name="conversationMode" value="voice" required />
-                      <div>
-                        <p className="font-semibold text-light">Voice conversation</p>
-                        <p className="text-xs text-light/60">Talk with an AI agent for a quick screen.</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light/80 transition hover:border-secondary">
-                      <input type="radio" name="conversationMode" value="text" required />
-                      <div>
-                        <p className="font-semibold text-light">Text chat</p>
-                        <p className="text-xs text-light/60">Chat with an AI chatbot about your experience.</p>
-                      </div>
-                    </label>
-                  </div>
-                </fieldset>
               </div>
 
               <div className="flex flex-wrap items-center gap-3 border-t border-white/5 pt-4">

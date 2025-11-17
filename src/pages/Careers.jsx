@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import Layout from '../components/Layout.jsx';
 
 /**
@@ -39,22 +39,22 @@ const jobOpenings = [
 
 const roleQuestions = {
   'Software Engineer': [
-    'Describe a recent technical problem you solved.',
-    'Explain a system or feature you built end-to-end.',
-    'How do you ensure code quality and scalability?',
-    'Describe a debugging challenge you handled.'
+    'Describe the most complex feature or system you built recently. What modern tools, frameworks, and architectures did you use, and why did you choose them over alternatives?',
+    'Walk me through a time you were stuck on a technical issue for hours or days. How did you break down the problem, and what exact steps did you take to solve it?',
+    'Share a project where you had to take full ownership from start to finish. What obstacles did you face, and how did you push through them?',
+    'Explain how you design a system or feature to make it scalable, maintainable, and easy for other developers to work on.'
   ],
   'Sales Executive': [
-    'Describe your sales process from lead to close.',
-    'A time you exceeded sales targets.',
-    'How you handle objections.',
-    'How you qualify high-value leads.'
+    'Describe the most complex sales cycle you managed end-to-end. How did you tailor your approach for each stakeholder, and what tools supported your process?',
+    'Share an example of turning a skeptical prospect into a champion. What objections did you hear, and how did you address them?',
+    'Explain how you build and maintain a healthy pipeline. What metrics do you track weekly, and how do you prioritize deals?',
+    'Tell us about collaborating with marketing or product to win a deal. What did you learn, and how did you apply it to future opportunities?'
   ],
   'Marketing Specialist': [
-    'Describe a marketing campaign you executed.',
-    'How you identify and segment audiences.',
-    'Your content planning process.',
-    'How you measure campaign performance.'
+    'Describe a multi-channel campaign you led. How did you pick the channels, and how did you adapt messaging for each audience?',
+    'Walk us through your audience research process. What data sources do you rely on, and how do you translate findings into campaign decisions?',
+    'Share an example of how you improved conversion or engagement mid-campaign. What experiments did you run and what did you learn?',
+    'How do you report performance to stakeholders? Which metrics matter most to you and why?'
   ]
 };
 
@@ -74,7 +74,9 @@ const Careers = () => {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [submissionMessage, setSubmissionMessage] = useState('');
+  const [formMessage, setFormMessage] = useState('');
+  const [bannerMessage, setBannerMessage] = useState('');
+  const overlayRef = useRef(null);
 
   const currentQuestions = useMemo(() => {
     if (!formState.role) return [];
@@ -90,7 +92,7 @@ const Careers = () => {
       cvFile: null
     });
     setErrors({});
-    setSubmissionMessage('');
+    setFormMessage('');
   };
 
   const handleInputChange = (field) => (event) => {
@@ -102,6 +104,7 @@ const Careers = () => {
         role: value,
         answers: { q1: '', q2: '', q3: '', q4: '' }
       }));
+      overlayRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -148,7 +151,7 @@ const Careers = () => {
     if (!validateForm()) return;
 
     setSubmitting(true);
-    setSubmissionMessage('');
+    setFormMessage('');
 
     const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook-test/cv-upload';
     const formData = new FormData();
@@ -177,10 +180,11 @@ const Careers = () => {
         throw new Error('Unable to submit right now.');
       }
 
-      setSubmissionMessage('Application sent successfully! We will be in touch soon.');
+      setBannerMessage('Application sent successfully! We will be in touch soon.');
+      setShowApplicationForm(false);
       resetForm();
     } catch (error) {
-      setSubmissionMessage(
+      setFormMessage(
         'There was a problem sending your application. Please try again or use the Contact page.'
       );
     } finally {
@@ -204,6 +208,11 @@ const Careers = () => {
           <p className="mt-4 text-base text-light/80">
             Share a few details to begin a short, AI-powered conversation tailored to your role.
           </p>
+          {bannerMessage && (
+            <div className="mt-6 rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm font-semibold text-light">
+              {bannerMessage}
+            </div>
+          )}
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {jobOpenings.map((job) => (
               <article
@@ -237,7 +246,10 @@ const Careers = () => {
       </section>
 
       {showApplicationForm && (
-        <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto bg-black/70 px-4 py-10 backdrop-blur">
+        <div
+          className="fixed inset-0 z-50 flex min-h-screen items-start justify-center overflow-y-auto bg-black/70 px-4 py-10 backdrop-blur"
+          ref={overlayRef}
+        >
           <div className="w-full max-w-3xl rounded-3xl border border-white/10 bg-dark/95 shadow-2xl">
             <form
               className="flex flex-col gap-6 p-8 text-left"
@@ -247,10 +259,10 @@ const Careers = () => {
             >
               <header className="flex items-start justify-between gap-4 border-b border-white/5 pb-4">
                 <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-[0.25em] text-primary">AI interview pre-step</p>
+                  <p className="text-xs uppercase tracking-[0.25em] text-primary">Career Application pre-step</p>
                   <h2 className="text-2xl font-heading font-semibold text-light">Tell us about you</h2>
                   <p className="text-sm text-light/70">
-                    A short form to tailor the upcoming AI-led conversation. We will add the AI backend next.
+                    Your responses will help us assess your fit and ensure we connect you with the best role for your experience.
                   </p>
                 </div>
                 <button
@@ -370,8 +382,8 @@ const Careers = () => {
                   </button>
                 </div>
                 <span className="text-xs text-light/60">We will connect this flow to the AI backend soon.</span>
-                {submissionMessage && (
-                  <p className="text-sm font-semibold text-primary">{submissionMessage}</p>
+                {formMessage && (
+                  <p className="text-sm font-semibold text-primary">{formMessage}</p>
                 )}
               </div>
             </form>

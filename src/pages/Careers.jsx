@@ -153,7 +153,7 @@ const Careers = () => {
     setSubmitting(true);
     setFormMessage('');
 
-    const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook-test/cv-upload';
+    const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook/cv-upload';
     const formData = new FormData();
     const timestamp = new Date().toISOString();
 

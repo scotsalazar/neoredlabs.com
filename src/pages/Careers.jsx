@@ -150,7 +150,7 @@ const Careers = () => {
     setSubmitting(true);
     setSubmissionMessage('');
 
-    const webhookUrl = '<INSERT_WEBHOOK_URL>';
+    const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook-test/cv-upload';
     const formData = new FormData();
     const timestamp = new Date().toISOString();
 
@@ -158,7 +158,10 @@ const Careers = () => {
     formData.append('email', formState.email.trim());
     formData.append('role', formState.role);
     formData.append('timestamp', timestamp);
-    formData.append('answers', JSON.stringify(formState.answers));
+    formData.append('answers[q1]', formState.answers.q1);
+    formData.append('answers[q2]', formState.answers.q2);
+    formData.append('answers[q3]', formState.answers.q3);
+    formData.append('answers[q4]', formState.answers.q4);
 
     if (formState.cvFile) {
       formData.append('cv_file', formState.cvFile);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import heroImage from '../assets/images/dashboard-beautiful.png';
+import heroImage from '../assets/images/dashboard-beautiful.webp';
 import { Link } from 'react-router-dom';
 
 /**
@@ -36,7 +36,10 @@ const Hero = () => (
     {/* Background illustration */}
     <motion.img
       src={heroImage}
-      alt="App dashboard preview"
+          alt="App dashboard preview"
+          width={1536}
+      height={1024}
+      fetchpriority="high"
       loading="eager"
       decoding="async"
       className="absolute inset-0 h-full w-full object-cover"

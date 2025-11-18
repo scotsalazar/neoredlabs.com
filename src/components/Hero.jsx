@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import heroImage from '../assets/images/dashboard-beautiful.webp';
+import heroImage from '../assets/iimages/new-hero-banner.webp
 import { Link } from 'react-router-dom';
 
 /**

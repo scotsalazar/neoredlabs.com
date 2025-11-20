@@ -6,7 +6,7 @@ import AIIntegration from '../components/AIIntegration.jsx';
 import ClientCarousel from '../components/ClientCarousel.jsx';
 import Reviews from '../components/Reviews.jsx';
 import { Link } from 'react-router-dom';
-import careersImage from '../assets/images/revenue-dashboard.png';
+import careersImage from '../assets/images/revenrevenue-dashboard-new.pngd.png';
 import contactImage from '../assets/images/monitoring-dashboard.png';
 
 /**

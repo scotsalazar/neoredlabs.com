@@ -60,14 +60,13 @@ const Hero = () => (
         className="text-4xl md:text-6xl font-heading font-bold text-light"
         variants={itemVariants}
       >
-        Powering Your Business with Intelligent Automation
+        Power your Business with Modern and Agentic Solutions
       </motion.h1>
       <motion.p
         className="mx-auto mt-4 max-w-2xl text-base md:text-lg text-light/80"
         variants={itemVariants}
       >
-        Automate, optimise and scale with AI‑driven SaaS solutions designed
-        for modern enterprises.
+        Accelerate growth with tailored AI agents, automation, and modern solutions built for today’s businesses.
       </motion.p>
       <motion.div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row" variants={itemVariants}>
         <Link to="/contact#schedule-call" className="btn-primary" aria-label="Schedule a Call">

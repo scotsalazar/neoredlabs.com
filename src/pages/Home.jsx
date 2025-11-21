@@ -3,6 +3,7 @@ import Layout from '../components/Layout.jsx';
 import Hero from '../components/Hero.jsx';
 import ProductHighlights from '../components/ProductHighlights.jsx';
 import AIIntegration from '../components/AIIntegration.jsx';
+import WhyChooseNeoLabs from '../components/WhyChooseNeoLabs.jsx';
 import ClientCarousel from '../components/ClientCarousel.jsx';
 import Reviews from '../components/Reviews.jsx';
 import { Link } from 'react-router-dom';
@@ -24,6 +25,7 @@ const Home = () => (
     <Hero />
     <ProductHighlights />
     <AIIntegration />
+    <WhyChooseNeoLabs />
     <ClientCarousel />
     <Reviews />
     {/* Hiring callout */}

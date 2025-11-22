@@ -1,0 +1,23 @@
+[
+  {
+    "id": "software-engineer",
+    "title": "Software Engineer",
+    "team": "Engineering",
+    "location": "Remote-first",
+    "applyUrl": "/careers#software-engineer"
+  },
+  {
+    "id": "marketing-specialist",
+    "title": "Marketing Specialist",
+    "team": "Marketing",
+    "location": "Hybrid - EMEA",
+    "applyUrl": "/careers#marketing-specialist"
+  },
+  {
+    "id": "sales-executive",
+    "title": "Sales Executive",
+    "team": "Sales",
+    "location": "Remote - North America",
+    "applyUrl": "/careers#sales-executive"
+  }
+]

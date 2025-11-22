@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('node:path');
+const fs = require('node:fs');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
 
@@ -8,6 +9,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 const app = express();
 const prisma = new PrismaClient();
 app.locals.prisma = prisma;
+const jobsFilePath = path.join(__dirname, 'data', 'open-positions.json');
 
 const DEFAULT_SLOTS = [
   { slot: '09:00', capacity: 5 },
@@ -23,6 +25,26 @@ const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 app.use(express.json());
+
+app.get('/api/jobs', async (_req, res) => {
+  try {
+    const raw = await fs.promises.readFile(jobsFilePath, 'utf8');
+    const jobs = JSON.parse(raw);
+
+    const response = jobs.map((job) => ({
+      id: job.id,
+      title: job.title,
+      team: job.team,
+      location: job.location,
+      applyUrl: job.applyUrl,
+    }));
+
+    return res.json({ jobs: response });
+  } catch (error) {
+    console.error('Failed to load job openings', error);
+    return res.status(500).json({ error: 'Unable to load job openings' });
+  }
+});
 
 function parseDateOnly(dateStr) {
   if (typeof dateStr !== 'string' || !DATE_REGEX.test(dateStr)) {

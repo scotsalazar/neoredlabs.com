@@ -75,9 +75,9 @@ const Footer = () => (
       <div className="grid gap-12 md:grid-cols-2 md:items-start">
         <div className="space-y-4 text-center md:text-left">
           <h2 className="text-xl font-semibold font-heading">Get in touch</h2>
-          <ul className="space-y-2 text-sm md:text-base">
+          <address className="not-italic space-y-2 text-sm md:text-base">
             {contactDetails.map((detail) => (
-              <li key={detail.label}>
+              <div key={detail.label}>
                 <span className="font-medium">{detail.label}:</span>{' '}
                 {detail.href ? (
                   <a
@@ -89,9 +89,9 @@ const Footer = () => (
                 ) : (
                   <span>{detail.value}</span>
                 )}
-              </li>
+              </div>
             ))}
-          </ul>
+          </address>
         </div>
         <div className="space-y-4 text-center md:text-left">
           <h2 className="text-xl font-semibold font-heading">Follow us</h2>
@@ -105,15 +105,34 @@ const Footer = () => (
                 aria-label={`Visit NeoLabs on ${link.label}`}
                 className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-light transition-colors hover:bg-primary/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-dark"
               >
+                <span className="sr-only">{link.label} social icon</span>
                 {link.icon}
               </a>
             ))}
           </div>
         </div>
       </div>
-      <p className="mt-12 border-t border-white/10 pt-6 text-center text-xs md:text-sm">
-        © {new Date().getFullYear()} NeoLabs. All rights reserved.
-      </p>
+      <div className="mt-12 space-y-4 border-t border-white/10 pt-6 text-center text-xs md:text-sm">
+        <p>
+          We respect your privacy. Any details you share are used solely for coordination and ongoing support.
+        </p>
+        <div className="flex flex-col items-center justify-center gap-2 text-light/80 md:flex-row md:gap-4">
+          <a
+            href="/privacy-policy"
+            className="hover:text-primary transition-colors"
+          >
+            Privacy Policy
+          </a>
+          <span className="hidden text-white/30 md:inline">|</span>
+          <a
+            href="/terms-of-service"
+            className="hover:text-primary transition-colors"
+          >
+            Terms of Service
+          </a>
+        </div>
+        <p>© {new Date().getFullYear()} NeoLabs. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 );

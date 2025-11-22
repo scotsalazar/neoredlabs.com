@@ -5,6 +5,8 @@ import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import Careers from './pages/Careers.jsx';
 import Contact from './pages/Contact';
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import TermsOfService from './pages/TermsOfService.jsx';
 
 /**
  * Application routes for the NeoLabs website.
@@ -20,6 +22,8 @@ const App = () => (
     <Route path="/about" element={<About />} />
     <Route path="/careers" element={<Careers />} />
     <Route path="/contact" element={<Contact />} />
+    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+    <Route path="/terms-of-service" element={<TermsOfService />} />
   </Routes>
 );
 

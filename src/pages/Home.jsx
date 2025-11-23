@@ -159,7 +159,7 @@ const Home = () => {
               loading="lazy"
               decoding="async"
             />
-            <p className="mt-3 text-sm text-light/60">Build with modern tools, guided by agent-assisted workflows.</p>
+            <p className="mt-3 text-sm text-light/60">Work with modern tools, guided by agent-assisted workflows.</p>
           </div>
         </div>
       </section>
@@ -175,7 +175,7 @@ const Home = () => {
               decoding="async"
             />
             <p className="mt-3 text-sm text-light/60">
-              The map graphic is illustrative and designed to show how clients connect with our team globally.
+              Book a demo anywhere in the Philippines—available through video conference or Zoom.
             </p>
           </div>
           <div>

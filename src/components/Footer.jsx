@@ -19,8 +19,8 @@ const contactDetails = [
   },
   {
     label: 'Phone',
-    value: '+63 (02) 1234 5678',
-    href: 'tel:+630212345678'
+    value: '+63 906-437-0420',
+    href: 'tel:+639064370420'
   }
 ];
 

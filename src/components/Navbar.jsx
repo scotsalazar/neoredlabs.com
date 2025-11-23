@@ -12,6 +12,8 @@ import { motion } from 'framer-motion';
  */
 const navLinks = [
   { label: 'Home', to: '/', end: true },
+    { label: 'Services', to: '/services' },
+
   { label: 'About', to: '/about' },
   { label: 'Careers', to: '/careers' },
   { label: 'Contact', to: '/contact' }

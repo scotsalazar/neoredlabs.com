@@ -9,6 +9,7 @@ import Layout from '../components/Layout.jsx';
  */
 const jobOpenings = [
   {
+    slug: 'software-engineer',
     title: 'Software Engineer',
     bullets: [
       'Build and scale modern applications',
@@ -18,6 +19,7 @@ const jobOpenings = [
     ]
   },
   {
+    slug: 'marketing-specialist',
     title: 'Marketing Specialist',
     bullets: [
       'Develop modern, data‑driven marketing campaigns',
@@ -27,6 +29,7 @@ const jobOpenings = [
     ]
   },
   {
+    slug: 'sales-executive',
     title: 'Sales Executive',
     bullets: [
       'Handle leads and close deals effectively',
@@ -153,7 +156,7 @@ const Careers = () => {
     setSubmitting(true);
     setFormMessage('');
 
-    const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook-test/cv-upload';
+    const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook/cv-upload';
     const formData = new FormData();
     const timestamp = new Date().toISOString();
 
@@ -217,6 +220,7 @@ const Careers = () => {
             {jobOpenings.map((job) => (
               <article
                 key={job.title}
+                id={job.slug || job.title.toLowerCase().replace(/\s+/g, '-')}
                 className="flex flex-col rounded-xl bg-white/5 p-8 shadow-lg"
               >
                 <h2 className="text-2xl font-heading font-semibold text-light">

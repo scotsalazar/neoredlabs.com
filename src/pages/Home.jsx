@@ -30,6 +30,7 @@ const Home = () => {
   const [demoForm, setDemoForm] = useState(initialDemoState);
   const [demoErrors, setDemoErrors] = useState({});
   const [demoMessage, setDemoMessage] = useState('');
+  const [demoSubmitting, setDemoSubmitting] = useState(false);
   const { jobs, loading, error } = useJobOpenings();
 
   const handleDemoChange = (field) => (event) => {
@@ -50,13 +51,40 @@ const Home = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleDemoSubmit = (event) => {
+  const handleDemoSubmit = async (event) => {
     event.preventDefault();
     setDemoMessage('');
     if (!validateDemo()) return;
 
-    setDemoMessage('Thanks! We will contact you shortly to schedule your walkthrough.');
-    setDemoForm(initialDemoState);
+    setDemoSubmitting(true);
+
+    try {
+      const response = await fetch('https://shezzo.app.n8n.cloud/webhook/contact-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: demoForm.name,
+          email: demoForm.email,
+          company: demoForm.company,
+          goal: demoForm.goal,
+          source: 'homepage-demo',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Webhook responded with an error');
+      }
+
+      setDemoMessage('Thanks! We will contact you shortly to schedule your walkthrough.');
+      setDemoForm(initialDemoState);
+    } catch (error) {
+      console.error('Demo request failed:', error);
+      setDemoMessage('We could not send your request right now. Please try again in a moment.');
+    } finally {
+      setDemoSubmitting(false);
+    }
   };
 
   const closeDemoModal = () => {
@@ -131,7 +159,7 @@ const Home = () => {
               loading="lazy"
               decoding="async"
             />
-            <p className="mt-3 text-sm text-light/60">Roles update automatically from our live openings feed.</p>
+            <p className="mt-3 text-sm text-light/60">Build with modern tools, guided by agent-assisted workflows.</p>
           </div>
         </div>
       </section>
@@ -244,8 +272,8 @@ const Home = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
-                  Submit demo request
+                <button type="submit" className="btn-primary" disabled={demoSubmitting}>
+                  {demoSubmitting ? 'Submitting…' : 'Submit demo request'}
                 </button>
               </div>
             </form>

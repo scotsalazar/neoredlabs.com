@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 const navLinks = [
   { label: 'Home', to: '/', end: true },
   { label: 'About', to: '/about' },
+  { label: 'Services', to: '/services' },
   { label: 'Careers', to: '/careers' },
   { label: 'Contact', to: '/contact' }
 ];

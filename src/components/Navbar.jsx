@@ -20,21 +20,21 @@ const navLinks = [
 
 const Navbar = () => (
   <motion.header
-    className="glass fixed top-0 left-0 right-0 z-50 py-3"
+    className="glass fixed top-0 left-0 right-0 z-50 py-4"
     initial={{ y: -20, opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
     transition={{ duration: 0.5, ease: 'easeOut' }}
   >
-    <div className="section-container flex items-center justify-between">
+    <div className="section-container flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:gap-6">
       <NavLink
         to="/"
         end
-        className="text-2xl font-heading font-semibold tracking-wide text-primary focus:outline-none"
+        className="w-full text-center text-2xl font-heading font-semibold tracking-wide text-primary focus:outline-none sm:w-auto sm:text-left"
       >
         NeoLabs
       </NavLink>
-      <nav>
-        <ul className="flex items-center gap-6 text-sm font-medium md:text-base">
+      <nav className="w-full sm:w-auto">
+        <ul className="flex flex-wrap items-center justify-center gap-3 text-sm font-medium md:gap-6 md:text-base">
           {navLinks.map((link) => (
             <li key={link.label}>
               <NavLink

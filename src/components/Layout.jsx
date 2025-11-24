@@ -73,10 +73,24 @@ const Layout = ({ title, description, image, children }) => {
         {/* Structured data JSON‑LD */}
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
       </Helmet>
-      <div className="flex min-h-screen flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-black via-slate-950 to-slate-900 text-light">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(16,185,129,0.12),transparent_35%)]"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(168,85,247,0.12),transparent_35%)]"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:120px_120px]"
+          aria-hidden
+        />
+        <div className="relative flex min-h-screen flex-col">
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
       </div>
     </>
   );

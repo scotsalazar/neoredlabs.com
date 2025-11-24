@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import logo1pls from '../assets/images/logo-1pls.png';
 import logoGPFresh from '../assets/images/logo-gpfresh.png';
 import logoKiapat from '../assets/images/logo-kiapat.png';
+import GradientSection from '../components/GradientSection.jsx';
 
 /**
  * About page detailing NeoLabs' story, expertise and client partners.
@@ -17,8 +18,9 @@ const About = () => (
     title="About NeoLabs | AI, Automation, and API-First Integrations"
     description="NeoLabs helps SMEs and enterprises modernize with custom apps, AI-driven automation, and real-time API-first integrations. Based in the Philippines."
   >
-    <motion.section
-      className="bg-dark py-20"
+    <GradientSection
+      as={motion.section}
+      className="py-20"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -94,7 +96,7 @@ const About = () => (
           </div>
         </div>
       </div>
-    </motion.section>
+    </GradientSection>
   </Layout>
 );
 

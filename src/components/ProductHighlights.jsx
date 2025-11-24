@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import GradientSection from './GradientSection.jsx';
 
 /**
  * Displays NeoLabs solutions as horizontally aligned spotlight cards with
@@ -55,16 +56,16 @@ const SolutionCard = ({ title, description, image }) => (
 );
 
 const ProductHighlights = () => (
-  <section className="bg-dark py-20" id="solutions">
+  <GradientSection className="py-20" id="solutions">
     <div className="section-container">
       <h2 className="section-title text-center">Our Solutions</h2>
-      <div className="mx-auto mt-12 grid w-full max-w-6xl grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="mx-auto mt-12 grid w-full max-w-6xl grid-cols-1 gap-10 md:grid-cols-3">
         {products.map((product) => (
           <SolutionCard key={product.title} {...product} />
         ))}
       </div>
     </div>
-  </section>
+  </GradientSection>
 );
 
 export default ProductHighlights;

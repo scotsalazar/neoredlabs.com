@@ -25,7 +25,7 @@ const itemVariants = {
 
 const AIIntegration = () => (
   <motion.section
-    className="bg-dark py-20"
+    className="bg-black py-20 text-light"
     id="automation"
     variants={containerVariants}
     initial="hidden"
@@ -41,7 +41,7 @@ const AIIntegration = () => (
           insights and deliver smarter experiences through our AI‑first
           approach.
         </p>
-        <ul className="mt-4 space-y-3 text-base text-light/80 list-disc list-inside">
+        <ul className="mt-4 space-y-3 list-inside list-disc text-base text-light/80">
           <li>Agent orchestration for complex multi‑step tasks</li>
           <li>Low‑code workflow builder for rapid iteration</li>
           <li>Real‑time monitoring and optimisation</li>
@@ -51,7 +51,7 @@ const AIIntegration = () => (
         <img
           src={workflowImage}
           alt="Automation workflow diagram"
-          className="max-w-md w-full rounded-xl shadow-xl"
+          className="w-full max-w-md rounded-xl shadow-xl"
         />
       </motion.div>
     </div>

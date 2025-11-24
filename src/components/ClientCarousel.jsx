@@ -17,7 +17,7 @@ const clients = [
 ];
 
 const ClientCarousel = () => (
-  <section className="bg-dark py-20" id="clients">
+  <section className="bg-black py-20 text-light" id="clients">
     <div className="section-container">
       <h2 className="section-title text-center">Trusted by SMEs Nationwide.</h2>
       <div className="mt-10 overflow-x-auto">

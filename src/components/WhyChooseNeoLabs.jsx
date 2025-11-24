@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import GradientSection from './GradientSection.jsx';
 
 const iconClasses = 'h-7 w-7 stroke-[1.5]';
 
@@ -95,7 +96,7 @@ const pillars = [
 ];
 
 const WhyChooseNeoLabs = () => (
-  <section className="bg-dark py-20" id="why-neolabs">
+  <GradientSection className="py-20" id="why-neolabs">
     <div className="section-container">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-emerald-300/80">Why Choose NeoLabs</p>
@@ -128,7 +129,7 @@ const WhyChooseNeoLabs = () => (
         </Link>
       </div>
     </div>
-  </section>
+  </GradientSection>
 );
 
 export default WhyChooseNeoLabs;

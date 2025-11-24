@@ -1,12 +1,13 @@
 import React from 'react';
 import Layout from '../components/Layout.jsx';
+import GradientSection from '../components/GradientSection.jsx';
 
 /**
  * Simple privacy policy outlining data practices for NeoLabs.
  */
 const PrivacyPolicy = () => (
   <Layout title="Privacy Policy | NeoLabs" description="Learn how NeoLabs handles your personal data and respects your privacy.">
-    <section className="bg-dark py-20">
+    <GradientSection className="py-20">
       <div className="section-container space-y-10">
         <div className="text-center">
           <h1 className="section-title">Privacy Policy</h1>
@@ -36,7 +37,7 @@ const PrivacyPolicy = () => (
           </div>
         </div>
       </div>
-    </section>
+    </GradientSection>
   </Layout>
 );
 

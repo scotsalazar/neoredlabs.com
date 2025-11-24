@@ -2,13 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import ServicesList from '../components/ServicesList.jsx';
+import GradientSection from '../components/GradientSection.jsx';
 
 const Services = () => {
   return (
     <Layout title="NeoRedLabs – Services" description="Discover our services from AI-driven automation to personalised apps.">
-      <section className="relative overflow-hidden bg-gradient-to-b from-black via-slate-950 to-slate-900 text-light">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(16,185,129,0.2),transparent_35%)]" aria-hidden />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.18),transparent_40%)]" aria-hidden />
+      <GradientSection>
         <div className="section-container relative flex flex-col-reverse gap-12 pb-20 pt-28 md:flex-row md:items-center">
           {/* Left column */}
           <div className="w-full md:w-1/2 space-y-6">
@@ -67,8 +66,8 @@ const Services = () => {
             </div>
           </div>
         </div>
-      </section>
-      <section className="bg-slate-950 py-20">
+      </GradientSection>
+      <GradientSection className="py-20">
         <div className="section-container space-y-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -88,7 +87,7 @@ const Services = () => {
           </div>
           <ServicesList />
         </div>
-      </section>
+      </GradientSection>
     </Layout>
   );
 };

@@ -1,12 +1,13 @@
 import React from 'react';
 import Layout from '../components/Layout.jsx';
+import GradientSection from '../components/GradientSection.jsx';
 
 /**
  * Terms of Service outlining acceptable use and service expectations.
  */
 const TermsOfService = () => (
   <Layout title="Terms of Service | NeoLabs" description="Understand the terms that govern your use of NeoLabs products and services.">
-    <section className="bg-dark py-20">
+    <GradientSection className="py-20">
       <div className="section-container space-y-10">
         <div className="text-center">
           <h1 className="section-title">Terms of Service</h1>
@@ -35,7 +36,7 @@ const TermsOfService = () => (
           </div>
         </div>
       </div>
-    </section>
+    </GradientSection>
   </Layout>
 );
 

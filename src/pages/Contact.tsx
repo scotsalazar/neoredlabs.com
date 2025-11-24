@@ -2,13 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout.jsx';
 import ContactForm from '../components/ContactForm';
+import GradientSection from '../components/GradientSection.jsx';
 
 const Contact = (): JSX.Element => (
   <Layout
     title="Contact Us | NeoLabs"
     description="Partner with NeoLabs for enterprise software, AI, and automation initiatives."
   >
-    <section className="bg-dark py-24">
+    <GradientSection className="py-24">
       <div className="section-container max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -40,7 +41,7 @@ const Contact = (): JSX.Element => (
           </div>
         </motion.div>
       </div>
-    </section>
+    </GradientSection>
   </Layout>
 );
 

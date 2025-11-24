@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import Layout from '../components/Layout.jsx';
+import GradientSection from '../components/GradientSection.jsx';
 
 /**
  * Simplified careers page that focuses on the most important
@@ -200,7 +201,7 @@ const Careers = () => {
       title="Careers | NeoLabs"
       description="Explore open roles at NeoLabs and join a modern AI startup shaping the next generation of intelligent apps."
     >
-      <section className="bg-dark py-20">
+      <GradientSection className="py-20">
         <div className="section-container text-center">
           <span className="mb-6 inline-block rounded-full bg-secondary px-5 py-2 text-xs font-medium text-dark uppercase tracking-wider">
             Now Hiring
@@ -247,7 +248,7 @@ const Careers = () => {
             </button>
           </div>
         </div>
-      </section>
+      </GradientSection>
 
       {showApplicationForm && (
         <div

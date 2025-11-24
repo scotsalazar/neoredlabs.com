@@ -6,6 +6,7 @@ import logoIamTechFix from '../assets/images/logo-kiapat.png';
 import logoNorthSouth4023 from '../assets/images/logo-northsouth4023.png';
 import logoKalyeBilliards from '../assets/images/logo-kalyebilliards.png';
 import { motion } from 'framer-motion';
+import GradientSection from './GradientSection.jsx';
 
 const clients = [
   { name: '1PLS Logistics Solutions', logo: logo1pls },
@@ -17,7 +18,7 @@ const clients = [
 ];
 
 const ClientCarousel = () => (
-  <section className="bg-dark py-20" id="clients">
+  <GradientSection className="py-20" id="clients">
     <div className="section-container">
       <h2 className="section-title text-center">Trusted by SMEs Nationwide.</h2>
       <div className="mt-10 overflow-x-auto">
@@ -40,7 +41,7 @@ const ClientCarousel = () => (
         </div>
       </div>
     </div>
-  </section>
+  </GradientSection>
 );
 
 export default ClientCarousel;

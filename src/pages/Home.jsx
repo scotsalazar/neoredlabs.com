@@ -6,6 +6,7 @@ import AIIntegration from '../components/AIIntegration.jsx';
 import WhyChooseNeoLabs from '../components/WhyChooseNeoLabs.jsx';
 import ClientCarousel from '../components/ClientCarousel.jsx';
 import Reviews from '../components/Reviews.jsx';
+import GradientSection from '../components/GradientSection.jsx';
 import { Link } from 'react-router-dom';
 import careersImage from '../assets/images/revenue-dashboard-new.png';
 import contactImage from '../assets/images/monitoring-dashboard.png';
@@ -116,7 +117,7 @@ const Home = () => {
       <ClientCarousel />
       <Reviews />
       {/* Hiring callout */}
-      <section className="bg-dark py-20">
+      <GradientSection className="py-20">
         <div className="section-container grid gap-10 md:grid-cols-[1.2fr,0.8fr] md:items-center">
           <div>
             <h2 className="section-title">We're Hiring</h2>
@@ -162,9 +163,9 @@ const Home = () => {
             <p className="mt-3 text-sm text-light/60">Work with modern tools, guided by agent-assisted workflows.</p>
           </div>
         </div>
-      </section>
+      </GradientSection>
       {/* Contact callout */}
-      <section className="bg-dark py-20">
+      <GradientSection className="py-20">
         <div className="section-container grid gap-10 md:grid-cols-[0.8fr,1.2fr] md:items-center">
           <div>
             <img
@@ -189,7 +190,7 @@ const Home = () => {
             </button>
           </div>
         </div>
-      </section>
+      </GradientSection>
 
       {showDemoModal && (
         <div

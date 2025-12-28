@@ -55,7 +55,7 @@ const socialLinks = [
   },
   {
     label: 'Facebook',
-    href: 'https://www.facebook.com/neolabs',
+    href: 'https://www.facebook.com/share/1H37s6GMVw/',
     icon: (
       <svg
         aria-hidden="true"

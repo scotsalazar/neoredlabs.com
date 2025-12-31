@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import Hero from '../components/Hero.jsx';
-import ProductHighlights from '../components/ProductHighlights.jsx';
 import AIIntegration from '../components/AIIntegration.jsx';
 import WhyChooseNeoLabs from '../components/WhyChooseNeoLabs.jsx';
 import ClientCarousel from '../components/ClientCarousel.jsx';
@@ -111,7 +110,6 @@ const Home = () => {
       description="NeoLabs delivers intelligent automation, SaaS engineering and AI‑powered products."
     >
       <Hero />
-      <ProductHighlights />
       <AIIntegration />
       <WhyChooseNeoLabs />
       <ClientCarousel />

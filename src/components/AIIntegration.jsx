@@ -36,17 +36,14 @@ const AIIntegration = () => (
   >
     <div className="section-container grid gap-12 md:grid-cols-2 md:items-center">
       <motion.div variants={itemVariants} className="space-y-6">
-        <h2 className="section-title">Intelligent Automation</h2>
+        <h2 className="section-title">Launch Your Business to the World with Your First Scalable System.</h2>
         <p className="text-lg leading-relaxed text-light/80">
-          We integrate large language models, automation agents and predictive
-          analytics into bespoke applications.  Accelerate workflows, gain
-          insights and deliver smarter experiences through our AI‑first
-          approach.
+          We build AI-run business systems that eliminate manual operations and human bottlenecks. Stop scaling headcount. Start scaling systems.
         </p>
         <ul className="mt-4 space-y-3 list-inside list-disc text-base text-light/80">
-          <li>Agent orchestration for complex multi‑step tasks</li>
-          <li>Low‑code workflow builder for rapid iteration</li>
-          <li>Real‑time monitoring and optimisation</li>
+          <li>Autonomous AI agents replacing repetitive and decision-heavy workflows</li>
+          <li>Low-code system architecture to deploy, change, and scale at speed</li>
+          <li>Real-time monitoring and optimisation to expose inefficiencies instantly</li>
         </ul>
       </motion.div>
       <motion.div variants={itemVariants} className="flex justify-center">

@@ -62,11 +62,64 @@ const roleQuestions = {
   ]
 };
 
+const philippinesLocations = [
+  'Manila',
+  'Quezon City',
+  'Makati',
+  'Pasig',
+  'Pasay',
+  'Taguig',
+  'Mandaluyong',
+  'Marikina',
+  'San Juan',
+  'Caloocan',
+  'Malabon',
+  'Navotas',
+  'Valenzuela',
+  'Parañaque',
+  'Las Piñas',
+  'Muntinlupa',
+  'Antipolo',
+  'Angeles City',
+  'San Fernando',
+  'San Jose del Monte',
+  'Malolos',
+  'Meycauayan',
+  'Baguio',
+  'Santa Rosa',
+  'Calamba',
+  'Biñan',
+  'Cabuyao',
+  'San Pedro',
+  'Batangas City',
+  'Lipa',
+  'Lucena',
+  'Tagaytay',
+  'Legazpi',
+  'Naga',
+  'Sorsogon City',
+  'Olongapo',
+  'Tarlac City',
+  'Cabanatuan',
+  'Dagupan',
+  'Laoag',
+  'Urdaneta',
+  'Cebu City',
+  'Iloilo City',
+  'Bacolod',
+  'Cagayan de Oro',
+  'Davao City',
+  'General Santos',
+  'Zamboanga City'
+];
+
 const Careers = () => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [formState, setFormState] = useState({
     name: '',
     email: '',
+    location: '',
+    age: '',
     role: '',
     answers: {
       q1: '',
@@ -91,6 +144,8 @@ const Careers = () => {
     setFormState({
       name: '',
       email: '',
+      location: '',
+      age: '',
       role: '',
       answers: { q1: '', q2: '', q3: '', q4: '' },
       cvFile: null
@@ -109,6 +164,12 @@ const Careers = () => {
         answers: { q1: '', q2: '', q3: '', q4: '' }
       }));
       overlayRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (field === 'age') {
+      const numericValue = value.replace(/\D/g, '').slice(0, 2);
+      setFormState((prev) => ({ ...prev, age: numericValue }));
       return;
     }
 
@@ -134,6 +195,25 @@ const Careers = () => {
     if (formState.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
       newErrors.email = 'Enter a valid email address.';
     }
+    if (!formState.location.trim()) {
+      newErrors.location = 'Location is required.';
+    } else if (
+      !philippinesLocations.some(
+        (item) => item.toLowerCase() === formState.location.trim().toLowerCase()
+      )
+    ) {
+      newErrors.location = 'Please pick a location from the list.';
+    }
+
+    const ageValue = formState.age.trim();
+    if (!ageValue) {
+      newErrors.age = 'Age is required.';
+    } else if (!/^\d{1,2}$/.test(ageValue)) {
+      newErrors.age = 'Age must be one or two digits.';
+    } else if (parseInt(ageValue, 10) === 0) {
+      newErrors.age = 'Age must be greater than zero.';
+    }
+
     if (!formState.role) newErrors.role = 'Select a role to continue.';
 
     currentQuestions.forEach((_, index) => {
@@ -163,6 +243,8 @@ const Careers = () => {
 
     formData.append('name', formState.name.trim());
     formData.append('email', formState.email.trim());
+    formData.append('location', formState.location.trim());
+    formData.append('age', formState.age.trim());
     formData.append('role', formState.role);
     formData.append('timestamp', timestamp);
     formData.append('answers[q1]', formState.answers.q1);
@@ -308,6 +390,45 @@ const Careers = () => {
                       className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
                     />
                     {errors.email && <p className="text-xs text-secondary">{errors.email}</p>}
+                  </label>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="space-y-2 text-sm text-light/80">
+                    <span className="block font-semibold text-light">Location</span>
+                    <input
+                      type="text"
+                      name="location"
+                      value={formState.location}
+                      onChange={handleInputChange('location')}
+                      list="philippines-locations"
+                      placeholder="Start typing a city..."
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
+                    />
+                    <datalist id="philippines-locations">
+                      {philippinesLocations.map((location) => (
+                        <option key={location} value={location} />
+                      ))}
+                    </datalist>
+                    <span className="block text-xs text-light/60">Autocomplete supports cities across the Philippines.</span>
+                    {errors.location && <p className="text-xs text-secondary">{errors.location}</p>}
+                  </label>
+
+                  <label className="space-y-2 text-sm text-light/80">
+                    <span className="block font-semibold text-light">Age</span>
+                    <input
+                      type="text"
+                      name="age"
+                      value={formState.age}
+                      onChange={handleInputChange('age')}
+                      inputMode="numeric"
+                      pattern="\d{1,2}"
+                      maxLength={2}
+                      placeholder="e.g., 24"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
+                    />
+                    <span className="block text-xs text-light/60">Numbers only, up to two digits.</span>
+                    {errors.age && <p className="text-xs text-secondary">{errors.age}</p>}
                   </label>
                 </div>
 

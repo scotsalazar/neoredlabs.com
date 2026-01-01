@@ -42,7 +42,7 @@ const AIIntegration = () => (
         </p>
         <ul className="mt-4 space-y-3 list-inside list-disc text-base text-light/80">
           <li>Autonomous AI agents replacing repetitive and decision-heavy workflows</li>
-          <li>Low-code system architecture to deploy, change, and scale at speed</li>
+          <li>Custom-built apps designed to fit your exact business workflows</li>
           <li>Real-time monitoring and optimisation to expose inefficiencies instantly</li>
         </ul>
       </motion.div>

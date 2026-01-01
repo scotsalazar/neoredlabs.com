@@ -1,17 +1,15 @@
 import React from 'react';
 import Layout from '../components/Layout.jsx';
 import { motion } from 'framer-motion';
-import logo1pls from '../assets/images/logo-1pls.png';
-import logoGPFresh from '../assets/images/logo-gpfresh.png';
-import logoKiapat from '../assets/images/logo-kiapat.png';
+import { Link } from 'react-router-dom';
 import GradientSection from '../components/GradientSection.jsx';
 
 /**
- * About page detailing NeoLabs' story, expertise and client partners.
+ * About page detailing NeoLabs' story, expertise, and mission.
  *
  * Content fades into view using Framer Motion for a subtle and
- * professional feel. A client showcase at the end links to three
- * highlighted partners.
+ * professional feel. Visitors are invited to connect with the team
+ * through a clear call-to-action at the end of the page.
  */
 const About = () => (
   <Layout
@@ -69,30 +67,23 @@ const About = () => (
             integration, and continuous innovation.
           </p>
         </div>
-        <div>
-          <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Clients</h2>
-          <div className="mt-6 flex flex-wrap justify-center gap-12">
-            <a href="#" className="block h-20">
-              <img
-                src={logo1pls}
-                alt="1PLS Logistics Solutions logo"
-                className="h-full w-auto object-contain filter grayscale opacity-60 transition hover:grayscale-0 hover:opacity-100"
-              />
-            </a>
-            <a href="#" className="block h-20">
-              <img
-                src={logoGPFresh}
-                alt="GPFresh Inc. logo"
-                className="h-full w-auto object-contain filter grayscale opacity-60 transition hover:grayscale-0 hover:opacity-100"
-              />
-            </a>
-            <a href="#" className="block h-20">
-              <img
-                src={logoKiapat}
-                alt="Kiapat App logo"
-                className="h-full w-auto object-contain filter grayscale opacity-60 transition hover:grayscale-0 hover:opacity-100"
-              />
-            </a>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-xl backdrop-blur">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-3 md:max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">Connect to the team</p>
+              <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Let's build what's next together</h2>
+              <p className="text-base md:text-lg leading-relaxed text-light/80">
+                Share your challenges, your roadmap, or the spark of an idea. We'll pair you with strategists and engineers who
+                can translate ambition into delivery—whether that's AI automation, product launches, or tightening the systems
+                you already rely on.
+              </p>
+            </div>
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:scale-[1.02] hover:bg-primary/90"
+            >
+              Talk to the team
+            </Link>
           </div>
         </div>
       </div>

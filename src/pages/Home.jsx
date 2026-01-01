@@ -151,13 +151,15 @@ const Home = () => {
             </Link>
           </div>
           <div>
-            <img
-              src={careersImage}
-              alt="Careers illustration"
-              className="mx-auto w-full max-w-md rounded-xl shadow-xl"
-              loading="lazy"
-              decoding="async"
-            />
+            <Link to="/careers" aria-label="Explore careers">
+              <img
+                src={careersImage}
+                alt="Careers illustration"
+                className="mx-auto w-full max-w-md rounded-xl shadow-xl"
+                loading="lazy"
+                decoding="async"
+              />
+            </Link>
             <p className="mt-3 text-sm text-light/60">Work with modern tools, guided by agent-assisted workflows.</p>
           </div>
         </div>
@@ -166,13 +168,15 @@ const Home = () => {
       <GradientSection className="py-20">
         <div className="section-container grid gap-10 md:grid-cols-[0.8fr,1.2fr] md:items-center">
           <div>
-            <img
-              src={contactImage}
-              alt="Illustrative map graphic"
-              className="mx-auto w-full max-w-md rounded-xl shadow-xl"
-              loading="lazy"
-              decoding="async"
-            />
+            <Link to="/contact" aria-label="Go to contact page">
+              <img
+                src={contactImage}
+                alt="Illustrative map graphic"
+                className="mx-auto w-full max-w-md rounded-xl shadow-xl"
+                loading="lazy"
+                decoding="async"
+              />
+            </Link>
             <p className="mt-3 text-sm text-light/60">
               Book a demo anywhere in the Philippines—available through video conference or Zoom.
             </p>

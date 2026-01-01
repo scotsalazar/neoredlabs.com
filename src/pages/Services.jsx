@@ -6,6 +6,7 @@ import GradientSection from '../components/GradientSection.jsx';
 const services = [
   {
     title: 'Custom Business Applications',
+    area: 'Service Area',
     valueProp:
       'Design and ship tailor-made apps that mirror how your teams sell, support, and scale—without wasting budget on one-size-fits-all software.',
     benefits: [
@@ -23,6 +24,7 @@ const services = [
   },
   {
     title: 'AI Integration & Intelligent Process Automation',
+    area: 'Agentic Area',
     valueProp: 'Layer AI into your operations to cut cycle times, enforce quality controls, and free people for higher-value work.',
     benefits: [
       'Automate intake, routing, and approvals so requests move from minutes to seconds.',
@@ -39,6 +41,7 @@ const services = [
   },
   {
     title: 'Real-Time Dashboards & Operational Insights',
+    area: 'Reporting Area',
     valueProp:
       'Give leaders and teams live visibility into performance so they can act on leading indicators, not lagging reports.',
     benefits: [
@@ -57,6 +60,7 @@ const services = [
   },
   {
     title: 'Proactive Product Support & Stakeholder Coordination',
+    area: 'Support Area',
     valueProp: 'Keep customers and partners confident with support that anticipates needs, closes loops, and keeps every stakeholder aligned.',
     benefits: [
       'Reduce churn with proactive outreach, playbooks, and health monitoring.',
@@ -98,7 +102,7 @@ const Services = () => {
                     <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/30">
                       {service.icon}
                     </span>
-                    <span className="text-sm font-semibold uppercase tracking-[0.2em] text-light/70">Service area</span>
+                    <span className="text-sm font-semibold uppercase tracking-[0.2em] text-light/70">{service.area}</span>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-light">{service.title}</h2>
                   <p className="text-lg leading-relaxed text-light/85">{service.valueProp}</p>
@@ -114,16 +118,19 @@ const Services = () => {
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    to="/contact"
-                    className="inline-flex items-center gap-2 text-base font-semibold text-primary transition hover:text-primary/80"
-                  >
-                    Talk to the team
-                    <span aria-hidden>→</span>
-                  </Link>
                 </div>
               </section>
             ))}
+          </div>
+
+          <div className="flex justify-center pt-12">
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-3 rounded-full border border-primary/40 bg-primary/10 px-6 py-3 text-base font-semibold text-primary shadow-sm transition hover:border-primary/60 hover:bg-primary/15"
+            >
+              Talk to the team
+              <span aria-hidden>→</span>
+            </Link>
           </div>
         </div>
       </GradientSection>

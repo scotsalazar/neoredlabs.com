@@ -40,10 +40,10 @@ const AIIntegration = () => (
         <p className="text-[15.5pt] leading-relaxed text-light/80">
           We build business systems that eliminate manual operations and human bottlenecks. Stop scaling headcount and start scaling systems.
         </p>
-        <ul className="mt-4 space-y-3 list-inside list-disc text-base text-light/80">
-          <li>Autonomous AI agents replacing repetitive and decision-heavy workflows</li>
-          <li>Custom-built apps designed to fit your exact business workflows, ensuring alignment with your teams and daily operations</li>
-          <li>Real-time monitoring and optimisation to expose inefficiencies instantly</li>
+        <ul className="mt-4 space-y-3 list-inside list-disc text-[14pt] leading-relaxed text-light/80">
+          <li>Allow autonomous AI agents to replace repetitive and decision-heavy workflows within your operations</li>
+          <li>Design custom-built apps to fit your exact business workflows, ensuring alignment with your teams and daily operations</li>
+          <li>Access real-time monitoring and optimisation to expose inefficiencies of your system instantly</li>
         </ul>
       </motion.div>
       <motion.div variants={itemVariants} className="flex justify-center">

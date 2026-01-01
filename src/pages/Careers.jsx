@@ -243,7 +243,6 @@ const Careers = () => {
 
     const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook/cv-upload';
     const formData = new FormData();
-    const timestamp = new Date().toISOString();
 
     formData.append('name', formState.name.trim());
     formData.append('email', formState.email.trim());
@@ -251,19 +250,21 @@ const Careers = () => {
     formData.append('age', formState.age.trim());
     formData.append('gender', formState.gender.trim());
     formData.append('role', formState.role);
-    formData.append('timestamp', timestamp);
     formData.append('answers[q1]', formState.answers.q1);
     formData.append('answers[q2]', formState.answers.q2);
     formData.append('answers[q3]', formState.answers.q3);
     formData.append('answers[q4]', formState.answers.q4);
 
     if (formState.cvFile) {
-      formData.append('cv_file', formState.cvFile);
+      formData.append('cv', formState.cvFile);
     }
 
     try {
       const response = await fetch(webhookUrl, {
         method: 'POST',
+        headers: {
+          Accept: 'application/json'
+        },
         body: formData
       });
 

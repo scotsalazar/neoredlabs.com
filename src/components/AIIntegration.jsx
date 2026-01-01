@@ -37,10 +37,10 @@ const AIIntegration = () => (
     <div className="section-container grid gap-12 md:grid-cols-2 md:items-center">
       <motion.div variants={itemVariants} className="space-y-6">
         <h2 className="section-title">Launch Your Business to the World with Your First Scalable System.</h2>
-        <p className="text-[15.5pt] leading-relaxed text-light/80">
+        <p className="text-[14.5pt] leading-relaxed text-light/80">
           We build business systems that eliminate manual operations and human bottlenecks. Stop scaling headcount and start scaling systems.
         </p>
-        <ul className="mt-4 space-y-3 list-inside list-disc text-[14pt] leading-relaxed text-light/80">
+        <ul className="mt-4 space-y-3 list-inside list-disc text-[13pt] leading-relaxed text-light/80">
           <li>Allow autonomous AI agents to replace repetitive and decision-heavy workflows within your operations</li>
           <li>Design custom-built apps to fit your exact business workflows, ensuring alignment with your teams and daily operations</li>
           <li>Access real-time monitoring and optimisation to expose inefficiencies of your system instantly</li>

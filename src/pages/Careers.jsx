@@ -120,6 +120,7 @@ const Careers = () => {
     email: '',
     location: '',
     age: '',
+    gender: '',
     role: '',
     answers: {
       q1: '',
@@ -146,6 +147,7 @@ const Careers = () => {
       email: '',
       location: '',
       age: '',
+      gender: '',
       role: '',
       answers: { q1: '', q2: '', q3: '', q4: '' },
       cvFile: null
@@ -214,6 +216,8 @@ const Careers = () => {
       newErrors.age = 'Age must be greater than zero.';
     }
 
+    if (!formState.gender.trim()) newErrors.gender = 'Gender selection is required.';
+
     if (!formState.role) newErrors.role = 'Select a role to continue.';
 
     currentQuestions.forEach((_, index) => {
@@ -245,6 +249,7 @@ const Careers = () => {
     formData.append('email', formState.email.trim());
     formData.append('location', formState.location.trim());
     formData.append('age', formState.age.trim());
+    formData.append('gender', formState.gender.trim());
     formData.append('role', formState.role);
     formData.append('timestamp', timestamp);
     formData.append('answers[q1]', formState.answers.q1);
@@ -431,6 +436,25 @@ const Careers = () => {
                     {errors.age && <p className="text-xs text-secondary">{errors.age}</p>}
                   </label>
                 </div>
+
+                <label className="space-y-2 text-sm text-light/80">
+                  <span className="block font-semibold text-light">Gender</span>
+                  <select
+                    name="gender"
+                    value={formState.gender}
+                    onChange={handleInputChange('gender')}
+                    className="w-full rounded-lg border border-white/10 bg-dark/80 px-4 py-3 text-light focus:border-secondary focus:outline-none"
+                    style={{ colorScheme: 'dark' }}
+                  >
+                    <option value="" disabled hidden>
+                      Select gender
+                    </option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Prefer not to say</option>
+                  </select>
+                  {errors.gender && <p className="text-xs text-secondary">{errors.gender}</p>}
+                </label>
 
                 <label className="space-y-2 text-sm text-light/80">
                   <span className="block font-semibold text-light">Role</span>

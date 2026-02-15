@@ -20,7 +20,7 @@ const latestUpdates = [
     isoDate: '2026-01-12',
     date: 'Jan 12, 2026',
     tag: 'WIN',
-    title: 'Expanded multi-site purchase automation across a 14-warehouse network.',
+    title: 'Successfully launched GPF PO Agent v1.01 and active.',
     detailsLink: '/contact',
   },
   {
@@ -42,9 +42,9 @@ const latestUpdates = [
 ];
 
 const proofTiles = [
-  { label: 'POs processed', value: '12,480+' },
+  { label: 'Tokens processed', value: '12,480,711+' },
   { label: 'Avg time saved', value: '62%' },
-  { label: 'Uptime', value: '99.9%' },
+  { label: 'Service Uptime', value: '99.9%' },
 ];
 
 /**

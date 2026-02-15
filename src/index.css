@@ -34,7 +34,7 @@ body {
   @apply backdrop-blur-md bg-dark/70 border border-white/10;
 }
 :root {
-  --announcement-speed: 20s;
+  --announcement-speed: 36s;
 }
 
 .announcement-track {

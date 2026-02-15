@@ -5,6 +5,7 @@ import logoKiapatApp from '../assets/images/8dbbfc73-2878-4538-8f5b-2f09dac70db2
 import logoIamTechFix from '../assets/images/logo-kiapat.png';
 import logoNorthSouth4023 from '../assets/images/logo-northsouth4023.png';
 import logoKalyeBilliards from '../assets/images/logo-kalyebilliards.png';
+import logoHopeForLupus from '../assets/images/logo-hopeforlupus.png';
 import GradientSection from './GradientSection.jsx';
 
 const clients = [
@@ -49,6 +50,13 @@ const clients = [
     href: '/services',
     alt: 'Northsouth4023 client logo',
     label: 'Operations'
+  },
+  {
+    name: 'HopeforLupus',
+    logo: logoHopeForLupus,
+    href: '/services',
+    alt: 'Hope For Lupus client logo',
+    label: 'Health'
   }
 ];
 

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Navbar from './Navbar.jsx';
 import Footer from './Footer.jsx';
+import AnnouncementTicker from './AnnouncementTicker.jsx';
 import { Helmet } from 'react-helmet';
 import { useLocation } from 'react-router-dom';
 
@@ -88,6 +89,8 @@ const Layout = ({ title, description, image, children }) => {
         />
         <div className="relative flex min-h-screen flex-col">
           <Navbar />
+          <div className="h-28 shrink-0 sm:h-24" aria-hidden />
+          <AnnouncementTicker />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>

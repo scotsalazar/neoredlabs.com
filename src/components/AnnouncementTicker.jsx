@@ -1,26 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const DISMISS_KEY = 'iamtech_migration_notice_dismissed';
-const MESSAGE =
-  'NeoLabs (Neo RedLabs) is currently transitioning to IAMTECH. Our domain is still www.neoredlabs.com while the migration is in progress.';
+const ANNOUNCEMENTS = [
+  'NeoLabs (Neo RedLabs) is currently transitioning to IAM Technology Inc.',
+  'While the migration to IAM Tech is still on going, our domain will still be www.neoredlabs.com until further notice',
+  'Currently hiring Junior Developers and Junior DEVOPS, please apply and send your CV to www.neoredlabs.com/careers',
+];
 
 const AnnouncementTicker = () => {
-  const [dismissed, setDismissed] = useState(() => {
-    if (typeof window === 'undefined') {
-      return false;
-    }
+  const [dismissed, setDismissed] = useState(false);
 
-    return window.localStorage.getItem(DISMISS_KEY) === '1';
-  });
-
-  const handleDismiss = () => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(DISMISS_KEY, '1');
-    }
-
-    setDismissed(true);
-  };
+  const handleDismiss = () => setDismissed(true);
 
   if (dismissed) {
     return null;
@@ -28,14 +18,14 @@ const AnnouncementTicker = () => {
 
   const segment = (
     <>
-      <span className="announcement-item text-sm font-semibold text-slate-50">{MESSAGE}</span>
-      <span className="announcement-separator text-cyan-300/70" aria-hidden="true">
-        •
-      </span>
-      <span className="announcement-item text-sm font-semibold text-slate-50">{MESSAGE}</span>
-      <span className="announcement-separator text-cyan-300/70" aria-hidden="true">
-        •
-      </span>
+      {ANNOUNCEMENTS.map((message, index) => (
+        <React.Fragment key={`${message}-${index}`}>
+          <span className="announcement-item text-sm font-semibold text-slate-50">{message}</span>
+          <span className="announcement-separator text-cyan-300/70" aria-hidden="true">
+            •{'\u00A0'}
+          </span>
+        </React.Fragment>
+      ))}
     </>
   );
 

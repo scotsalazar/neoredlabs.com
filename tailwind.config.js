@@ -17,8 +17,9 @@ module.exports = {
         accent: '#6EE7B7'     // mint accent for subtle highlights
       },
       fontFamily: {
-        sans: ['Manrope', 'sans-serif'],
-        heading: ['Manrope', 'sans-serif']
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        display: ['Space Grotesk', 'Inter', 'ui-sans-serif', 'system-ui'],
+        heading: ['Space Grotesk', 'Inter', 'ui-sans-serif', 'system-ui']
       }
     }
   },

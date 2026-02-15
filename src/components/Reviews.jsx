@@ -35,7 +35,9 @@ const testimonials = [
 const Reviews = () => (
   <GradientSection className="py-20" id="reviews">
     <div className="section-container">
-      <h2 className="section-title text-center">What Our Clients Say</h2>
+      <h2 className="text-center font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+        What Our Clients Say
+      </h2>
       <div className="mt-12 grid gap-8 md:grid-cols-3">
         {testimonials.map((test) => (
           <article

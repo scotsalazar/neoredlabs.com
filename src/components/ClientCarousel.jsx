@@ -65,29 +65,22 @@ const ClientCarousel = () => (
         Serving multiple industries • Active deployments • Long-term partnerships
       </p>
 
-      <div className="mt-12 rounded-2xl bg-black/25 px-4 py-8 md:px-8 md:py-10">
-        <div className="grid grid-cols-2 items-end justify-items-center gap-x-6 gap-y-8 md:flex md:flex-wrap md:items-end md:justify-center md:gap-8 lg:gap-10">
-          {clients.map((client) => (
-            <a
-              key={client.name}
-              href={client.href}
-              className="group flex min-h-[92px] min-w-[132px] flex-col items-center justify-end px-2 text-center cursor-pointer"
-              aria-label={`View related work for ${client.name}`}
-            >
-              <div className="flex h-[68px] w-full items-end justify-center">
-                <img
-                  src={client.logo}
-                  alt={client.alt}
-                  title={client.name}
-                  className="max-h-[52px] w-auto max-w-[160px] object-contain opacity-90 brightness-110 contrast-95"
-                />
-              </div>
-              <span className="mt-2 text-[11px] uppercase tracking-[0.16em] text-light/60">
-                {client.label}
-              </span>
-            </a>
-          ))}
-        </div>
+      <div className="mt-12 flex flex-wrap items-center justify-center gap-8 md:gap-10">
+        {clients.map((client) => (
+          <a
+            key={client.name}
+            href={client.href}
+            className="flex items-center justify-center"
+            aria-label={`View related work for ${client.name}`}
+            title={client.name}
+          >
+            <img
+              src={client.logo}
+              alt={client.alt}
+              className="max-h-[52px] w-auto max-w-[160px] object-contain opacity-90 brightness-110 contrast-95"
+            />
+          </a>
+        ))}
       </div>
     </div>
   </GradientSection>

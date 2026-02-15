@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const ANNOUNCEMENTS = [
   'NeoLabs (Neo RedLabs) is currently transitioning to IAM Technology Inc.',
-  'While the migration to IAM Tech is still on going, our domain will still be www.neoredlabs.com until further notice',
+  'While the migration to IAM Tech is on going, our domain for now will be www.neoredlabs.com until further notice',
   'Currently hiring Junior Developers and Junior DEVOPS, please apply and send your CV to www.neoredlabs.com/careers',
 ];
 

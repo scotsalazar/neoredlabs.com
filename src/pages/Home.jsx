@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import Hero from '../components/Hero.jsx';
 import AIIntegration from '../components/AIIntegration.jsx';
@@ -6,9 +6,6 @@ import ClientCarousel from '../components/ClientCarousel.jsx';
 import Reviews from '../components/Reviews.jsx';
 import GradientSection from '../components/GradientSection.jsx';
 import { Link } from 'react-router-dom';
-import careersImage from '../assets/images/revenue-dashboard-new.png';
-import contactImage from '../assets/images/monitoring-dashboard.png';
-import useJobOpenings from '../hooks/useJobOpenings.js';
 
 const initialDemoState = {
   name: '',
@@ -17,12 +14,45 @@ const initialDemoState = {
   goal: '',
 };
 
+const latestUpdates = [
+  {
+    id: 'update-win-warehouse-network',
+    isoDate: '2026-01-12',
+    date: 'Jan 12, 2026',
+    tag: 'WIN',
+    title: 'Expanded multi-site purchase automation across a 14-warehouse network.',
+    detailsLink: '/contact',
+  },
+  {
+    id: 'update-release-approvals',
+    isoDate: '2026-01-04',
+    date: 'Jan 4, 2026',
+    tag: 'RELEASE',
+    title: 'Shipped approval routing with SLA alerts and escalation handoffs.',
+    detailsLink: '/contact',
+  },
+  {
+    id: 'update-client-finops',
+    isoDate: '2025-12-18',
+    date: 'Dec 18, 2025',
+    tag: 'CLIENT',
+    title: 'Onboarded a national distributor to real-time finance and ops reporting.',
+    detailsLink: '/contact',
+  },
+];
+
+const proofTiles = [
+  { label: 'POs processed', value: '12,480+' },
+  { label: 'Avg time saved', value: '62%' },
+  { label: 'Uptime', value: '99.9%' },
+];
+
 /**
  * Home page assembling the primary sections of the site.
  *
  * Combines the hero, solution highlights, automation overview,
- * clients and testimonials.  Additional call‑outs for hiring and
- * contact opportunities conclude the page.
+ * clients and testimonials.  A compact updates module and demo
+ * booking modal conclude the page.
  */
 const Home = () => {
   const [showDemoModal, setShowDemoModal] = useState(false);
@@ -30,7 +60,6 @@ const Home = () => {
   const [demoErrors, setDemoErrors] = useState({});
   const [demoMessage, setDemoMessage] = useState('');
   const [demoSubmitting, setDemoSubmitting] = useState(false);
-  const { jobs, loading, error } = useJobOpenings();
 
   const handleDemoChange = (field) => (event) => {
     setDemoForm((prev) => ({ ...prev, [field]: event.target.value }));
@@ -92,17 +121,6 @@ const Home = () => {
     setDemoMessage('');
   };
 
-  const jobLinks = useMemo(
-    () =>
-      jobs.map((job) => ({
-        id: job.id,
-        title: job.title,
-        applyUrl: job.applyUrl || `/careers#${job.id}`,
-        meta: job.team && job.location ? `${job.team} · ${job.location}` : job.team || job.location,
-      })),
-    [jobs],
-  );
-
   return (
     <Layout
       title="NeoLabs | Home"
@@ -112,86 +130,71 @@ const Home = () => {
       <AIIntegration />
       <ClientCarousel />
       <Reviews />
-      {/* Contact callout */}
+      {/* Latest updates */}
       <GradientSection className="py-20">
-        <div className="section-container grid gap-10 md:grid-cols-[0.8fr,1.2fr] md:items-center">
-          <div>
-            <Link to="/contact" aria-label="Go to contact page">
-              <img
-                src={contactImage}
-                alt="Illustrative map graphic"
-                className="mx-auto w-full max-w-md rounded-xl shadow-xl"
-                loading="lazy"
-                decoding="async"
-              />
-            </Link>
-            <p className="mt-3 text-sm text-light/60">
-              Book a demo anywhere in the Philippines—available through video conference or Zoom.
-            </p>
-          </div>
-          <div>
-            <h2 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Schedule a Demo
-            </h2>
-            <p className="mt-6 text-lg leading-relaxed text-light/80">
-              Ready to see NeoLabs in action? Reserve time with our team for a tailored walkthrough of the platform,
-              align on your goals, and co-design the path to launch.
-            </p>
-            <button type="button" className="btn-primary mt-8" onClick={() => setShowDemoModal(true)}>
-              Schedule a Demo
-            </button>
-          </div>
-        </div>
-      </GradientSection>
-      {/* Hiring callout */}
-      <GradientSection className="py-20">
-        <div className="section-container grid gap-10 md:grid-cols-[1.2fr,0.8fr] md:items-center">
-          <div>
-            <h2 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-              We're Hiring
-            </h2>
-            <p className="mt-6 text-lg leading-relaxed text-light/80">
-              Join our growing team and help shape the next generation of
-              intelligent applications.  Explore our open roles and be part
-              of an AI‑first culture.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {jobLinks.map((job) => (
-                <Link
-                  key={job.id}
-                  to={job.applyUrl}
-                  className="flex items-center gap-2 rounded-full border border-secondary/40 bg-white/5 px-4 py-2 text-sm font-semibold text-light transition hover:border-secondary hover:bg-secondary/10"
-                >
-                  <span>{job.title}</span>
-                  {job.meta && <span className="text-xs font-normal text-light/70">{job.meta}</span>}
-                </Link>
-              ))}
-              {loading && (
-                <span className="rounded-full border border-white/10 px-3 py-2 text-sm text-light/60">
-                  Loading openings…
-                </span>
-              )}
-              {error && (
-                <span className="rounded-full border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-100">
-                  {error}
-                </span>
-              )}
+        <div className="section-container">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl">
+                Latest Updates
+              </h2>
+              <p className="mt-3 text-sm text-light/70 sm:text-base">Wins, releases, and rollouts.</p>
             </div>
-            <Link to="/careers" className="btn-primary mt-8">
-              Explore Careers
+            <Link
+              to="/contact"
+              className="text-sm font-semibold text-secondary transition hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-dark"
+            >
+              View all
             </Link>
           </div>
-          <div>
-            <Link to="/careers" aria-label="Explore careers">
-              <img
-                src={careersImage}
-                alt="Careers illustration"
-                className="mx-auto w-full max-w-md rounded-xl shadow-xl"
-                loading="lazy"
-                decoding="async"
-              />
-            </Link>
-            <p className="mt-3 text-sm text-light/60">Work with modern tools, guided by agent-assisted workflows.</p>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[1.3fr,0.7fr] lg:items-start">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg backdrop-blur-sm sm:p-6">
+              <ul aria-label="Latest updates feed" className="divide-y divide-white/10">
+                {latestUpdates.map((item) => (
+                  <li key={item.id} className="py-4 first:pt-0 last:pb-0">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-light/60">
+                      <time dateTime={item.isoDate}>{item.date}</time>
+                      <span className="rounded-full border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary">
+                        {item.tag}
+                      </span>
+                    </div>
+                    <h3 className="mt-3 text-lg font-semibold leading-snug text-light sm:text-xl">{item.title}</h3>
+                    <Link
+                      to={item.detailsLink}
+                      className="mt-3 inline-flex text-sm font-semibold text-secondary transition hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-dark"
+                      aria-label={`View details for: ${item.title}`}
+                    >
+                      Details →
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              {proofTiles.map((tile) => (
+                <article
+                  key={tile.label}
+                  className="rounded-xl border border-white/10 bg-white/[0.03] p-4 shadow-md"
+                  aria-label={`${tile.label}: ${tile.value}`}
+                >
+                  <p className="text-xs uppercase tracking-[0.12em] text-light/60">{tile.label}</p>
+                  <p className="mt-2 text-2xl font-semibold text-light">{tile.value}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+            <p className="text-sm text-light/80">Want to see this live?</p>
+            <button
+              type="button"
+              className="btn-primary px-4 py-2 text-sm"
+              onClick={() => setShowDemoModal(true)}
+            >
+              Book a demo
+            </button>
           </div>
         </div>
       </GradientSection>

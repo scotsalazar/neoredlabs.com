@@ -112,11 +112,44 @@ const Home = () => {
       <AIIntegration />
       <ClientCarousel />
       <Reviews />
+      {/* Contact callout */}
+      <GradientSection className="py-20">
+        <div className="section-container grid gap-10 md:grid-cols-[0.8fr,1.2fr] md:items-center">
+          <div>
+            <Link to="/contact" aria-label="Go to contact page">
+              <img
+                src={contactImage}
+                alt="Illustrative map graphic"
+                className="mx-auto w-full max-w-md rounded-xl shadow-xl"
+                loading="lazy"
+                decoding="async"
+              />
+            </Link>
+            <p className="mt-3 text-sm text-light/60">
+              Book a demo anywhere in the Philippines—available through video conference or Zoom.
+            </p>
+          </div>
+          <div>
+            <h2 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Schedule a Demo
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-light/80">
+              Ready to see NeoLabs in action? Reserve time with our team for a tailored walkthrough of the platform,
+              align on your goals, and co-design the path to launch.
+            </p>
+            <button type="button" className="btn-primary mt-8" onClick={() => setShowDemoModal(true)}>
+              Schedule a Demo
+            </button>
+          </div>
+        </div>
+      </GradientSection>
       {/* Hiring callout */}
       <GradientSection className="py-20">
         <div className="section-container grid gap-10 md:grid-cols-[1.2fr,0.8fr] md:items-center">
           <div>
-            <h2 className="section-title">We're Hiring</h2>
+            <h2 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              We're Hiring
+            </h2>
             <p className="mt-6 text-lg leading-relaxed text-light/80">
               Join our growing team and help shape the next generation of
               intelligent applications.  Explore our open roles and be part
@@ -159,35 +192,6 @@ const Home = () => {
               />
             </Link>
             <p className="mt-3 text-sm text-light/60">Work with modern tools, guided by agent-assisted workflows.</p>
-          </div>
-        </div>
-      </GradientSection>
-      {/* Contact callout */}
-      <GradientSection className="py-20">
-        <div className="section-container grid gap-10 md:grid-cols-[0.8fr,1.2fr] md:items-center">
-          <div>
-            <Link to="/contact" aria-label="Go to contact page">
-              <img
-                src={contactImage}
-                alt="Illustrative map graphic"
-                className="mx-auto w-full max-w-md rounded-xl shadow-xl"
-                loading="lazy"
-                decoding="async"
-              />
-            </Link>
-            <p className="mt-3 text-sm text-light/60">
-              Book a demo anywhere in the Philippines—available through video conference or Zoom.
-            </p>
-          </div>
-          <div>
-            <h2 className="section-title">Schedule a Demo</h2>
-            <p className="mt-6 text-lg leading-relaxed text-light/80">
-              Ready to see NeoLabs in action? Reserve time with our team for a tailored walkthrough of the platform,
-              align on your goals, and co-design the path to launch.
-            </p>
-            <button type="button" className="btn-primary mt-8" onClick={() => setShowDemoModal(true)}>
-              Schedule a Demo
-            </button>
           </div>
         </div>
       </GradientSection>

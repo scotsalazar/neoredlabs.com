@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import Hero from '../components/Hero.jsx';
 import AIIntegration from '../components/AIIntegration.jsx';
-import WhyChooseNeoLabs from '../components/WhyChooseNeoLabs.jsx';
 import ClientCarousel from '../components/ClientCarousel.jsx';
 import Reviews from '../components/Reviews.jsx';
 import GradientSection from '../components/GradientSection.jsx';
@@ -111,7 +110,6 @@ const Home = () => {
     >
       <Hero />
       <AIIntegration />
-      <WhyChooseNeoLabs />
       <ClientCarousel />
       <Reviews />
       {/* Hiring callout */}

@@ -41,9 +41,10 @@ const AIIntegration = () => (
           We build business systems that eliminate manual operations and human bottlenecks. Stop scaling headcount and start scaling systems.
         </p>
         <ul className="mt-4 space-y-3 list-inside list-disc text-[12pt] leading-relaxed text-light/80">
-          <li>Allow autonomous AI agents to replace repetitive and decision-heavy workflows within your operations</li>
-          <li>Design custom-built apps to fit your exact business workflows, ensuring alignment with your team and daily operations</li>
-          <li>Access real-time monitoring and optimisation to expose inefficiencies of your system instantly</li>
+          <li>Design custom-built apps to fit your exact business workflows, ensuring alignment with your team and automate your daily operations</li>
+          <li>Allow autonomous AI agents to replace repetitive and decision-heavy workflows within your operations and reduce operational costs</li>
+          <li>Co-build your app through guided consultation and close coordination — you define the ask or problem, we provide solutions and implement it</li>
+          <li>Access real-time monitoring and optimisation to expose inefficiencies, control gaps, and policy violations instantly</li>
         </ul>
       </motion.div>
       <motion.div variants={itemVariants} className="flex justify-center">

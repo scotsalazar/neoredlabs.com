@@ -33,3 +33,75 @@ body {
 .glass {
   @apply backdrop-blur-md bg-dark/70 border border-white/10;
 }
+:root {
+  --announcement-speed: 20s;
+}
+
+.announcement-track {
+  animation: announcement-scroll var(--announcement-speed) linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+
+.announcement-segment {
+  flex: 0 0 auto;
+}
+
+.announcement-ticker:hover .announcement-track,
+.announcement-ticker:focus-within .announcement-track {
+  animation-play-state: paused;
+}
+
+@keyframes announcement-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .announcement-ticker .section-container {
+    gap: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .announcement-badge {
+    font-size: 10px;
+    padding: 0.2rem 0.45rem;
+  }
+
+  .announcement-item {
+    font-size: 0.75rem;
+  }
+
+  .announcement-separator {
+    font-size: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .announcement-track {
+    animation: none;
+    transform: none;
+    width: 100%;
+    justify-content: flex-start;
+    white-space: normal;
+    will-change: auto;
+  }
+
+  .announcement-segment {
+    width: 100%;
+  }
+
+  .announcement-segment[aria-hidden='true'] {
+    display: none;
+  }
+
+  .announcement-separator {
+    display: none;
+  }
+}

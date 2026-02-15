@@ -55,9 +55,13 @@ const clients = [
 const ClientCarousel = () => (
   <GradientSection className="py-24" id="clients">
     <div className="section-container">
-      <h2 className="section-title text-center">Trusted by teams in logistics, retail, and hospitality.</h2>
-      <p className="mt-3 text-center text-sm text-light/70">From logistics to restaurants to gyms.</p>
-      <p className="mt-3 text-center text-xs tracking-wide text-light/60">
+      <h2 className="text-center font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+        Trusted by teams in logistics, retail, and hospitality.
+      </h2>
+      <p className="mx-auto mt-3 max-w-xl text-center text-base leading-relaxed text-white/75 sm:text-lg">
+        From logistics to restaurants to gyms.
+      </p>
+      <p className="mx-auto mt-3 max-w-xl text-center text-base leading-relaxed text-white/75 sm:text-lg">
         Serving multiple industries • Active deployments • Long-term partnerships
       </p>
 

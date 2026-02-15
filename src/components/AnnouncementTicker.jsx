@@ -22,7 +22,7 @@ const AnnouncementTicker = () => {
         <React.Fragment key={`${message}-${index}`}>
           <span className="announcement-item text-sm font-semibold text-slate-50">{message}</span>
           <span className="announcement-separator text-cyan-300/70" aria-hidden="true">
-            •
+            •{'\u00A0'}
           </span>
         </React.Fragment>
       ))}

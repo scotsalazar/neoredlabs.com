@@ -2,6 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import GradientSection from '../components/GradientSection.jsx';
+import appImage from '../assets/images/product-erp.png';
+import automationImage from '../assets/images/ai.png';
+import dashboardImage from '../assets/images/monitoring-dashboard.png';
+import supportImage from '../assets/images/meeting.png';
 
 const services = [
   {
@@ -9,6 +13,8 @@ const services = [
     area: 'Service Area',
     valueProp:
       'Design and ship tailor-made apps that mirror how your teams sell, support, and scale—without wasting budget on one-size-fits-all software.',
+    image: appImage,
+    imageAlt: 'Custom business application interface for sales and operations teams',
     benefits: [
       'Capture revenue faster with workflows built for your exact sales, ops, and customer motions.',
       'Remove manual steps so teams close loops in fewer clicks and with fewer handoffs.',
@@ -26,6 +32,8 @@ const services = [
     title: 'AI Integration & Intelligent Process Automation',
     area: 'Agentic Area',
     valueProp: 'Layer AI into your operations to cut cycle times, enforce quality controls, and free people for higher-value work.',
+    image: automationImage,
+    imageAlt: 'AI integration workflow for intelligent process automation',
     benefits: [
       'Automate intake, routing, and approvals so requests move from minutes to seconds.',
       'Blend human-in-the-loop checkpoints with AI to maintain governance and compliance.',
@@ -44,6 +52,8 @@ const services = [
     area: 'Reporting Area',
     valueProp:
       'Give leaders and teams live visibility into performance so they can act on leading indicators, not lagging reports.',
+    image: dashboardImage,
+    imageAlt: 'Operational insights dashboard with real-time KPI monitoring',
     benefits: [
       'Consolidate KPIs across product, revenue, and operations into one source of truth.',
       'Spot risks early with automated alerts and clear ownership cues.',
@@ -62,6 +72,8 @@ const services = [
     title: 'Proactive Product Support & Stakeholder Coordination',
     area: 'Support Area',
     valueProp: 'Keep customers and partners confident with support that anticipates needs, closes loops, and keeps every stakeholder aligned.',
+    image: supportImage,
+    imageAlt: 'Stakeholder support coordination meeting for proactive product support',
     benefits: [
       'Reduce churn with proactive outreach, playbooks, and health monitoring.',
       'Accelerate escalations with clear ownership, status transparency, and timeline commitments.',
@@ -78,6 +90,15 @@ const services = [
 ];
 
 const Services = () => {
+  const [imageErrors, setImageErrors] = React.useState({});
+
+  const handleImageError = (title) => {
+    setImageErrors((previousErrors) => ({
+      ...previousErrors,
+      [title]: true,
+    }));
+  };
+
   return (
     <Layout title="NeoRedLabs – Services" description="Discover our services from AI-driven automation to personalised apps.">
       <GradientSection className="py-20 md:py-24">
@@ -93,31 +114,54 @@ const Services = () => {
 
           <div className="flex flex-col divide-y divide-white/10 border-y border-white/10">
             {services.map((service) => (
-              <section
-                key={service.title}
-                className="py-10 md:py-12 flex flex-col gap-8 lg:grid lg:grid-cols-[1.1fr_1fr] lg:items-start lg:gap-12"
-              >
-                <div className="space-y-4 max-w-3xl">
-                  <div className="inline-flex items-center gap-3 text-primary">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/30">
-                      {service.icon}
-                    </span>
-                    <span className="text-sm font-semibold uppercase tracking-[0.2em] text-light/70">{service.area}</span>
+              <section key={service.title} className="py-10 md:py-12">
+                <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-12">
+                  <div className="order-1">
+                    {imageErrors[service.title] || !service.image ? (
+                      <div
+                        className="aspect-[16/9] w-full rounded-2xl border border-white/15 bg-gradient-to-br from-primary/20 via-cyan-400/10 to-white/5 p-6 shadow-lg"
+                        role="img"
+                        aria-label={`${service.area} visual unavailable`}
+                      >
+                        <div className="flex h-full items-end">
+                          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-light/80">{service.area} placeholder</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={service.image}
+                        alt={service.imageAlt}
+                        loading="lazy"
+                        onError={() => handleImageError(service.title)}
+                        className="aspect-[16/9] w-full rounded-2xl border border-white/10 object-cover shadow-lg"
+                      />
+                    )}
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-light">{service.title}</h2>
-                  <p className="text-lg leading-relaxed text-light/85">{service.valueProp}</p>
-                </div>
 
-                <div className="space-y-4 max-w-2xl">
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-light/60">What that looks like</h3>
-                  <ul className="space-y-3 text-base leading-relaxed text-light/85">
-                    {service.benefits.map((benefit) => (
-                      <li key={benefit} className="flex gap-3">
-                        <span className="mt-2 h-[6px] w-[6px] rounded-full bg-primary" aria-hidden />
-                        <span>{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="order-2 grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-start lg:gap-8">
+                    <div className="space-y-4 max-w-3xl">
+                      <div className="inline-flex items-center gap-3 text-primary">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/30">
+                          {service.icon}
+                        </span>
+                        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-light/70">{service.area}</span>
+                      </div>
+                      <h2 className="text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-light">{service.title}</h2>
+                      <p className="text-lg leading-relaxed text-light/85">{service.valueProp}</p>
+                    </div>
+
+                    <div className="space-y-4 max-w-2xl">
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-light/60">What that looks like</h3>
+                      <ul className="space-y-3 text-base leading-relaxed text-light/85">
+                        {service.benefits.map((benefit) => (
+                          <li key={benefit} className="flex gap-3">
+                            <span className="mt-2 h-[6px] w-[6px] rounded-full bg-primary" aria-hidden />
+                            <span>{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </section>
             ))}

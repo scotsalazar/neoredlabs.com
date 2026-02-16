@@ -2,35 +2,47 @@ import React from 'react';
 import Layout from '../components/Layout.jsx';
 import GradientSection from '../components/GradientSection.jsx';
 
-const releaseEntries = [
+const RELEASE_NOTE_ENTRIES = [
   {
-    version: 'v1.2.0',
-    date: 'March 2026',
-    updates: [
-      'Introduced the Release Notes page for transparent product and website updates.',
-      'Improved site navigation by adding direct access to release updates from the main menu.',
-      'Refined page-level metadata handling across key routes for better search previews.',
-    ],
+    id: 'iam-release-dashboard-sync',
+    title: 'IAM: Unified access dashboard sync release',
+    category: 'IAM latest releases',
+    summary:
+      'Released a consolidated IAM operations dashboard with faster role auditing, policy change history, and cross-tenant visibility for admin teams.',
+    date: '2026-03-12',
+    image: '/assets/images/solutions/performance-dashboard.png',
+    ctaLabel: 'View IAM release details',
+    ctaHref: '/services',
   },
   {
-    version: 'v1.1.0',
-    date: 'February 2026',
-    updates: [
-      'Expanded services messaging with clearer outcome-oriented descriptions.',
-      'Enhanced responsive spacing behavior across major marketing pages.',
-      'Polished contact page messaging for faster partnership onboarding.',
-    ],
+    id: 'agent-news-autonomy-monitoring',
+    title: 'Agent update: proactive autonomy monitoring now live',
+    category: 'latest agent news',
+    summary:
+      'Published new agent reliability tooling that flags stalled workflows, improves execution trace quality, and helps teams review handoff outcomes in real time.',
+    date: '2026-03-05',
+    image: '/assets/images/solutions/automation-workflow.png',
+    ctaLabel: 'Read agent updates',
+    ctaHref: '/about',
   },
   {
-    version: 'v1.0.0',
-    date: 'January 2026',
-    updates: [
-      'Launched the refreshed NeoLabs website foundation and page architecture.',
-      'Established the shared Layout wrapper for consistent global navigation and footer experiences.',
-      'Shipped core routes: Home, About, Services, and Contact.',
-    ],
+    id: 'venture-expansion-partnership-announcement',
+    title: 'Business venture: strategic delivery partnership expansion',
+    category: 'latest business ventures',
+    summary:
+      'Announced a new collaboration model focused on rapid solution pilots, co-development opportunities, and long-term transformation support for enterprise clients.',
+    date: '2026-02-24',
+    image: '/assets/images/solutions/intelligent-operations.png',
+    ctaLabel: 'Explore venture highlights',
+    ctaHref: '/contact',
   },
 ];
+
+const humanDateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
 
 const ReleaseNotes = () => (
   <Layout title="Release Notes | NeoLabs" description="Track the latest NeoLabs website and product updates.">
@@ -40,27 +52,33 @@ const ReleaseNotes = () => (
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Release Notes</p>
           <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-light">What&apos;s new at NeoLabs</h1>
           <p className="text-lg leading-relaxed text-light/80 max-w-3xl">
-            Follow recent improvements, shipped enhancements, and quality updates across our website and digital delivery
-            initiatives.
+            This section shares our latest updates and release notes, including IAM launches, agent improvements,
+            and new business venture milestones.
           </p>
         </header>
 
-        <div className="space-y-6">
-          {releaseEntries.map((entry) => (
-            <section key={entry.version} className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-2xl font-semibold text-light">{entry.version}</h2>
-                <span className="text-sm font-medium uppercase tracking-[0.16em] text-light/60">{entry.date}</span>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {RELEASE_NOTE_ENTRIES.map((entry) => (
+            <article key={entry.id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+              <img src={entry.image} alt={entry.title} className="h-48 w-full object-cover" loading="lazy" />
+
+              <div className="flex h-full flex-col gap-4 p-6">
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/90">{entry.category}</p>
+                  <h2 className="text-2xl font-semibold text-light">{entry.title}</h2>
+                  <p className="text-base leading-relaxed text-light/80">{entry.summary}</p>
+                </div>
+
+                <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+                  <time dateTime={entry.date} className="text-sm font-medium uppercase tracking-[0.16em] text-light/60">
+                    {humanDateFormatter.format(new Date(entry.date))}
+                  </time>
+                  <a href={entry.ctaHref} className="text-sm font-semibold text-primary transition-colors hover:text-primary/80">
+                    {entry.ctaLabel}
+                  </a>
+                </div>
               </div>
-              <ul className="space-y-3 text-base leading-relaxed text-light/85">
-                {entry.updates.map((update) => (
-                  <li key={update} className="flex items-start gap-3">
-                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden />
-                    <span>{update}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            </article>
           ))}
         </div>
       </div>

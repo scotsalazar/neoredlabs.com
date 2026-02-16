@@ -45,7 +45,10 @@ const humanDateFormatter = new Intl.DateTimeFormat('en-US', {
 });
 
 const ReleaseNotes = () => (
-  <Layout title="Release Notes | NeoLabs" description="Track the latest NeoLabs website and product updates.">
+  <Layout
+    title="Release Notes | NeoLabs"
+    description="Concise product, platform, and partnership updates from the NeoLabs team."
+  >
     <GradientSection className="py-20 md:py-24">
       <div className="section-container space-y-12">
         <header className="max-w-4xl space-y-4">
@@ -59,33 +62,44 @@ const ReleaseNotes = () => (
           </p>
         </header>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <section className="space-y-6" aria-labelledby="release-notes-updates-heading">
+          <h2 id="release-notes-updates-heading" className="text-2xl font-semibold tracking-tight text-light">
+            Recent updates
+          </h2>
+
+          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="NeoLabs release note entries">
           {RELEASE_NOTE_ENTRIES.map((entry) => (
-            <article
-              key={entry.id}
-              className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm"
-            >
-              <img src={entry.image} alt={entry.title} className="h-48 w-full object-cover" loading="lazy" />
+            <li key={entry.id} className="list-none">
+              <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm">
+                <img src={entry.image} alt={entry.title} className="h-48 w-full object-cover" loading="lazy" />
 
-              <div className="flex h-full flex-col gap-4 p-6">
-                <div className="space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/60">{entry.category}</p>
-                  <h2 className="text-2xl font-semibold leading-tight tracking-tight text-light">{entry.title}</h2>
-                  <p className="text-base leading-relaxed text-light/80">{entry.summary}</p>
-                </div>
+                <div className="flex h-full flex-col gap-4 p-6">
+                  <div className="space-y-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/70">{entry.category}</p>
+                    <h3 className="text-2xl font-semibold leading-tight tracking-tight text-light">{entry.title}</h3>
+                    <p className="text-base leading-relaxed text-light/90">{entry.summary}</p>
+                  </div>
 
-                <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-                  <time dateTime={entry.date} className="text-xs font-medium uppercase tracking-[0.16em] text-light/60">
-                    {humanDateFormatter.format(new Date(entry.date))}
-                  </time>
-                  <a href={entry.ctaHref} className="text-sm font-semibold text-secondary transition-colors hover:text-secondary/80">
-                    {entry.ctaLabel}
-                  </a>
+                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+                    <time
+                      dateTime={entry.date}
+                      className="text-xs font-medium uppercase tracking-[0.16em] text-light/70"
+                    >
+                      {humanDateFormatter.format(new Date(entry.date))}
+                    </time>
+                    <a
+                      href={entry.ctaHref}
+                      className="rounded-md px-2 py-1 text-sm font-semibold text-secondary transition-colors hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                    >
+                      {entry.ctaLabel}
+                    </a>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            </li>
           ))}
-        </div>
+          </ul>
+        </section>
       </div>
     </GradientSection>
   </Layout>

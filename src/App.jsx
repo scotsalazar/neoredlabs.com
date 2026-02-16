@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import TermsOfService from './pages/TermsOfService.jsx';
 import Services from './pages/Services.jsx';
+import ReleaseNotes from './pages/ReleaseNotes.jsx';
 
 /**
  * Application routes for the NeoLabs website.
@@ -23,6 +24,7 @@ const App = () => (
     <Route path="/" element={<Home />} />
         <Route path="/services" element={<Services />} />
     <Route path="/about" element={<About />} />
+    <Route path="/release-notes" element={<ReleaseNotes />} />
     <Route path="/careers" element={<Careers />} />
     <Route path="/contact" element={<Contact />} />
     <Route path="/privacy-policy" element={<PrivacyPolicy />} />

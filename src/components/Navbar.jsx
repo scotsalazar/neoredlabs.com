@@ -14,8 +14,8 @@ const navLinks = [
   { label: 'Home', to: '/', end: true },
   { label: 'About', to: '/about' },
   { label: 'Services', to: '/services' },
-  { label: 'Release Notes', to: '/release-notes' },
-  { label: 'Contact', to: '/contact' }
+  { label: 'Contacts', to: '/contact' },
+  { label: 'Changelog', to: '/release-notes' }
 ];
 
 const Navbar = () => (

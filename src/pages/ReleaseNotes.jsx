@@ -46,28 +46,28 @@ const humanDateFormatter = new Intl.DateTimeFormat('en-US', {
 
 const ReleaseNotes = () => (
   <Layout
-    title="Release Notes | NeoLabs"
+    title="Changelog | NeoLabs"
     description="Concise product, platform, and partnership updates from the NeoLabs team."
   >
     <GradientSection className="py-20 md:py-24">
       <div className="section-container space-y-12">
         <header className="max-w-4xl space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Release Notes</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Changelog</p>
           <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl">
             What&apos;s new at NeoLabs
           </h1>
           <p className="text-lg leading-relaxed text-light/80 max-w-3xl">
-            This section shares our latest updates and release notes, including IAM launches, agent improvements,
+            This section shares our latest updates and changelog entries, including IAM launches, agent improvements,
             and new business venture milestones.
           </p>
         </header>
 
-        <section className="space-y-6" aria-labelledby="release-notes-updates-heading">
-          <h2 id="release-notes-updates-heading" className="text-2xl font-semibold tracking-tight text-light">
+        <section className="space-y-6" aria-labelledby="changelog-updates-heading">
+          <h2 id="changelog-updates-heading" className="text-2xl font-semibold tracking-tight text-light">
             Recent updates
           </h2>
 
-          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="NeoLabs release note entries">
+          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="NeoLabs changelog entries">
           {RELEASE_NOTE_ENTRIES.map((entry) => (
             <li key={entry.id} className="list-none">
               <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm">

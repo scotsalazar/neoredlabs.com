@@ -50,7 +50,9 @@ const ReleaseNotes = () => (
       <div className="section-container space-y-12">
         <header className="max-w-4xl space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Release Notes</p>
-          <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-light">What&apos;s new at NeoLabs</h1>
+          <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl">
+            What&apos;s new at NeoLabs
+          </h1>
           <p className="text-lg leading-relaxed text-light/80 max-w-3xl">
             This section shares our latest updates and release notes, including IAM launches, agent improvements,
             and new business venture milestones.
@@ -59,21 +61,24 @@ const ReleaseNotes = () => (
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {RELEASE_NOTE_ENTRIES.map((entry) => (
-            <article key={entry.id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+            <article
+              key={entry.id}
+              className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm"
+            >
               <img src={entry.image} alt={entry.title} className="h-48 w-full object-cover" loading="lazy" />
 
               <div className="flex h-full flex-col gap-4 p-6">
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/90">{entry.category}</p>
-                  <h2 className="text-2xl font-semibold text-light">{entry.title}</h2>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/60">{entry.category}</p>
+                  <h2 className="text-2xl font-semibold leading-tight tracking-tight text-light">{entry.title}</h2>
                   <p className="text-base leading-relaxed text-light/80">{entry.summary}</p>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between gap-3 pt-2">
-                  <time dateTime={entry.date} className="text-sm font-medium uppercase tracking-[0.16em] text-light/60">
+                <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+                  <time dateTime={entry.date} className="text-xs font-medium uppercase tracking-[0.16em] text-light/60">
                     {humanDateFormatter.format(new Date(entry.date))}
                   </time>
-                  <a href={entry.ctaHref} className="text-sm font-semibold text-primary transition-colors hover:text-primary/80">
+                  <a href={entry.ctaHref} className="text-sm font-semibold text-secondary transition-colors hover:text-secondary/80">
                     {entry.ctaLabel}
                   </a>
                 </div>

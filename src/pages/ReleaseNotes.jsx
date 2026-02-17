@@ -4,15 +4,15 @@ import GradientSection from '../components/GradientSection.jsx';
 
 const RELEASE_NOTE_ENTRIES = [
   {
-    id: 'iam-release-dashboard-sync',
-    title: 'IAM: Unified access dashboard sync release',
-    category: 'IAM latest releases',
+    id: 'hiring-announcement-neolabs',
+    title: "We're Hiring: Build the Future of AI Operations with NeoLabs",
+    category: 'company news',
     summary:
-      'Coordinated cross-team alignment to integrate our unified access dashboard across client and operations environments, establishing consistent policies and data flows; deployed the automated synchronization with our main client server hub, linking user management and logs; executed comprehensive testing and monitoring to ensure real-time updates and minimal downtime; resulting in improved policy audit tracking, seamless role transitions, and consolidated IAM insights across the client app.',
-    date: '2026-03-12',
+      'NeoLabs is expanding our team across engineering, AI operations, delivery excellence, and client success. We are looking for mission-driven builders who want to ship practical AI systems that solve real business challenges. Explore open roles, learn what we value, and apply through our careers page to join us in shaping the next generation of autonomous workflows.',
+    date: '2026-03-16',
     image: '/assets/images/solutions/6e44c11e-99d0-4547-8133-1e77994f764e.png',
-    ctaLabel: 'View IAM release details',
-    ctaHref: '/services',
+    ctaLabel: 'View open roles',
+    ctaHref: 'https://neoredlabs.com/careers',
   },
   {
     id: 'agent-news-autonomy-monitoring',
@@ -69,11 +69,16 @@ const ReleaseNotes = () => (
             Recent updates
           </h2>
 
-          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="NeoLabs changelog entries">
+          <ul className="space-y-6" aria-label="NeoLabs changelog entries">
             {RELEASE_NOTE_ENTRIES.map((entry) => (
               <li key={entry.id} className="list-none">
-                <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm">
-                  <img src={entry.image} alt={entry.title} className="h-48 w-full object-cover" loading="lazy" />
+                <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm md:flex-row md:min-h-[320px]">
+                  <img
+                    src={entry.image}
+                    alt={entry.title}
+                    className="h-56 w-full object-cover md:h-auto md:w-[38%] lg:w-[42%]"
+                    loading="lazy"
+                  />
 
                   <div className="flex h-full flex-col gap-4 p-6">
                     <div className="space-y-3">
@@ -95,6 +100,8 @@ const ReleaseNotes = () => (
                       </time>
                       <a
                         href={entry.ctaHref}
+                        target={entry.ctaHref.startsWith('http') ? '_blank' : undefined}
+                        rel={entry.ctaHref.startsWith('http') ? 'noreferrer' : undefined}
                         className="rounded-md px-2 py-1 text-sm font-semibold text-secondary transition-colors hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                       >
                         {entry.ctaLabel}

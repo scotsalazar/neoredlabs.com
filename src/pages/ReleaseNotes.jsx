@@ -8,20 +8,20 @@ const RELEASE_NOTE_ENTRIES = [
     title: 'IAM: Unified access dashboard sync release',
     category: 'IAM latest releases',
     summary:
-      'Released a consolidated IAM operations dashboard with faster role auditing, policy change history, and cross-tenant visibility for admin teams.',
+      'Coordinated cross-team alignment to integrate our unified access dashboard across client and operations environments, establishing consistent policies and data flows; deployed the automated synchronization with our main client server hub, linking user management and logs; executed comprehensive testing and monitoring to ensure real-time updates and minimal downtime; resulting in improved policy audit tracking, seamless role transitions, and consolidated IAM insights across the client app.',
     date: '2026-03-12',
-    image: '/assets/images/solutions/performance-dashboard.png',
+    image: '/assets/images/solutions/6e44c11e-99d0-4547-8133-1e77994f764e.png',
     ctaLabel: 'View IAM release details',
     ctaHref: '/services',
   },
   {
     id: 'agent-news-autonomy-monitoring',
-    title: 'Agent update: proactive autonomy monitoring now live',
+    title: 'PO Agent v1.01 release update',
     category: 'latest agent news',
     summary:
-      'Published new agent reliability tooling that flags stalled workflows, improves execution trace quality, and helps teams review handoff outcomes in real time.',
+      'Coordinated cross-functional research and operations to refine our purchase-order autonomous agent; deployed the v1.01 release with updated monitoring processes across our scheduling system; executed new algorithmic workflows that process 99% of incoming purchase orders and automate delivery scheduling, with real-time adjustments to partner availability; resulting in near-total PO coverage, improved accuracy, and reduced manual intervention.',
     date: '2026-03-05',
-    image: '/assets/images/solutions/automation-workflow.png',
+    image: '/assets/images/solutions/8053086a-a535-4a34-a4b9-810b49271058.png',
     ctaLabel: 'Read agent updates',
     ctaHref: '/about',
   },
@@ -30,9 +30,9 @@ const RELEASE_NOTE_ENTRIES = [
     title: 'Business venture: strategic delivery partnership expansion',
     category: 'latest business ventures',
     summary:
-      'Announced a new collaboration model focused on rapid solution pilots, co-development opportunities, and long-term transformation support for enterprise clients.',
+      'Coordinated strategic discussions and handshake agreements with corporate business partners to expand delivery networks; deployed partnership frameworks, aligning service protocols and integration points; executed joint operations through pilot programs to test route efficiencies and cross-service logistics; resulting in expanded reach, improved delivery times, and stronger client relationships across enterprise accounts.',
     date: '2026-02-24',
-    image: '/assets/images/solutions/intelligent-operations.png',
+    image: '/assets/images/solutions/48a604cc-735d-434c-8561-b10b1c6fd76c.png',
     ctaLabel: 'Explore venture highlights',
     ctaHref: '/contact',
   },
@@ -52,7 +52,9 @@ const ReleaseNotes = () => (
     <GradientSection className="py-20 md:py-24">
       <div className="section-container space-y-12">
         <header className="max-w-4xl space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Changelog</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+            Changelog
+          </p>
           <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl">
             What&apos;s new at NeoLabs
           </h1>
@@ -68,36 +70,40 @@ const ReleaseNotes = () => (
           </h2>
 
           <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="NeoLabs changelog entries">
-          {RELEASE_NOTE_ENTRIES.map((entry) => (
-            <li key={entry.id} className="list-none">
-              <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm">
-                <img src={entry.image} alt={entry.title} className="h-48 w-full object-cover" loading="lazy" />
+            {RELEASE_NOTE_ENTRIES.map((entry) => (
+              <li key={entry.id} className="list-none">
+                <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm">
+                  <img src={entry.image} alt={entry.title} className="h-48 w-full object-cover" loading="lazy" />
 
-                <div className="flex h-full flex-col gap-4 p-6">
-                  <div className="space-y-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/70">{entry.category}</p>
-                    <h3 className="text-2xl font-semibold leading-tight tracking-tight text-light">{entry.title}</h3>
-                    <p className="text-base leading-relaxed text-light/90">{entry.summary}</p>
-                  </div>
+                  <div className="flex h-full flex-col gap-4 p-6">
+                    <div className="space-y-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/70">
+                        {entry.category}
+                      </p>
+                      <h3 className="text-2xl font-semibold leading-tight tracking-tight text-light">
+                        {entry.title}
+                      </h3>
+                      <p className="text-base leading-relaxed text-light/90">{entry.summary}</p>
+                    </div>
 
-                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-                    <time
-                      dateTime={entry.date}
-                      className="text-xs font-medium uppercase tracking-[0.16em] text-light/70"
-                    >
-                      {humanDateFormatter.format(new Date(entry.date))}
-                    </time>
-                    <a
-                      href={entry.ctaHref}
-                      className="rounded-md px-2 py-1 text-sm font-semibold text-secondary transition-colors hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-                    >
-                      {entry.ctaLabel}
-                    </a>
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+                      <time
+                        dateTime={entry.date}
+                        className="text-xs font-medium uppercase tracking-[0.16em] text-light/70"
+                      >
+                        {humanDateFormatter.format(new Date(entry.date))}
+                      </time>
+                      <a
+                        href={entry.ctaHref}
+                        className="rounded-md px-2 py-1 text-sm font-semibold text-secondary transition-colors hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                      >
+                        {entry.ctaLabel}
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </article>
-            </li>
-          ))}
+                </article>
+              </li>
+            ))}
           </ul>
         </section>
       </div>

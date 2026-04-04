@@ -7,9 +7,11 @@
 :root {
   --color-page: 250 247 242;
   --color-page-muted: 247 244 238;
+  --color-panel: 255 255 255;
   --color-panel-muted: 251 250 247;
   --color-page-elevated: 244 239 232;
   --color-dark: 15 23 36;
+  --color-surface-dark: 15 23 36;
   --color-light: 255 255 255;
   --color-primary: 22 139 128;
   --color-secondary: 111 211 198;
@@ -17,15 +19,43 @@
   --color-ink-strong: 27 36 51;
   --color-copy: 90 102 117;
   --color-line: 221 213 202;
+  --button-primary-bg: 15 23 36;
+  --button-primary-fg: 255 255 255;
+  --button-secondary-bg: 255 255 255;
+  --button-secondary-fg: 17 32 50;
+  --button-secondary-hover-bg: 247 244 238;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+html[data-theme='dark'] {
+  --color-page: 14 21 32;
+  --color-page-muted: 19 28 40;
+  --color-panel: 23 33 46;
+  --color-panel-muted: 27 38 52;
+  --color-page-elevated: 19 28 40;
+  --color-dark: 10 16 24;
+  --color-surface-dark: 10 16 24;
+  --color-light: 255 255 255;
+  --color-primary: 60 183 171;
+  --color-secondary: 138 217 207;
+  --color-ink: 245 247 250;
+  --color-ink-strong: 255 255 255;
+  --color-copy: 168 179 194;
+  --color-line: 40 52 69;
+  --button-primary-bg: 60 183 171;
+  --button-primary-fg: 10 16 24;
+  --button-secondary-bg: 23 33 46;
+  --button-secondary-fg: 245 247 250;
+  --button-secondary-hover-bg: 27 38 52;
+}
+
 body {
-  @apply bg-slate-50 font-sans text-slate-900 antialiased;
+  @apply bg-page font-sans text-ink antialiased;
   background: rgb(var(--color-page));
+  color: rgb(var(--color-ink));
 }
 
 a {
@@ -41,7 +71,15 @@ a {
 }
 
 .eyebrow {
-  @apply inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary;
+  @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary;
+  border: 1px solid rgb(var(--color-primary) / 0.16);
+  background: rgb(var(--color-panel));
+}
+
+.eyebrow-on-dark {
+  border-color: rgb(var(--color-light) / 0.12);
+  background: rgb(var(--color-light) / 0.05);
+  color: rgb(var(--color-light) / 0.75);
 }
 
 .lede {
@@ -49,7 +87,7 @@ a {
 }
 
 .surface-panel {
-  @apply rounded-[1.75rem] border border-line/80 bg-white shadow-[0_18px_50px_rgb(var(--color-dark)/0.06)];
+  @apply rounded-[1.75rem] border border-line/80 bg-panel shadow-[0_18px_50px_rgb(var(--color-dark)/0.06)];
 }
 
 .subtle-divider {
@@ -57,15 +95,51 @@ a {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-dark px-6 py-3 text-sm font-semibold text-light shadow-[0_16px_40px_rgb(var(--color-dark)/0.14)] transition duration-300 hover:bg-dark/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-dark/30;
+  @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-[0_16px_40px_rgb(var(--color-dark)/0.14)] transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30;
+  background: rgb(var(--button-primary-bg));
+  color: rgb(var(--button-primary-fg));
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-full border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition duration-300 hover:border-copy/35 hover:bg-page focus:outline-none focus-visible:ring-2 focus-visible:ring-line;
+  @apply inline-flex items-center justify-center rounded-full border border-line px-6 py-3 text-sm font-semibold transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-line;
+  background: rgb(var(--button-secondary-bg));
+  color: rgb(var(--button-secondary-fg));
+}
+
+.btn-primary:hover {
+  filter: brightness(0.96);
+}
+
+.btn-secondary:hover {
+  background: rgb(var(--button-secondary-hover-bg));
+}
+
+.btn-secondary-on-dark {
+  border-color: rgb(var(--color-light) / 0.15);
+  background: rgb(var(--color-light) / 0.05);
+  color: rgb(var(--color-light));
+}
+
+.btn-secondary-on-dark:hover {
+  background: rgb(var(--color-light) / 0.1);
+}
+
+.theme-toggle {
+  @apply inline-flex h-11 w-11 items-center justify-center rounded-full border border-line transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-line;
+  background: rgb(var(--button-secondary-bg));
+  color: rgb(var(--color-ink));
+}
+
+.theme-toggle:hover {
+  background: rgb(var(--button-secondary-hover-bg));
 }
 
 .bg-page-muted {
   background-color: rgb(var(--color-page-muted));
+}
+
+.bg-panel {
+  background-color: rgb(var(--color-panel));
 }
 
 .bg-panel-muted {
@@ -81,11 +155,11 @@ a {
 }
 
 .bg-ink-surface {
-  background-color: rgb(var(--color-dark));
+  background-color: rgb(var(--color-surface-dark));
 }
 
 .bg-ink-float {
-  background-color: rgb(var(--color-dark) / 0.88);
+  background-color: rgb(var(--color-surface-dark) / 0.88);
 }
 
 .text-ink-strong {

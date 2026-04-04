@@ -59,9 +59,9 @@ const Home = () => (
 
           <div className="grid gap-4">
             {differentiators.map((item) => (
-              <article key={item.title} className="border-b border-slate-200 py-4 last:border-b-0">
+              <article key={item.title} className="border-b border-line py-4 last:border-b-0">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{item.title}</p>
-                <p className="mt-2 max-w-2xl text-base leading-7 text-slate-600">{item.description}</p>
+                <p className="mt-2 max-w-2xl text-base leading-7 text-copy">{item.description}</p>
               </article>
             ))}
           </div>
@@ -69,7 +69,7 @@ const Home = () => (
       </div>
     </section>
 
-    <section className="bg-white">
+    <section className="bg-page">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
@@ -83,7 +83,7 @@ const Home = () => (
           {serviceSummary.map((item) => (
             <article key={item.title} className="bg-panel-muted rounded-[1.5rem] border border-line p-7">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{item.title}</p>
-              <p className="mt-4 text-lg font-semibold tracking-tight text-slate-950">{item.description}</p>
+              <p className="mt-4 text-lg font-semibold tracking-tight text-ink-strong">{item.description}</p>
             </article>
           ))}
         </div>
@@ -103,25 +103,25 @@ const Home = () => (
 
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {pricingPreview.map((item) => (
-            <article key={item.name} className="rounded-[1.5rem] border border-slate-200 bg-white p-7">
+            <article key={item.name} className="rounded-[1.5rem] border border-line bg-panel p-7">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{item.name}</p>
-              <p className="mt-4 text-3xl font-semibold tracking-tight text-slate-950">{item.price}</p>
-              <p className="mt-3 text-sm leading-7 text-slate-600">{item.fit}</p>
+              <p className="mt-4 text-3xl font-semibold tracking-tight text-ink-strong">{item.price}</p>
+              <p className="mt-3 text-sm leading-7 text-copy">{item.fit}</p>
             </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section className="bg-dark text-white">
+    <section className="bg-surface-dark text-light">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl space-y-4">
-            <p className="eyebrow border-white/10 bg-white/5 text-slate-200">Start the conversation</p>
-            <h2 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            <p className="eyebrow eyebrow-on-dark">Start the conversation</p>
+            <h2 className="font-display text-4xl font-semibold tracking-tight text-light sm:text-5xl">
               Tell us what the business needs to run better.
             </h2>
-            <p className="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+            <p className="max-w-2xl text-base leading-8 text-light/70 sm:text-lg">
               If you already know the scope, we can move fast. If not, we can help shape the right rollout.
             </p>
           </div>
@@ -129,7 +129,7 @@ const Home = () => (
             <Link to="/contact" className="btn-primary">
               Contact Us
             </Link>
-            <Link to="/business" className="btn-secondary border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+            <Link to="/business" className="btn-secondary btn-secondary-on-dark">
               Business updates
             </Link>
           </div>

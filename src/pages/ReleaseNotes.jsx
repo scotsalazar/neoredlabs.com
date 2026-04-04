@@ -41,7 +41,7 @@ const ReleaseNotes = () => {
       title="Business | NeoLabs"
       description="Follow NeoLabs business updates, release notes, and company milestones."
     >
-      <section className="bg-white">
+      <section className="bg-page">
         <div className="section-container py-20">
           <div className="max-w-2xl space-y-5">
             <p className="eyebrow">Business</p>
@@ -55,18 +55,18 @@ const ReleaseNotes = () => {
 
     <section className="bg-page-muted">
         <div className="section-container py-20">
-          {loading && <p className="text-base text-slate-600">Loading business updates...</p>}
+          {loading && <p className="text-base text-copy">Loading business updates...</p>}
           {error && <p className="text-base text-red-500">{error}</p>}
 
           {!loading && !error && featured && (
             <div className="grid gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
               <article className="space-y-5">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Latest update</p>
-                <h2 className="text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">{featured.title}</h2>
-                <p className="text-sm uppercase tracking-[0.18em] text-slate-500">{featured.category} | {featured.publishedAtLabel}</p>
-                <p className="text-base leading-8 text-slate-600">{featured.summary}</p>
+                <h2 className="text-4xl font-semibold tracking-tight text-ink-strong sm:text-5xl">{featured.title}</h2>
+                <p className="text-sm uppercase tracking-[0.18em] text-copy">{featured.category} | {featured.publishedAtLabel}</p>
+                <p className="text-base leading-8 text-copy">{featured.summary}</p>
                 {featured.content && (
-                  <div className="space-y-4 text-base leading-8 text-slate-600">
+                  <div className="space-y-4 text-base leading-8 text-copy">
                     {featured.content.split('\n\n').map((paragraph) => (
                       <p key={paragraph}>{paragraph}</p>
                     ))}
@@ -93,11 +93,11 @@ const ReleaseNotes = () => {
 
               <div className="mt-8 grid gap-6 lg:grid-cols-2">
                 {archive.map((post) => (
-                  <article key={post.id} className="rounded-[1.5rem] border border-slate-200 bg-white p-7">
+                  <article key={post.id} className="rounded-[1.5rem] border border-line bg-panel p-7">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{post.category}</p>
-                    <h3 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">{post.title}</h3>
-                    <p className="mt-3 text-sm uppercase tracking-[0.18em] text-slate-500">{post.publishedAtLabel}</p>
-                    <p className="mt-4 text-base leading-7 text-slate-600">{post.summary}</p>
+                    <h3 className="mt-3 text-2xl font-semibold tracking-tight text-ink-strong">{post.title}</h3>
+                    <p className="mt-3 text-sm uppercase tracking-[0.18em] text-copy">{post.publishedAtLabel}</p>
+                    <p className="mt-4 text-base leading-7 text-copy">{post.summary}</p>
                   </article>
                 ))}
               </div>

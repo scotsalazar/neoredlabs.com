@@ -163,14 +163,14 @@ const BusinessAdmin = () => {
       title="Business Admin | NeoLabs"
       description="Internal business post management for NeoLabs."
     >
-      <section className="bg-slate-100">
+      <section className="bg-page-muted">
         <div className="section-container py-16">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
             <div className="surface-panel p-8">
               <div className="space-y-4">
                 <p className="eyebrow">Internal admin</p>
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-950">Manage Business posts</h1>
-                <p className="text-sm leading-7 text-slate-600">
+                <h1 className="text-3xl font-semibold tracking-tight text-ink-strong">Manage Business posts</h1>
+                <p className="text-sm leading-7 text-copy">
                   Use this page to keep the Business section historical in SQLite rather than hardcoded locally. If `ADMIN_API_TOKEN` is configured on the server, enter it below.
                 </p>
               </div>
@@ -180,7 +180,7 @@ const BusinessAdmin = () => {
                   type="password"
                   value={token}
                   onChange={(event) => setToken(event.target.value)}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary"
+                  className="w-full rounded-2xl border border-line bg-page px-4 py-3 text-sm text-ink outline-none transition focus:border-primary"
                   placeholder="Optional admin token"
                 />
                 <button type="button" onClick={handleTokenSave} className="btn-secondary">
@@ -189,17 +189,17 @@ const BusinessAdmin = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="mt-8 grid gap-4">
-                <input name="title" value={form.title} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3" placeholder="Title" required />
+                <input name="title" value={form.title} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Title" required />
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input name="slug" value={form.slug} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3" placeholder="Slug" required />
-                  <input name="category" value={form.category} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3" placeholder="Category" required />
+                  <input name="slug" value={form.slug} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Slug" required />
+                  <input name="category" value={form.category} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Category" required />
                 </div>
-                <input name="imageUrl" value={form.imageUrl} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3" placeholder="/illustrations/business-dashboard-rollout.svg" required />
-                <textarea name="summary" rows={3} value={form.summary} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3" placeholder="Summary" required />
-                <textarea name="content" rows={8} value={form.content} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3" placeholder="Full content" required />
+                <input name="imageUrl" value={form.imageUrl} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="/illustrations/business-dashboard-rollout.svg" required />
+                <textarea name="summary" rows={3} value={form.summary} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Summary" required />
+                <textarea name="content" rows={8} value={form.content} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Full content" required />
                 <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
-                  <input type="datetime-local" name="publishedAt" value={form.publishedAt} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3" />
-                  <label className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                  <input type="datetime-local" name="publishedAt" value={form.publishedAt} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" />
+                  <label className="flex items-center gap-3 rounded-2xl border border-line bg-page px-4 py-3 text-sm text-copy">
                     <input type="checkbox" name="isPublished" checked={form.isPublished} onChange={handleChange} />
                     Published
                   </label>
@@ -224,20 +224,20 @@ const BusinessAdmin = () => {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">History</p>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Saved business posts</h2>
+                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink-strong">Saved business posts</h2>
                 </div>
-                {loading && <p className="text-sm text-slate-500">Loading...</p>}
+                {loading && <p className="text-sm text-copy">Loading...</p>}
               </div>
 
               <div className="mt-6 space-y-4">
                 {posts.map((post) => (
-                  <article key={post.id} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
+                  <article key={post.id} className="rounded-[1.5rem] border border-line bg-page p-5">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{post.category}</p>
-                        <h3 className="mt-2 text-lg font-semibold text-slate-950">{post.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-slate-600">{post.summary}</p>
-                        <p className="mt-3 text-xs uppercase tracking-[0.18em] text-slate-500">
+                        <h3 className="mt-2 text-lg font-semibold text-ink-strong">{post.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-copy">{post.summary}</p>
+                        <p className="mt-3 text-xs uppercase tracking-[0.18em] text-copy">
                           {post.slug} / {post.isPublished ? 'Published' : 'Draft'} / {post.publishedAtLabel || 'No publish date'}
                         </p>
                       </div>
@@ -248,7 +248,7 @@ const BusinessAdmin = () => {
                     </div>
                   </article>
                 ))}
-                {!loading && posts.length === 0 && <p className="text-sm text-slate-500">No posts found.</p>}
+                {!loading && posts.length === 0 && <p className="text-sm text-copy">No posts found.</p>}
               </div>
             </div>
           </div>

@@ -14,49 +14,49 @@ const policyLinks = [
 ];
 
 const Footer = () => (
-  <footer className="mt-20 bg-dark text-slate-200">
+  <footer className="mt-20 bg-surface-dark text-light/80">
     <div className="section-container py-14">
       <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
         <div className="space-y-4">
-          <p className="font-display text-3xl font-semibold text-white">NeoLabs</p>
-          <p className="max-w-lg text-sm leading-7 text-slate-400">
+          <p className="font-display text-3xl font-semibold text-light">NeoLabs</p>
+          <p className="max-w-lg text-sm leading-7 text-light/60">
             Personalized app development, automation, and integrations for teams that need fast delivery and dependable support.
           </p>
-          <div className="space-y-1 text-sm text-slate-400">
+          <div className="space-y-1 text-sm text-light/60">
             <p>Makati City, Metro Manila, Philippines</p>
-            <a href="mailto:info@neolabs.com" className="hover:text-white">info@neolabs.com</a>
+            <a href="mailto:info@neolabs.com" className="hover:text-light">info@neolabs.com</a>
             <p>+63 906-437-0420</p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Company</p>
-          <ul className="space-y-3 text-sm text-slate-300">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-light/40">Company</p>
+          <ul className="space-y-3 text-sm text-light/75">
             {footerLinks.map((link) => (
               <li key={link.label}>
-                <a href={link.href} className="hover:text-white">{link.label}</a>
+                <a href={link.href} className="hover:text-light">{link.label}</a>
               </li>
             ))}
           </ul>
         </div>
 
         <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Policies</p>
-          <ul className="space-y-3 text-sm text-slate-300">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-light/40">Policies</p>
+          <ul className="space-y-3 text-sm text-light/75">
             {policyLinks.map((link) => (
               <li key={link.label}>
-                <a href={link.href} className="hover:text-white">{link.label}</a>
+                <a href={link.href} className="hover:text-light">{link.label}</a>
               </li>
             ))}
           </ul>
-          <a href="/careers" className="inline-flex items-center gap-2 text-sm font-semibold text-secondary hover:text-white">
+          <a href="/careers" className="inline-flex items-center gap-2 text-sm font-semibold text-secondary hover:text-light">
             Careers
             <span aria-hidden>{'->'}</span>
           </a>
         </div>
       </div>
 
-      <div className="mt-12 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex sm:items-center sm:justify-between">
+      <div className="mt-12 border-t border-light/10 pt-6 text-xs text-light/40 sm:flex sm:items-center sm:justify-between">
         <p>Copyright {new Date().getFullYear()} NeoLabs. All rights reserved.</p>
         <p className="mt-3 sm:mt-0">Modern systems aligned to real operations.</p>
       </div>

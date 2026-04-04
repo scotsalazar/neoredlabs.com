@@ -22,7 +22,7 @@ const About = () => (
     title="About NeoLabs | Modern App Development Team"
     description="Learn about NeoLabs, a modern app development team focused on personalized delivery, fast shipping, and operational fit."
   >
-    <section className="bg-white">
+    <section className="bg-page">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="space-y-5">
@@ -31,7 +31,7 @@ const About = () => (
             <p className="lede">
               NeoLabs helps businesses move from fragmented manual work into modern systems that feel easier to use, easier to manage, and easier to trust.
             </p>
-            <p className="text-base leading-8 text-slate-600">
+            <p className="text-base leading-8 text-copy">
               We are based in Metro Manila and work with teams that need a responsive partner, faster delivery, and a stronger understanding of how operations really run.
             </p>
           </div>
@@ -51,21 +51,21 @@ const About = () => (
       <div className="section-container py-20">
         <div className="grid gap-6 lg:grid-cols-3">
           {principles.map((item) => (
-            <article key={item.title} className="rounded-[1.5rem] border border-slate-200 bg-white p-7">
+            <article key={item.title} className="rounded-[1.5rem] border border-line bg-panel p-7">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{item.title}</p>
-              <p className="mt-4 text-base leading-7 text-slate-600">{item.description}</p>
+              <p className="mt-4 text-base leading-7 text-copy">{item.description}</p>
             </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section className="bg-dark text-white">
+    <section className="bg-surface-dark text-light">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl space-y-4">
-            <p className="eyebrow border-white/10 bg-white/5 text-slate-200">Work with NeoLabs</p>
-            <h2 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            <p className="eyebrow eyebrow-on-dark">Work with NeoLabs</p>
+            <h2 className="font-display text-4xl font-semibold tracking-tight text-light sm:text-5xl">
               If the system matters, the delivery partner should too.
             </h2>
           </div>

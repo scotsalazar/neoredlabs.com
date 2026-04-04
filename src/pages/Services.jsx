@@ -31,7 +31,7 @@ const Services = () => (
     title="Services | NeoLabs"
     description="Explore NeoLabs services for personalized app development, automation, integrations, and operational reporting."
   >
-    <section className="bg-white">
+    <section className="bg-page">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
           <div className="space-y-5">
@@ -61,14 +61,14 @@ const Services = () => (
       <div className="section-container py-20">
         <div className="grid gap-10">
           {services.map((service, index) => (
-            <article key={service.title} className="grid gap-6 border-b border-slate-200 pb-10 last:border-b-0 last:pb-0 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
+            <article key={service.title} className="grid gap-6 border-b border-line pb-10 last:border-b-0 last:pb-0 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
               <div className={`${index % 2 === 1 ? 'lg:order-2' : ''} surface-panel overflow-hidden`}>
                 <img src={service.image} alt={service.title} className="h-full w-full object-cover" />
               </div>
               <div className={`${index % 2 === 1 ? 'lg:order-1' : ''} space-y-4`}>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Core service</p>
-                <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{service.title}</h2>
-                <p className="max-w-2xl text-base leading-8 text-slate-600">{service.summary}</p>
+                <h2 className="text-3xl font-semibold tracking-tight text-ink-strong sm:text-4xl">{service.title}</h2>
+                <p className="max-w-2xl text-base leading-8 text-copy">{service.summary}</p>
               </div>
             </article>
           ))}
@@ -76,15 +76,15 @@ const Services = () => (
       </div>
     </section>
 
-    <section className="bg-white">
+    <section className="bg-page">
       <div className="section-container py-20">
         <div className="bg-panel-muted rounded-[1.75rem] border border-line p-8 lg:p-12">
           <p className="eyebrow">How we deliver</p>
           <h2 className="mt-4 section-title">Fast, clear, and aligned to the business.</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {deliveryPoints.map((item) => (
-              <div key={item} className="rounded-[1.25rem] border border-slate-200 bg-white p-5">
-                <p className="text-base font-semibold text-slate-950">{item}</p>
+              <div key={item} className="rounded-[1.25rem] border border-line bg-panel p-5">
+                <p className="text-base font-semibold text-ink-strong">{item}</p>
               </div>
             ))}
           </div>

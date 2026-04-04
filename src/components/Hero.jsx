@@ -34,10 +34,10 @@ const Hero = () => (
           <h1 className="text-ink-strong font-display text-5xl font-semibold leading-[0.95] tracking-tight sm:text-6xl lg:text-[5.35rem]">
             Modern apps built fast and shaped around your operations.
           </h1>
-          <p className="max-w-xl text-lg leading-8 text-slate-700">
+          <p className="max-w-xl text-lg leading-8 text-copy">
             We build modern internal apps, automation, and integrations for teams that need faster delivery, clearer scope, and support that stays close to the work.
           </p>
-          <p className="text-sm leading-7 text-slate-500">
+          <p className="text-sm leading-7 text-copy">
             Based in Metro Manila, working with teams that need a practical partner and a modern product standard.
           </p>
         </div>
@@ -51,11 +51,11 @@ const Hero = () => (
           </Link>
         </div>
 
-        <div className="grid gap-4 border-t border-slate-200 pt-6 sm:grid-cols-3">
+        <div className="grid gap-4 border-t border-line pt-6 sm:grid-cols-3">
           {strengths.map((item) => (
             <div key={item.label} className="space-y-2">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-950">{item.label}</p>
-              <p className="text-sm leading-6 text-slate-500">{item.description}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-strong">{item.label}</p>
+              <p className="text-sm leading-6 text-copy">{item.description}</p>
             </div>
           ))}
         </div>
@@ -74,8 +74,8 @@ const Hero = () => (
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="bg-ink-float absolute bottom-6 left-6 rounded-[1.5rem] border border-white/10 px-5 py-4 text-white shadow-[0_18px_50px_rgb(var(--color-dark)/0.26)] backdrop-blur">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">How we work</p>
+        <div className="bg-ink-float absolute bottom-6 left-6 rounded-[1.5rem] border border-light/10 px-5 py-4 text-light shadow-[0_18px_50px_rgb(var(--color-dark)/0.26)] backdrop-blur">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/65">How we work</p>
           <p className="mt-2 text-lg font-semibold">Clear scope. Fast build. Close support.</p>
         </div>
       </motion.div>

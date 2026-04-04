@@ -3,9 +3,11 @@ import { Helmet } from 'react-helmet';
 import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar.jsx';
 import Footer from './Footer.jsx';
+import { useTheme } from './ThemeProvider.jsx';
 
 const Layout = ({ title, description, image, children }) => {
   const location = useLocation();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -23,6 +25,7 @@ const Layout = ({ title, description, image, children }) => {
     description ||
     'NeoLabs builds personalized modern apps, automation, and integrations for teams that need fast delivery, operational fit, and dependable support.';
   const metaImage = image || undefined;
+  const themeColor = theme === 'dark' ? '#0A1018' : '#FAF7F2';
 
   const organizationSchema = {
     '@context': 'https://schema.org',
@@ -59,7 +62,8 @@ const Layout = ({ title, description, image, children }) => {
         <title>{metaTitle}</title>
         {metaDescription && <meta name="description" content={metaDescription} />}
         <meta name="robots" content="index,follow" />
-        <meta name="theme-color" content="#0f1724" />
+        <meta name="theme-color" content={themeColor} />
+        <meta name="color-scheme" content={theme === 'dark' ? 'dark light' : 'light dark'} />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:type" content="website" />
@@ -75,7 +79,7 @@ const Layout = ({ title, description, image, children }) => {
         <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-transparent text-slate-900">
+      <div className="min-h-screen bg-transparent text-ink">
         <Navbar />
         <div className="h-24 shrink-0 sm:h-28" aria-hidden />
         <main>{children}</main>

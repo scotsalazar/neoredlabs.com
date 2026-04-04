@@ -95,7 +95,7 @@ const Pricing = () => (
     title="Pricing | NeoLabs"
     description="Explore NeoLabs pricing for Free Trial, Starter, Growth, and Scale app development packages."
   >
-    <section className="bg-white">
+    <section className="bg-page">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <div className="space-y-5">
@@ -125,11 +125,11 @@ const Pricing = () => (
                 <div className="flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">{item.name}</p>
-                    <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{item.price}</p>
+                    <p className="mt-3 text-3xl font-semibold tracking-tight text-ink-strong">{item.price}</p>
                   </div>
-                  <p className="max-w-xs text-sm leading-6 text-slate-500">{item.positioning}</p>
+                  <p className="max-w-xs text-sm leading-6 text-copy">{item.positioning}</p>
                 </div>
-                <ul className="space-y-3 text-sm leading-7 text-slate-600 sm:text-base">
+                <ul className="space-y-3 text-sm leading-7 text-copy sm:text-base">
                   {item.points.map((point) => (
                     <li key={point} className="flex gap-3">
                       <span className="mt-2 h-2 w-2 rounded-full bg-primary" aria-hidden />
@@ -144,7 +144,7 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-white">
+    <section className="bg-page">
       <div className="section-container py-20">
         <div className="space-y-8">
           <div className="max-w-2xl space-y-4">
@@ -153,14 +153,14 @@ const Pricing = () => (
           </div>
 
           <div className="surface-panel overflow-hidden">
-            <div className="grid grid-cols-1 border-b border-slate-200 bg-slate-950 px-6 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-200 md:grid-cols-[0.9fr_0.8fr_1.3fr]">
+            <div className="grid grid-cols-1 border-b border-line bg-surface-dark px-6 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-light/80 md:grid-cols-[0.9fr_0.8fr_1.3fr]">
               <span>Package</span>
               <span>Price range</span>
               <span>Commercial intent</span>
             </div>
             {pricingGuide.map((row) => (
-              <div key={row[0]} className="grid grid-cols-1 gap-2 border-b border-slate-200 px-6 py-5 text-sm text-slate-600 last:border-b-0 md:grid-cols-[0.9fr_0.8fr_1.3fr] md:gap-6 md:text-base">
-                <span className="font-semibold text-slate-900">{row[0]}</span>
+              <div key={row[0]} className="grid grid-cols-1 gap-2 border-b border-line px-6 py-5 text-sm text-copy last:border-b-0 md:grid-cols-[0.9fr_0.8fr_1.3fr] md:gap-6 md:text-base">
+                <span className="font-semibold text-ink-strong">{row[0]}</span>
                 <span>{row[1]}</span>
                 <span>{row[2]}</span>
               </div>
@@ -185,7 +185,7 @@ const Pricing = () => (
             {scaleDifferentiators.map((item) => (
               <article key={item.title} className="surface-panel p-7">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">{item.title}</p>
-                <p className="mt-3 text-base leading-7 text-slate-600">{item.description}</p>
+                <p className="mt-3 text-base leading-7 text-copy">{item.description}</p>
               </article>
             ))}
           </div>
@@ -193,20 +193,20 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-white">
+    <section className="bg-page">
       <div className="section-container py-20">
-        <div className="grid gap-6 rounded-[2rem] border border-slate-200 bg-slate-950 p-8 text-white lg:grid-cols-[0.95fr_1.05fr] lg:p-12">
+        <div className="grid gap-6 rounded-[2rem] border border-line bg-surface-dark p-8 text-light lg:grid-cols-[0.95fr_1.05fr] lg:p-12">
           <div className="space-y-4">
-            <p className="eyebrow border-white/10 bg-white/5 text-slate-200">Deployment & hosting</p>
-            <h2 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            <p className="eyebrow eyebrow-on-dark">Deployment & hosting</p>
+            <h2 className="font-display text-4xl font-semibold tracking-tight text-light sm:text-5xl">
               Production setup is priced according to operational responsibility.
             </h2>
           </div>
 
-          <div className="space-y-5 text-sm leading-7 text-slate-300 sm:text-base">
-            <p><span className="font-semibold text-white">Starter:</span> Deployment is an optional add-on depending on project scope and client requirements.</p>
-            <p><span className="font-semibold text-white">Growth:</span> Deployment may be included in the proposal or billed separately based on app complexity, third-party integrations, and support requirements.</p>
-            <p><span className="font-semibold text-white">Scale:</span> Deployment, infrastructure, security, backups, monitoring, and maintenance are quoted separately to match enterprise-grade requirements.</p>
+          <div className="space-y-5 text-sm leading-7 text-light/70 sm:text-base">
+            <p><span className="font-semibold text-light">Starter:</span> Deployment is an optional add-on depending on project scope and client requirements.</p>
+            <p><span className="font-semibold text-light">Growth:</span> Deployment may be included in the proposal or billed separately based on app complexity, third-party integrations, and support requirements.</p>
+            <p><span className="font-semibold text-light">Scale:</span> Deployment, infrastructure, security, backups, monitoring, and maintenance are quoted separately to match enterprise-grade requirements.</p>
           </div>
         </div>
       </div>
@@ -214,7 +214,7 @@ const Pricing = () => (
 
     <section className="bg-page-muted">
       <div className="section-container py-20">
-        <div className="flex flex-col gap-6 rounded-[2rem] border border-slate-200 bg-white p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
+        <div className="flex flex-col gap-6 rounded-[2rem] border border-line bg-panel p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
           <div className="max-w-2xl space-y-4">
             <p className="eyebrow">Next step</p>
             <h2 className="section-title">If you know your likely tier, we can scope the right version of it.</h2>

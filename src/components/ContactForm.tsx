@@ -119,29 +119,29 @@ const ContactForm = (): JSX.Element => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-5 rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-soft" noValidate>
+    <form onSubmit={handleSubmit} className="grid gap-5 rounded-[1.75rem] border border-line bg-panel p-8 shadow-soft" noValidate>
       <div className="grid gap-5 md:grid-cols-2">
-        <label className="space-y-2 text-sm text-slate-700">
-          <span className="font-semibold text-slate-900">Name</span>
+        <label className="space-y-2 text-sm text-copy">
+          <span className="font-semibold text-ink-strong">Name</span>
           <input
             type="text"
             name="name"
             value={formValues.name}
             onChange={handleChange}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-primary"
+            className="w-full rounded-2xl border border-line bg-page-muted px-4 py-3 text-ink outline-none transition focus:border-primary"
             placeholder="Your name"
           />
           {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
         </label>
 
-        <label className="space-y-2 text-sm text-slate-700">
-          <span className="font-semibold text-slate-900">Business email</span>
+        <label className="space-y-2 text-sm text-copy">
+          <span className="font-semibold text-ink-strong">Business email</span>
           <input
             type="email"
             name="email"
             value={formValues.email}
             onChange={handleChange}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-primary"
+            className="w-full rounded-2xl border border-line bg-page-muted px-4 py-3 text-ink outline-none transition focus:border-primary"
             placeholder="you@company.com"
           />
           {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
@@ -149,27 +149,27 @@ const ContactForm = (): JSX.Element => {
       </div>
 
       <div className="grid gap-5 md:grid-cols-3">
-        <label className="space-y-2 text-sm text-slate-700">
-          <span className="font-semibold text-slate-900">Company size</span>
-          <select name="companySize" value={formValues.companySize} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-primary">
+        <label className="space-y-2 text-sm text-copy">
+          <span className="font-semibold text-ink-strong">Company size</span>
+          <select name="companySize" value={formValues.companySize} onChange={handleChange} className="w-full rounded-2xl border border-line bg-page-muted px-4 py-3 text-ink outline-none transition focus:border-primary">
             <option value="" disabled>Select size</option>
             {companySizeOptions.map((option) => <option key={option}>{option}</option>)}
           </select>
           {errors.companySize && <p className="text-xs text-red-500">{errors.companySize}</p>}
         </label>
 
-        <label className="space-y-2 text-sm text-slate-700">
-          <span className="font-semibold text-slate-900">Package fit</span>
-          <select name="packageInterest" value={formValues.packageInterest} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-primary">
+        <label className="space-y-2 text-sm text-copy">
+          <span className="font-semibold text-ink-strong">Package fit</span>
+          <select name="packageInterest" value={formValues.packageInterest} onChange={handleChange} className="w-full rounded-2xl border border-line bg-page-muted px-4 py-3 text-ink outline-none transition focus:border-primary">
             <option value="" disabled>Select package</option>
             {packageOptions.map((option) => <option key={option}>{option}</option>)}
           </select>
           {errors.packageInterest && <p className="text-xs text-red-500">{errors.packageInterest}</p>}
         </label>
 
-        <label className="space-y-2 text-sm text-slate-700">
-          <span className="font-semibold text-slate-900">Project level</span>
-          <select name="scopeLevel" value={formValues.scopeLevel} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-primary">
+        <label className="space-y-2 text-sm text-copy">
+          <span className="font-semibold text-ink-strong">Project level</span>
+          <select name="scopeLevel" value={formValues.scopeLevel} onChange={handleChange} className="w-full rounded-2xl border border-line bg-page-muted px-4 py-3 text-ink outline-none transition focus:border-primary">
             <option value="" disabled>Select level</option>
             {scopeOptions.map((option) => <option key={option}>{option}</option>)}
           </select>
@@ -177,32 +177,32 @@ const ContactForm = (): JSX.Element => {
         </label>
       </div>
 
-      <label className="space-y-2 text-sm text-slate-700">
-        <span className="font-semibold text-slate-900">Preferred call time (optional)</span>
+      <label className="space-y-2 text-sm text-copy">
+        <span className="font-semibold text-ink-strong">Preferred call time (optional)</span>
         <input
           type="datetime-local"
           name="callDate"
           value={formValues.callDate}
           onChange={handleChange}
-          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-primary"
+          className="w-full rounded-2xl border border-line bg-page-muted px-4 py-3 text-ink outline-none transition focus:border-primary"
         />
       </label>
 
-      <label className="space-y-2 text-sm text-slate-700">
-        <span className="font-semibold text-slate-900">Project summary</span>
+      <label className="space-y-2 text-sm text-copy">
+        <span className="font-semibold text-ink-strong">Project summary</span>
         <textarea
           name="message"
           rows={6}
           value={formValues.message}
           onChange={handleChange}
-          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-primary"
+          className="w-full rounded-2xl border border-line bg-page-muted px-4 py-3 text-ink outline-none transition focus:border-primary"
           placeholder="Share the workflows, systems, or business problem you want to improve."
         />
         {errors.message && <p className="text-xs text-red-500">{errors.message}</p>}
       </label>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs leading-6 text-slate-500">By sending this form, you allow NeoLabs to contact you about your inquiry and next steps.</p>
+        <p className="text-xs leading-6 text-copy">By sending this form, you allow NeoLabs to contact you about your inquiry and next steps.</p>
         <button type="submit" className="btn-primary min-w-[180px]" disabled={status.type === 'submitting'}>
           {status.type === 'submitting' ? 'Sending...' : 'Send inquiry'}
         </button>

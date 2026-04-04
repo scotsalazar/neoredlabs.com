@@ -1,38 +1,50 @@
 const defaultBusinessPosts = [
   {
     id: 1,
-    slug: 'po-agent-v101-rollout',
-    title: 'PO Agent v1.01 is active across daily order handling.',
-    category: 'Operations',
-    summary: 'We rolled out a more stable purchase-order automation flow with stronger monitoring and clearer exception handling.',
+    slug: 'live-visibility-and-alerting-rollout',
+    title: 'Live dashboards and alerts now give SME teams clearer visibility across daily operations.',
+    category: 'Reporting',
+    summary: 'Recent rollout work focused on giving business owners and operators a clearer 24/7 view of activity, workload, and issues that need attention.',
     content:
-      'NeoLabs deployed the updated PO Agent workflow to improve daily purchase-order handling and reduce manual intervention across recurring order activity.\n\nThe release focused on monitoring quality, more consistent routing, and clearer exception handling so operators can trust the workflow with less follow-up overhead.',
-    imageUrl: '/illustrations/business-po-agent.svg',
-    publishedAt: '2026-03-16T09:00:00.000Z',
+      'This delivery centered on dashboards, reporting layers, and operational alerting that surface issues sooner instead of waiting for manual checking or delayed updates.\n\nThe result is a stronger day-to-day view of operations for teams that need faster response, tighter oversight, and clearer visibility across the work.',
+    imageUrl: '/illustrations/business-dashboard-rollout.svg',
+    publishedAt: '2026-03-20T09:00:00.000Z',
     isPublished: true
   },
   {
     id: 2,
-    slug: 'live-reporting-dashboard-rollout',
-    title: 'Live reporting dashboards now surface finance and ops signals sooner.',
-    category: 'Reporting',
-    summary: 'Recent delivery work focused on real-time visibility for revenue, fulfillment, and workload so leadership can respond earlier.',
+    slug: 'manual-intervention-reduction-rollout',
+    title: 'Automation improvements reduced manual follow-up across recurring operational work.',
+    category: 'Operations',
+    summary: 'NeoLabs rolled out a more stable workflow that removed repetitive manual interventions and gave teams more time for focused work.',
     content:
-      'This rollout centered on making business reporting more useful in day-to-day operations rather than waiting for static updates or manual summaries.\n\nThe result is a clearer reporting layer for teams that need faster visibility into operational movement, activity volume, and decision-support signals.',
-    imageUrl: '/illustrations/business-dashboard-rollout.svg',
-    publishedAt: '2026-03-05T09:00:00.000Z',
+      'The release focused on improving routing, monitoring, and exception handling so daily work no longer depends on as much repetitive manual follow-up.\n\nThis kind of rollout matters most for operations that need a smoother system, fewer intervention points, and better use of internal team time.',
+    imageUrl: '/illustrations/business-po-agent.svg',
+    publishedAt: '2026-03-12T09:00:00.000Z',
     isPublished: true
   },
   {
     id: 3,
-    slug: 'iam-transition-business-update',
-    title: 'NeoLabs transition context has been moved into Business updates.',
-    category: 'Company',
-    summary: 'The IAM transition note is now treated as company-history context inside Business rather than a sitewide announcement banner.',
+    slug: 'community-activity-digital-rollout',
+    title: 'Community and activity workflows were consolidated into a cleaner digital process.',
+    category: 'Community',
+    summary: 'One recent delivery focused on connecting community-facing activities into a more organized digital flow that is easier to manage and promote.',
     content:
-      'To keep the main website cleaner and more company-owned, transition messaging is no longer shown globally across the site.\n\nInstead, this page keeps the historical update visible in the right place: alongside business updates, release notes, and company-level milestones.',
+      'The work brought related activities and coordination steps into one clearer process so teams could manage updates, participation, and communication with less friction.\n\nThis kind of delivery is especially useful where community involvement, organized activities, or outreach workflows need better structure and visibility.',
     imageUrl: '/illustrations/business-iam-transition.svg',
-    publishedAt: '2026-02-24T09:00:00.000Z',
+    publishedAt: '2026-02-28T09:00:00.000Z',
+    isPublished: true
+  },
+  {
+    id: 4,
+    slug: 'paperless-approval-and-record-rollout',
+    title: 'Paper-heavy approvals and records were moved into a cleaner digital workflow.',
+    category: 'Digital transformation',
+    summary: 'Recent work helped reduce printing-heavy processes by shifting approvals, records, and reporting into a more trackable digital setup.',
+    content:
+      'This rollout focused on replacing paper-based steps with digital approvals, records, and reporting so teams could work with less printing and better traceability.\n\nThe result is a cleaner operational flow that supports faster access to information, easier tracking, and a more sustainable way to manage routine work.',
+    imageUrl: '/illustrations/business-dashboard-rollout.svg',
+    publishedAt: '2026-02-18T09:00:00.000Z',
     isPublished: true
   }
 ];

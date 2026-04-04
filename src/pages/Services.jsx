@@ -6,39 +6,42 @@ const services = [
   {
     title: 'Personalized app development',
     image: '/illustrations/service-custom-apps.svg',
-    summary: 'Internal apps, admin panels, dashboards, and workflow tools built around how your team actually works.',
+    summary: 'Replace scattered manual steps with a working app built around how your team already operates.',
+    proof: 'Built around your approvals, users, dashboards, and internal workflows.',
   },
   {
     title: 'Automation and integrations',
     image: '/illustrations/service-automation.svg',
-    summary: 'Approvals, alerts, AI-assisted steps, and connected systems that reduce repetitive work and missed handoffs.',
+    summary: 'Reduce repetitive work and missed handoffs by connecting tasks, approvals, and system triggers.',
+    proof: 'Ideal for teams that need fewer manual interventions across daily work.',
   },
   {
     title: 'Reporting and operational visibility',
     image: '/illustrations/service-reporting.svg',
-    summary: 'Dashboards, signals, and reporting layers that help teams act earlier and manage the work with more clarity.',
+    summary: 'Give owners and teams clearer visibility with dashboards, reporting layers, and alerts that surface issues sooner.',
+    proof: 'Built for operations that need 24/7 visibility instead of delayed updates.',
   }
 ];
 
 const deliveryPoints = [
-  'Clear scope from the start',
-  'Fast build cycles and steady progress',
-  'Operational alignment and 24/7 support'
+  'Clear scope before build starts',
+  'Fast shipping with steady weekly progress',
+  'Support that stays close after rollout'
 ];
 
 const Services = () => (
   <Layout
     title="Services | NeoLabs"
-    description="Explore NeoLabs services for personalized app development, automation, integrations, and operational reporting."
+    description="Explore NeoLabs services for personalized app development, automation, integrations, and operational visibility."
   >
     <section className="bg-page">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">Services</p>
-            <h1 className="section-title">Modern systems built around your operations, not around generic software.</h1>
+            <h1 className="section-title">Services built to remove manual work and improve operational control.</h1>
             <p className="lede">
-              We focus on the work that matters most: personalized apps, automation, integrations, and reporting that make the business easier to run.
+              Each service is designed to fit your existing operations, connect your tools, and give your team a smoother way to work.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/pricing" className="btn-primary">View pricing</Link>
@@ -69,6 +72,7 @@ const Services = () => (
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Core service</p>
                 <h2 className="text-3xl font-semibold tracking-tight text-ink-strong sm:text-4xl">{service.title}</h2>
                 <p className="max-w-2xl text-base leading-8 text-copy">{service.summary}</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-copy">{service.proof}</p>
               </div>
             </article>
           ))}
@@ -80,7 +84,7 @@ const Services = () => (
       <div className="section-container py-20">
         <div className="bg-panel-muted rounded-[1.75rem] border border-line p-8 lg:p-12">
           <p className="eyebrow">How we deliver</p>
-          <h2 className="mt-4 section-title">Fast, clear, and aligned to the business.</h2>
+          <h2 className="mt-4 section-title">A build process that stays clear from scope to rollout.</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {deliveryPoints.map((item) => (
               <div key={item} className="rounded-[1.25rem] border border-line bg-panel p-5">

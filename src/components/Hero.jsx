@@ -4,16 +4,16 @@ import { Link } from 'react-router-dom';
 
 const strengths = [
   {
-    label: 'Personalized builds',
-    description: 'Modern apps shaped around your users, approvals, and workflow.',
+    label: 'Built around your workflow',
+    description: 'The system fits your users, approvals, and day-to-day operations.',
   },
   {
-    label: 'Fast shipping',
-    description: 'Clear scope, quick iteration, and steady delivery from the start.',
+    label: 'Connected to your stack',
+    description: 'We work with the tools you already use instead of forcing a reset.',
   },
   {
-    label: '24/7 support',
-    description: 'Responsive alignment when the work is live and operations keep moving.',
+    label: 'Visibility that stays live',
+    description: 'Dashboards and alerts keep teams closer to what is happening.',
   }
 ];
 
@@ -35,10 +35,7 @@ const Hero = () => (
             Modern apps built fast and shaped around your operations.
           </h1>
           <p className="max-w-xl text-lg leading-8 text-copy">
-            We build modern internal apps, automation, and integrations for teams that need faster delivery, clearer scope, and support that stays close to the work.
-          </p>
-          <p className="text-sm leading-7 text-copy">
-            Based in Metro Manila, working with teams that need a practical partner and a modern product standard.
+            We help businesses reduce manual work, connect existing tools, and gain clearer operational visibility with personalized modern apps.
           </p>
         </div>
 
@@ -76,7 +73,7 @@ const Hero = () => (
         </div>
         <div className="bg-ink-float absolute bottom-6 left-6 rounded-[1.5rem] border border-light/10 px-5 py-4 text-light shadow-[0_18px_50px_rgb(var(--color-dark)/0.26)] backdrop-blur">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/65">How we work</p>
-          <p className="mt-2 text-lg font-semibold">Clear scope. Fast build. Close support.</p>
+          <p className="mt-2 text-lg font-semibold">Connect the tools. Remove the manual. See the work clearly.</p>
         </div>
       </motion.div>
     </div>

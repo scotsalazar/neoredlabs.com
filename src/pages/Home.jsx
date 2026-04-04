@@ -3,68 +3,71 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import Hero from '../components/Hero.jsx';
 
-const differentiators = [
+const results = [
   {
-    title: 'Personalized modern app delivery',
-    description: 'We build around how your team actually works, not around a generic template.',
+    title: 'Less manual work',
+    description: 'Automation removes repetitive interventions so teams can spend more time on focused, higher-value work.',
   },
   {
-    title: 'Fast shipping without the chaos',
-    description: 'Scope stays clear, communication stays close, and progress keeps moving each week.',
+    title: 'Connected existing tools',
+    description: 'We fit into your current setup and make the apps you already use work together more smoothly.',
   },
   {
-    title: 'Operational fit and 24/7 support',
-    description: 'We understand the day-to-day side of the business and stay aligned when the work is live.',
+    title: '24/7 operational visibility',
+    description: 'Dashboards and alerts help owners and teams see issues earlier and respond with more control.',
+  },
+  {
+    title: 'Cleaner digital workflows',
+    description: 'Digital approvals, records, and reporting reduce paper-heavy processes and keep work easier to track.',
   }
 ];
 
 const serviceSummary = [
   {
     title: 'Custom apps',
-    description: 'Internal systems, admin panels, dashboards, and role-based workflows.',
+    description: 'Built around actual workflows so your team can work faster without adjusting to generic software.',
   },
   {
     title: 'Automation',
-    description: 'Approvals, alerts, email flows, AI-assisted steps, and repetitive-task reduction.',
+    description: 'Removes repetitive work, missed handoffs, and manual follow-up across daily operations.',
   },
   {
     title: 'Integrations',
-    description: 'Connected tools, reporting layers, and operational visibility across the business.',
+    description: 'Your business already has the tools. We connect them, automate the manual parts, and turn them into a smoother operation.',
   }
 ];
 
 const pricingPreview = [
   { name: 'Starter', price: 'PHP 3,500 - 5,000', fit: 'For SMEs that need a working operational app.' },
-  { name: 'Growth', price: 'PHP 6,000 - 12,000', fit: 'For teams adding automation and deeper workflow support.' },
+  { name: 'Growth', price: 'PHP 6,000 - 12,000', fit: 'For teams connecting tools, automating steps, and improving visibility.' },
   { name: 'Scale', price: 'PHP 20,000+', fit: 'For enterprise and mission-critical operations.' },
 ];
 
 const Home = () => (
   <Layout
     title="NeoLabs | Modern App Development Company"
-    description="NeoLabs builds personalized modern apps, automation, and integrations for teams that need fast delivery, operational fit, and dependable support."
+    description="NeoLabs helps businesses reduce manual work, connect existing tools, and gain clearer operational visibility with personalized modern apps."
   >
     <Hero />
 
     <section className="bg-page-muted">
       <div className="section-container py-20">
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div className="space-y-4">
-            <p className="eyebrow">Why NeoLabs</p>
-            <h2 className="section-title">Built for businesses that want the work to feel clear and dependable.</h2>
-            <p className="lede">
-              Our edge is simple: personalized builds, fast delivery, operational understanding, and support that stays available when your team needs it.
-            </p>
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl space-y-4">
+            <p className="eyebrow">Results</p>
+            <h2 className="section-title">Turn manual operations into connected, automated systems built for real business growth.</h2>
+            <p className="lede">The work should remove friction, connect what already exists, and make the business easier to monitor every day.</p>
           </div>
+          <Link to="/contact" className="btn-secondary">Discuss your workflow</Link>
+        </div>
 
-          <div className="grid gap-4">
-            {differentiators.map((item) => (
-              <article key={item.title} className="border-b border-line py-4 last:border-b-0">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{item.title}</p>
-                <p className="mt-2 max-w-2xl text-base leading-7 text-copy">{item.description}</p>
-              </article>
-            ))}
-          </div>
+        <div className="mt-10 grid gap-6 lg:grid-cols-4">
+          {results.map((item) => (
+            <article key={item.title} className="rounded-[1.5rem] border border-line bg-panel p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{item.title}</p>
+              <p className="mt-4 text-base leading-7 text-copy">{item.description}</p>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -75,6 +78,7 @@ const Home = () => (
           <div className="max-w-2xl space-y-4">
             <p className="eyebrow">What we build</p>
             <h2 className="section-title">Apps, automation, and integrations that reduce operational drag.</h2>
+            <p className="lede">Each offer focuses on one outcome: better workflows, less manual effort, and smoother operations with the tools you already use.</p>
           </div>
           <Link to="/services" className="btn-secondary">See services</Link>
         </div>
@@ -96,7 +100,7 @@ const Home = () => (
           <div className="max-w-2xl space-y-4">
             <p className="eyebrow">Pricing</p>
             <h2 className="section-title">Fair package options with room to scale by complexity.</h2>
-            <p className="lede">Start with the right tier, then shape the final scope around workflows, integrations, security, and support needs.</p>
+            <p className="lede">Start with the right level, then shape the scope around workflow complexity, connected tools, visibility, and rollout needs.</p>
           </div>
           <Link to="/pricing" className="btn-secondary">View full pricing</Link>
         </div>
@@ -121,9 +125,7 @@ const Home = () => (
             <h2 className="font-display text-4xl font-semibold tracking-tight text-light sm:text-5xl">
               Tell us what the business needs to run better.
             </h2>
-            <p className="max-w-2xl text-base leading-8 text-light/70 sm:text-lg">
-              If you already know the scope, we can move fast. If not, we can help shape the right rollout.
-            </p>
+            <p className="max-w-2xl text-base leading-8 text-light/70 sm:text-lg">Share the bottlenecks, tools, or workflows you want to improve and we will help shape the right rollout.</p>
           </div>
           <div className="flex flex-wrap gap-4">
             <Link to="/contact" className="btn-primary">

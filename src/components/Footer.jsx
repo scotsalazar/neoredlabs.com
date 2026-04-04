@@ -20,7 +20,7 @@ const Footer = () => (
         <div className="space-y-4">
           <p className="font-display text-3xl font-semibold text-light">NeoLabs</p>
           <p className="max-w-lg text-sm leading-7 text-light/60">
-            Personalized app development, automation, and integrations for teams that need fast delivery and dependable support.
+            Personalized app delivery for teams that need less manual work, connected operations, and clearer visibility.
           </p>
           <div className="space-y-1 text-sm text-light/60">
             <p>Makati City, Metro Manila, Philippines</p>
@@ -58,7 +58,7 @@ const Footer = () => (
 
       <div className="mt-12 border-t border-light/10 pt-6 text-xs text-light/40 sm:flex sm:items-center sm:justify-between">
         <p>Copyright {new Date().getFullYear()} NeoLabs. All rights reserved.</p>
-        <p className="mt-3 sm:mt-0">Modern systems aligned to real operations.</p>
+        <p className="mt-3 sm:mt-0">Connected operations with less manual load.</p>
       </div>
     </div>
   </footer>

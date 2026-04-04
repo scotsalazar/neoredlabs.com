@@ -23,7 +23,7 @@ const Layout = ({ title, description, image, children }) => {
   const metaTitle = title || 'NeoLabs | Modern App Development Company';
   const metaDescription =
     description ||
-    'NeoLabs builds personalized modern apps, automation, and integrations for teams that need fast delivery, operational fit, and dependable support.';
+    'NeoLabs helps businesses reduce manual work, connect existing tools, and gain clearer operational visibility with personalized modern apps.';
   const metaImage = image || undefined;
   const themeColor = theme === 'dark' ? '#0A1018' : '#FAF7F2';
 

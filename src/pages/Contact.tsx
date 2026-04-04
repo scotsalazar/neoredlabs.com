@@ -5,7 +5,7 @@ import ContactForm from '../components/ContactForm';
 const Contact = (): JSX.Element => (
   <Layout
     title="Contact Us | NeoLabs"
-    description="Contact NeoLabs to discuss modern app development, automation, integrations, and operational software needs."
+    description="Contact NeoLabs to discuss workflow bottlenecks, automation, integrations, and better operational visibility."
   >
     <section className="bg-page">
       <div className="section-container py-20">
@@ -14,17 +14,21 @@ const Contact = (): JSX.Element => (
             <p className="eyebrow">Contact Us</p>
             <h1 className="section-title">Tell us what needs to run better.</h1>
             <p className="lede">
-              Share the workflow, system, or operational problem you want to improve and we will help shape the right next step.
+              Share the bottlenecks, tools, or manual steps you want to improve and we will help shape the right next step.
             </p>
 
             <div className="grid gap-4 pt-2">
               <article className="bg-panel-muted rounded-[1.5rem] border border-line p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Best fit</p>
-                <p className="mt-3 text-base leading-7 text-copy">Teams that need personalized systems, fast delivery, and close operational support.</p>
+                <p className="mt-3 text-base leading-7 text-copy">Teams that need less manual work, smoother operations, and a build that fits their current setup.</p>
+              </article>
+              <article className="bg-panel-muted rounded-[1.5rem] border border-line p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Expected outcomes</p>
+                <p className="mt-3 text-base leading-7 text-copy">We usually help clients improve visibility, connect tools, remove repetitive steps, and tighten control.</p>
               </article>
               <article className="bg-panel-muted rounded-[1.5rem] border border-line p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Helpful details</p>
-                <p className="mt-3 text-base leading-7 text-copy">Share your package fit, workflow complexity, integrations, timeline, and support needs.</p>
+                <p className="mt-3 text-base leading-7 text-copy">Share your workflow complexity, integrations, reporting needs, timeline, and any must-have alerts.</p>
               </article>
               <article className="bg-panel-muted rounded-[1.5rem] border border-line p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Direct contact</p>

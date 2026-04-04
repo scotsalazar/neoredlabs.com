@@ -4,35 +4,35 @@ import Layout from '../components/Layout.jsx';
 
 const principles = [
   {
-    title: 'Personalized',
-    description: 'We shape the system around your approvals, users, and daily operations.',
+    title: 'Workflow-first delivery',
+    description: 'We shape systems around the approvals, tools, and daily work your team already manages.',
   },
   {
-    title: 'Fast',
-    description: 'We keep scope clear and delivery moving so the work does not stall.',
+    title: 'Clear business outcomes',
+    description: 'Clients trust us to reduce manual work, connect operations, and improve visibility without unnecessary complexity.',
   },
   {
-    title: 'Available',
-    description: 'We stay close to the rollout and support the work when it is live.',
+    title: 'Cleaner digital operations',
+    description: 'We help teams replace paper-heavy steps and disconnected records with more trackable digital workflows.',
   }
 ];
 
 const About = () => (
   <Layout
     title="About NeoLabs | Modern App Development Team"
-    description="Learn about NeoLabs, a modern app development team focused on personalized delivery, fast shipping, and operational fit."
+    description="Learn why businesses trust NeoLabs for personalized app delivery, connected operations, and cleaner digital workflows."
   >
     <section className="bg-page">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">About NeoLabs</p>
-            <h1 className="section-title">A modern app partner focused on operational fit.</h1>
+            <h1 className="section-title">A delivery partner trusted to make operations clearer, faster, and easier to manage.</h1>
             <p className="lede">
-              NeoLabs helps businesses move from fragmented manual work into modern systems that feel easier to use, easier to manage, and easier to trust.
+              NeoLabs works with teams that need more than a generic app. We help turn manual work into connected digital operations with better visibility and less friction.
             </p>
             <p className="text-base leading-8 text-copy">
-              We are based in Metro Manila and work with teams that need a responsive partner, faster delivery, and a stronger understanding of how operations really run.
+              Based in Metro Manila, we stay close to the business context so the systems we build align with real operational needs, not just software requirements.
             </p>
           </div>
 
@@ -66,7 +66,7 @@ const About = () => (
           <div className="max-w-2xl space-y-4">
             <p className="eyebrow eyebrow-on-dark">Work with NeoLabs</p>
             <h2 className="font-display text-4xl font-semibold tracking-tight text-light sm:text-5xl">
-              If the system matters, the delivery partner should too.
+              If the workflow matters, the build should fit the way the business actually runs.
             </h2>
           </div>
           <Link to="/contact" className="btn-primary">

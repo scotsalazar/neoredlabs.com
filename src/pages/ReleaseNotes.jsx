@@ -39,15 +39,15 @@ const ReleaseNotes = () => {
   return (
     <Layout
       title="Business | NeoLabs"
-      description="Follow NeoLabs business updates, release notes, and company milestones."
+      description="Follow NeoLabs delivery milestones, operational improvements, and company updates."
     >
       <section className="bg-page">
         <div className="section-container py-20">
           <div className="max-w-2xl space-y-5">
             <p className="eyebrow">Business</p>
-            <h1 className="section-title">Updates, releases, and company milestones.</h1>
+            <h1 className="section-title">Delivery milestones, operational improvements, and company updates.</h1>
             <p className="lede">
-              This page keeps a clean record of rollout updates, reporting improvements, and company-level notes.
+              This page keeps a cleaner record of rollout outcomes, reporting improvements, and milestone-style updates tied to real client work.
             </p>
           </div>
         </div>

@@ -6,7 +6,7 @@ const packages = [
   {
     name: 'Free Trial',
     price: 'Concept preview',
-    positioning: 'Best for showing the concept before a paid rollout.',
+    positioning: 'Best for validating the direction before a paid rollout.',
     points: [
       'Basic branded setup',
       'Simple feature preview',
@@ -18,7 +18,7 @@ const packages = [
   {
     name: 'Starter',
     price: 'PHP 3,500 - 5,000',
-    positioning: 'Best for SMEs that need a working operational app.',
+    positioning: 'Best for SMEs that need a working app to replace manual coordination.',
     points: [
       'Admin control page',
       'Web and mobile version',
@@ -31,7 +31,7 @@ const packages = [
   {
     name: 'Growth',
     price: 'PHP 6,000 - 12,000',
-    positioning: 'Best for scaling businesses that want efficiency and automation.',
+    positioning: 'Best for growing businesses that want connected tools, automation, and clearer visibility.',
     points: [
       'Modern UI/UX',
       'Improved security setup',
@@ -45,7 +45,7 @@ const packages = [
   {
     name: 'Scale',
     price: 'PHP 20,000+',
-    positioning: 'Best for government and large businesses that require compliance, scale, and reliability.',
+    positioning: 'Best for complex operations that require stronger governance, reliability, and cross-system control.',
     points: [
       'Role-based access and permissions',
       'Audit trails and activity logs',
@@ -93,16 +93,16 @@ const pricingGuide = [
 const Pricing = () => (
   <Layout
     title="Pricing | NeoLabs"
-    description="Explore NeoLabs pricing for Free Trial, Starter, Growth, and Scale app development packages."
+    description="Explore NeoLabs pricing for app delivery packages built around workflow complexity, automation, visibility, and operational readiness."
   >
     <section className="bg-page">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">Pricing</p>
-            <h1 className="section-title">Simple pricing that scales with the work.</h1>
+            <h1 className="section-title">Pricing shaped by the level of workflow, automation, and operational responsibility involved.</h1>
             <p className="lede">
-              Each tier increases in scope, security, integration depth, and operational readiness so it is easier to match the right package to the business.
+              Each package reflects how much of the business workflow needs to be replaced, connected, automated, and supported.
             </p>
           </div>
           <div className="surface-panel overflow-hidden">
@@ -149,7 +149,7 @@ const Pricing = () => (
         <div className="space-y-8">
           <div className="max-w-2xl space-y-4">
             <p className="eyebrow">Monthly pricing guide</p>
-            <h2 className="section-title">A cleaner guide for the first conversation.</h2>
+            <h2 className="section-title">A practical guide for the first quote conversation.</h2>
           </div>
 
           <div className="surface-panel overflow-hidden">
@@ -177,7 +177,7 @@ const Pricing = () => (
             <p className="eyebrow">Scale package</p>
             <h2 className="section-title">What makes a Scale app different.</h2>
             <p className="lede">
-              Scale projects carry more operational risk, so security, governance, performance, and reliability matter more.
+              Scale projects carry more operational responsibility, so visibility, control, security, and reliability matter more.
             </p>
           </div>
 
@@ -217,8 +217,8 @@ const Pricing = () => (
         <div className="flex flex-col gap-6 rounded-[2rem] border border-line bg-panel p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
           <div className="max-w-2xl space-y-4">
             <p className="eyebrow">Next step</p>
-            <h2 className="section-title">If you know your likely tier, we can scope the right version of it.</h2>
-            <p className="lede">Tell us your business goals, integrations, workflow complexity, and delivery timeline. We'll help shape the right package fit and rollout approach.</p>
+            <h2 className="section-title">Tell us the workflow you need to improve and we will shape the right package around it.</h2>
+            <p className="lede">Share your tools, bottlenecks, reporting needs, and timeline so we can scope the right rollout.</p>
           </div>
           <Link to="/contact" className="btn-primary">Request a quote</Link>
         </div>

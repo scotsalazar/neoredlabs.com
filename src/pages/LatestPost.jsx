@@ -3,6 +3,22 @@ import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import { fetchBusinessPost } from '../lib/api/businessPosts.js';
 
+const renderParagraph = (paragraph) => {
+  const segments = paragraph.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+
+  return segments.map((segment, index) => {
+    if (segment.startsWith('**') && segment.endsWith('**')) {
+      return (
+        <strong key={`${segment}-${index}`} className="font-semibold text-ink-strong">
+          {segment.slice(2, -2)}
+        </strong>
+      );
+    }
+
+    return <React.Fragment key={`${segment}-${index}`}>{segment}</React.Fragment>;
+  });
+};
+
 const LatestPost = () => {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
@@ -82,7 +98,7 @@ const LatestPost = () => {
               <div className="mx-auto max-w-3xl space-y-6">
                 {paragraphs.map((paragraph) => (
                   <p key={paragraph.slice(0, 48)} className="text-base leading-8 text-copy sm:text-lg">
-                    {paragraph}
+                    {renderParagraph(paragraph)}
                   </p>
                 ))}
               </div>

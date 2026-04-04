@@ -47,7 +47,7 @@ const About = () => (
       </div>
     </section>
 
-    <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
       <div className="section-container py-20">
         <div className="grid gap-6 lg:grid-cols-3">
           {principles.map((item) => (
@@ -60,7 +60,7 @@ const About = () => (
       </div>
     </section>
 
-    <section className="bg-slate-950 text-white">
+    <section className="bg-dark text-white">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl space-y-4">

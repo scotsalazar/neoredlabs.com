@@ -57,7 +57,7 @@ const Services = () => (
       </div>
     </section>
 
-    <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
       <div className="section-container py-20">
         <div className="grid gap-10">
           {services.map((service, index) => (
@@ -78,7 +78,7 @@ const Services = () => (
 
     <section className="bg-white">
       <div className="section-container py-20">
-        <div className="rounded-[1.75rem] border border-slate-200 bg-[#fbfaf7] p-8 lg:p-12">
+        <div className="bg-panel-muted rounded-[1.75rem] border border-line p-8 lg:p-12">
           <p className="eyebrow">How we deliver</p>
           <h2 className="mt-4 section-title">Fast, clear, and aligned to the business.</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">

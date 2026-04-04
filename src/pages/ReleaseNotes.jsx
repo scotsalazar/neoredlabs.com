@@ -53,7 +53,7 @@ const ReleaseNotes = () => {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
         <div className="section-container py-20">
           {loading && <p className="text-base text-slate-600">Loading business updates...</p>}
           {error && <p className="text-base text-red-500">{error}</p>}

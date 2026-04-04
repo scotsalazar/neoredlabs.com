@@ -116,7 +116,7 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
       <div className="section-container py-20">
         <div className="grid gap-6 lg:grid-cols-2">
           {packages.map((item) => (
@@ -170,7 +170,7 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
           <div className="space-y-4">
@@ -212,7 +212,7 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 rounded-[2rem] border border-slate-200 bg-white p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
           <div className="max-w-2xl space-y-4">

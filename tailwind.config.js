@@ -3,11 +3,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: '#0D1B2A',
-        light: '#F8FAFC',
-        primary: '#168B80',
-        secondary: '#6FD3C6',
-        accent: '#E2F3EF'
+        dark: 'rgb(var(--color-dark) / <alpha-value>)',
+        light: 'rgb(var(--color-light) / <alpha-value>)',
+        primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
+        page: 'rgb(var(--color-page) / <alpha-value>)',
+        'page-muted': 'rgb(var(--color-page-muted) / <alpha-value>)',
+        'panel-muted': 'rgb(var(--color-panel-muted) / <alpha-value>)',
+        ink: 'rgb(var(--color-ink) / <alpha-value>)',
+        'ink-strong': 'rgb(var(--color-ink-strong) / <alpha-value>)',
+        copy: 'rgb(var(--color-copy) / <alpha-value>)',
+        line: 'rgb(var(--color-line) / <alpha-value>)'
       },
       fontFamily: {
         sans: ['Manrope', 'ui-sans-serif', 'system-ui'],
@@ -15,7 +21,7 @@ module.exports = {
         heading: ['Manrope', 'ui-sans-serif', 'system-ui']
       },
       boxShadow: {
-        soft: '0 30px 80px rgba(15, 23, 42, 0.08)'
+        soft: '0 30px 80px rgb(var(--color-dark) / 0.08)'
       }
     }
   },

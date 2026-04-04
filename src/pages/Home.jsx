@@ -46,7 +46,7 @@ const Home = () => (
   >
     <Hero />
 
-    <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="space-y-4">
@@ -81,7 +81,7 @@ const Home = () => (
 
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {serviceSummary.map((item) => (
-            <article key={item.title} className="rounded-[1.5rem] border border-slate-200 bg-[#fbfaf7] p-7">
+            <article key={item.title} className="bg-panel-muted rounded-[1.5rem] border border-line p-7">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{item.title}</p>
               <p className="mt-4 text-lg font-semibold tracking-tight text-slate-950">{item.description}</p>
             </article>
@@ -90,7 +90,7 @@ const Home = () => (
       </div>
     </section>
 
-    <section className="bg-[#f7f4ee]">
+    <section className="bg-page-muted">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
@@ -113,7 +113,7 @@ const Home = () => (
       </div>
     </section>
 
-    <section className="bg-slate-950 text-white">
+    <section className="bg-dark text-white">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl space-y-4">

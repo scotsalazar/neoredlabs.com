@@ -18,15 +18,15 @@ const Contact = (): JSX.Element => (
             </p>
 
             <div className="grid gap-4 pt-2">
-              <article className="rounded-[1.5rem] border border-slate-200 bg-[#fbfaf7] p-6">
+              <article className="bg-panel-muted rounded-[1.5rem] border border-line p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Best fit</p>
                 <p className="mt-3 text-base leading-7 text-slate-600">Teams that need personalized systems, fast delivery, and close operational support.</p>
               </article>
-              <article className="rounded-[1.5rem] border border-slate-200 bg-[#fbfaf7] p-6">
+              <article className="bg-panel-muted rounded-[1.5rem] border border-line p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Helpful details</p>
                 <p className="mt-3 text-base leading-7 text-slate-600">Share your package fit, workflow complexity, integrations, timeline, and support needs.</p>
               </article>
-              <article className="rounded-[1.5rem] border border-slate-200 bg-[#fbfaf7] p-6">
+              <article className="bg-panel-muted rounded-[1.5rem] border border-line p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Direct contact</p>
                 <p className="mt-3 text-base leading-7 text-slate-600">
                   <a className="font-semibold text-slate-900 hover:text-primary" href="mailto:info@neolabs.com">info@neolabs.com</a>

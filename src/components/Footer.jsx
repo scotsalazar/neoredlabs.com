@@ -14,7 +14,7 @@ const policyLinks = [
 ];
 
 const Footer = () => (
-  <footer className="mt-20 bg-slate-950 text-slate-200">
+  <footer className="mt-20 bg-dark text-slate-200">
     <div className="section-container py-14">
       <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
         <div className="space-y-4">

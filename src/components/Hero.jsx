@@ -18,7 +18,7 @@ const strengths = [
 ];
 
 const Hero = () => (
-  <section className="overflow-hidden bg-[linear-gradient(180deg,#faf7f2_0%,#f4efe8_100%)]">
+  <section className="bg-hero-surface overflow-hidden">
     <div className="section-container grid gap-12 py-14 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:py-20">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -31,7 +31,7 @@ const Hero = () => (
           <p className="text-sm font-semibold uppercase tracking-[0.26em] text-primary">
             Personalized modern apps
           </p>
-          <h1 className="font-display text-5xl font-semibold leading-[0.95] tracking-tight text-[#1b2433] sm:text-6xl lg:text-[5.35rem]">
+          <h1 className="text-ink-strong font-display text-5xl font-semibold leading-[0.95] tracking-tight sm:text-6xl lg:text-[5.35rem]">
             Modern apps built fast and shaped around your operations.
           </h1>
           <p className="max-w-xl text-lg leading-8 text-slate-700">
@@ -67,14 +67,14 @@ const Hero = () => (
         transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
         className="relative"
       >
-        <div className="surface-panel overflow-hidden bg-[#0f1724]">
+        <div className="surface-panel bg-ink-surface overflow-hidden">
           <img
             src="/illustrations/hero-ph-software.svg"
             alt="NeoLabs planning and shipping modern operational software"
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="absolute bottom-6 left-6 rounded-[1.5rem] border border-white/10 bg-slate-950/88 px-5 py-4 text-white shadow-[0_18px_50px_rgba(15,23,42,0.26)] backdrop-blur">
+        <div className="bg-ink-float absolute bottom-6 left-6 rounded-[1.5rem] border border-white/10 px-5 py-4 text-white shadow-[0_18px_50px_rgb(var(--color-dark)/0.26)] backdrop-blur">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">How we work</p>
           <p className="mt-2 text-lg font-semibold">Clear scope. Fast build. Close support.</p>
         </div>

@@ -11,7 +11,7 @@ const navLinks = [
 
 const Navbar = () => (
   <motion.header
-    className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200/80 bg-[rgba(250,247,242,0.9)] backdrop-blur-xl"
+    className="bg-nav fixed left-0 right-0 top-0 z-50 border-b border-line/80 backdrop-blur-xl"
     initial={{ y: -18, opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
     transition={{ duration: 0.45, ease: 'easeOut' }}

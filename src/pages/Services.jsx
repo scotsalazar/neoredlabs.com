@@ -32,16 +32,16 @@ const deliveryPoints = [
 const Services = () => (
   <Layout
     title="Services | NeoLabs"
-    description="Explore NeoLabs services for personalized app development, automation, integrations, and operational visibility."
+    description="Explore NeoLabs services for modern application development, AI-powered automation, integrations, and operational visibility."
   >
     <section className="bg-page">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">Services</p>
-            <h1 className="section-title">Services built to remove manual work and improve operational control.</h1>
+            <h1 className="section-title">Our platform leverages the latest AI and LLM technologies, integrated across most modern applications to deliver intelligent, automated solutions.</h1>
             <p className="lede">
-              Each service is designed to fit your existing operations, connect your tools, and give your team a smoother way to work.
+              Each service is designed to fit your existing operations, connect your tools, and create smoother, more intelligent workflows.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/pricing" className="btn-primary">View pricing</Link>

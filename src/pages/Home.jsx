@@ -46,7 +46,7 @@ const pricingPreview = [
 const Home = () => (
   <Layout
     title="NeoLabs | Modern App Development Company"
-    description="NeoLabs helps businesses reduce manual work, connect existing tools, and gain clearer operational visibility with personalized modern apps."
+    description="NeoLabs helps businesses build modern applications, connect existing tools, and use AI-powered automation for clearer operational visibility."
   >
     <Hero />
 

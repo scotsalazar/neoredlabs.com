@@ -29,7 +29,7 @@ const About = () => (
             <p className="eyebrow">About NeoLabs</p>
             <h1 className="section-title">A delivery partner trusted to make operations clearer, faster, and easier to manage.</h1>
             <p className="lede">
-              NeoLabs works with teams that need more than a generic app. We help turn manual work into connected digital operations with better visibility and less friction.
+              NeoLabs works with teams that need more than a generic app. We build modern operational systems that combine tailored software, connected tools, and intelligent automation.
             </p>
             <p className="text-base leading-8 text-copy">
               Based in Metro Manila, we stay close to the business context so the systems we build align with real operational needs, not just software requirements.

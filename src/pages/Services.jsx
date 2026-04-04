@@ -3,16 +3,24 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import GradientSection from '../components/GradientSection.jsx';
 import appImage from '../assets/images/product-erp.png';
-import automationImage from '../assets/images/ai.png';
-import dashboardImage from '../assets/images/monitoring-dashboard.png';
-import supportImage from '../assets/images/meeting.png';
+import automationImage from '../assets/images/product-chat.png';
+import dashboardImage from '../assets/images/dashboard-beautiful.png';
+import supportImage from '../assets/images/about.png';
+import workflowImage from '../assets/images/workflow.png';
+
+const workflowHighlights = [
+  'Custom workflows built around how your team actually works',
+  'Automations + AI to reduce manual work and errors',
+  'Integrations across Gmail, Sheets, Shopify, Slack, CRM, and accounting',
+  'Dashboards + alerts that surface issues before they become fires',
+];
 
 const services = [
   {
     title: 'Custom Business Applications',
     area: 'Service Area',
     valueProp:
-      'Design and ship tailor-made apps that mirror how your teams sell, support, and scale—without wasting budget on one-size-fits-all software.',
+      'Design and ship tailor-made apps that mirror how your teams sell, support, and scale without wasting budget on one-size-fits-all software.',
     image: appImage,
     imageAlt: 'Custom business application interface for sales and operations teams',
     benefits: [
@@ -33,7 +41,7 @@ const services = [
     area: 'Agentic Area',
     valueProp: 'Layer AI into your operations to cut cycle times, enforce quality controls, and free people for higher-value work.',
     image: automationImage,
-    imageAlt: 'AI integration workflow for intelligent process automation',
+    imageAlt: 'AI assistant and workflow automation interface',
     benefits: [
       'Automate intake, routing, and approvals so requests move from minutes to seconds.',
       'Blend human-in-the-loop checkpoints with AI to maintain governance and compliance.',
@@ -73,7 +81,7 @@ const services = [
     area: 'Support Area',
     valueProp: 'Keep customers and partners confident with support that anticipates needs, closes loops, and keeps every stakeholder aligned.',
     image: supportImage,
-    imageAlt: 'Stakeholder support coordination meeting for proactive product support',
+    imageAlt: 'Stakeholder support coordination session',
     benefits: [
       'Reduce churn with proactive outreach, playbooks, and health monitoring.',
       'Accelerate escalations with clear ownership, status transparency, and timeline commitments.',
@@ -100,17 +108,56 @@ const Services = () => {
   };
 
   return (
-    <Layout title="NeoRedLabs – Services" description="Discover our services from AI-driven automation to personalised apps.">
+    <Layout title="NeoLabs | Services" description="Discover our services from AI-driven automation to custom apps.">
       <GradientSection className="py-20 md:py-24">
         <div className="section-container space-y-12">
           <header className="max-w-4xl space-y-4">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Services</p>
-            <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-light">What we deliver</h1>
-            <p className="text-lg leading-relaxed text-light/80 max-w-3xl">
-              A focused lineup built to ship polished products, automate critical journeys, and keep every stakeholder aligned. Each
-              engagement is led by senior specialists and tuned to your stack, speed, and standards.
+            <h1 className="text-4xl font-semibold leading-tight text-light md:text-5xl">What we deliver</h1>
+            <p className="max-w-3xl text-lg leading-relaxed text-light/80">
+              A focused lineup built to ship polished products, automate critical journeys, and keep every stakeholder aligned.
+              Each engagement is led by senior specialists and tuned to your stack, speed, and standards.
             </p>
           </header>
+
+          <section className="grid gap-8 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl backdrop-blur-sm lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-8">
+            <div className="space-y-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/90">Current services</p>
+                <h2 className="mt-3 text-3xl font-semibold leading-tight text-light sm:text-4xl">
+                  Build systems that run your business, not more headcount.
+                </h2>
+              </div>
+
+              <p className="max-w-2xl text-base leading-relaxed text-light/80 sm:text-lg">
+                We build custom apps, automations, and AI agents that remove repetitive work, connect your tools,
+                and give you real-time control.
+              </p>
+
+              <ul className="grid gap-3 text-sm leading-relaxed text-light/85 sm:grid-cols-2">
+                {workflowHighlights.map((item) => (
+                  <li key={item} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-wrap items-center gap-4">
+                <Link to="/contact" className="btn-primary">
+                  Book a call
+                </Link>
+                <p className="text-sm text-light/60">Clear scope • Weekly progress</p>
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30 p-2">
+              <img
+                src={workflowImage}
+                alt="Automation workflow diagram"
+                className="w-full rounded-[1.25rem] object-cover"
+              />
+            </div>
+          </section>
 
           <div className="flex flex-col divide-y divide-white/10 border-y border-white/10">
             {services.map((service) => (
@@ -139,18 +186,18 @@ const Services = () => {
                   </div>
 
                   <div className="order-2 grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-start lg:gap-8">
-                    <div className="space-y-4 max-w-3xl">
+                    <div className="max-w-3xl space-y-4">
                       <div className="inline-flex items-center gap-3 text-primary">
                         <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/30">
                           {service.icon}
                         </span>
                         <span className="text-sm font-semibold uppercase tracking-[0.2em] text-light/70">{service.area}</span>
                       </div>
-                      <h2 className="text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-light">{service.title}</h2>
+                      <h2 className="text-2xl font-semibold leading-tight tracking-tight text-light md:text-3xl">{service.title}</h2>
                       <p className="text-lg leading-relaxed text-light/85">{service.valueProp}</p>
                     </div>
 
-                    <div className="space-y-4 max-w-2xl">
+                    <div className="max-w-2xl space-y-4">
                       <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-light/60">What that looks like</h3>
                       <ul className="space-y-3 text-base leading-relaxed text-light/85">
                         {service.benefits.map((benefit) => (

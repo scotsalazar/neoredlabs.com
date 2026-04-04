@@ -1,16 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import heroImage from '../assets/images/new-hero-banner.webp';
 import { Link } from 'react-router-dom';
+import heroImage from '../assets/images/new-hero-banner.webp';
 
-/**
- * Hero section introducing the NeoLabs platform.
- *
- * Utilises Framer Motion to gently fade the background illustration and
- * headline into view.  A dark overlay sits atop the background to
- * improve contrast.  The headline emphasises the company mission and
- * calls the user to action.
- */
 const containerVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
@@ -27,17 +19,16 @@ const itemVariants = {
 
 const Hero = () => (
   <motion.section
-    className="relative flex h-[80vh] items-center justify-center overflow-hidden"
+    className="relative flex min-h-[72vh] items-center justify-center overflow-hidden"
     variants={containerVariants}
     initial="hidden"
     whileInView="visible"
     viewport={{ once: true, amount: 0.3 }}
   >
-    {/* Background illustration */}
     <motion.img
       src={heroImage}
-          alt="App dashboard preview"
-          width={1536}
+      alt="NeoLabs platform overview"
+      width={1536}
       height={1024}
       fetchpriority="high"
       loading="eager"
@@ -45,35 +36,34 @@ const Hero = () => (
       className="absolute inset-0 h-full w-full object-cover"
       variants={itemVariants}
     />
-    {/* Dark overlay to improve contrast */}
+
     <motion.div
       className="absolute inset-0 bg-black/70"
       aria-hidden="true"
       variants={itemVariants}
     />
-    {/* Headline and call to action */}
-    <motion.div
-      className="relative z-10 section-container text-center"
-      variants={itemVariants}
-    >
+
+    <motion.div className="relative z-10 section-container text-center" variants={itemVariants}>
       <motion.h1
-        className="text-4xl md:text-6xl font-heading font-bold text-light"
+        className="text-4xl font-heading font-bold text-light md:text-6xl"
         variants={itemVariants}
       >
         Power your Business with Modern and Agentic Solutions
       </motion.h1>
+
       <motion.p
-        className="mx-auto mt-4 max-w-2xl text-base md:text-lg text-light/80"
+        className="mx-auto mt-4 max-w-2xl text-base text-light/80 md:text-lg"
         variants={itemVariants}
       >
-        Accelerate growth with tailored AI agents, automation, and modern solutions built for today’s businesses.
+        Accelerate growth with tailored AI agents, automation, and modern solutions built for today&apos;s businesses.
       </motion.p>
+
       <motion.div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row" variants={itemVariants}>
         <Link to="/contact#schedule-call" className="btn-primary" aria-label="Schedule a Call">
           Schedule a Call
         </Link>
-        <Link to="/about" className="btn-primary bg-secondary text-dark" aria-label="Learn More">
-          Learn More
+        <Link to="/business" className="btn-primary bg-secondary text-dark" aria-label="Latest Updates">
+          Latest Updates
         </Link>
       </motion.div>
     </motion.div>

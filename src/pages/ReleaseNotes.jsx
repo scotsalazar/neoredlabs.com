@@ -1,39 +1,43 @@
 import React from 'react';
 import Layout from '../components/Layout.jsx';
 import GradientSection from '../components/GradientSection.jsx';
+import workflowImage from '../assets/images/workflow.png';
+import dashboardImage from '../assets/images/product-erp.png';
+import analyticsImage from '../assets/images/revenue-dashboard.png';
+import partnershipImage from '../assets/images/about.png';
 
-const RELEASE_NOTE_ENTRIES = [
+const BUSINESS_UPDATES = [
   {
-    id: 'hiring-announcement-neolabs',
-    title: "We're Hiring: Build the Future of AI Operations with NeoLabs",
-    category: 'company news',
+    id: 'business-po-agent-release',
+    title: 'PO Agent v1.01 is active across daily order handling.',
+    category: 'latest update',
     summary:
-      'NeoLabs is expanding our team across engineering, AI operations, delivery excellence, and client success. We are looking for mission-driven builders who want to ship practical AI systems that solve real business challenges. Explore open roles, learn what we value, and apply through our careers page to join us in shaping the next generation of autonomous workflows.',
+      'We rolled out a more stable purchase-order automation flow with stronger monitoring, cleaner exception handling, and better delivery scheduling coverage for day-to-day operations.',
     date: '2026-03-16',
-    image: '/assets/images/solutions/6e44c11e-99d0-4547-8133-1e77994f764e.png',
-    ctaLabel: 'View open roles',
-    ctaHref: 'https://neoredlabs.com/careers',
+    image: workflowImage,
+    ctaLabel: 'Talk to the team',
+    ctaHref: '/contact',
   },
   {
-    id: 'agent-news-autonomy-monitoring',
-    title: 'PO Agent v1.01 release update',
-    category: 'latest agent news',
+    id: 'business-dashboard-rollout',
+    title: 'Live reporting dashboards now surface finance and ops signals sooner.',
+    category: 'operations',
     summary:
-      'Coordinated cross-functional research and operations to refine our purchase-order autonomous agent; deployed the v1.01 release with updated monitoring processes across our scheduling system; executed new algorithmic workflows that process 99% of incoming purchase orders and automate delivery scheduling, with real-time adjustments to partner availability; resulting in near-total PO coverage, improved accuracy, and reduced manual intervention.',
+      'Recent delivery work focused on real-time views for revenue, fulfillment, and team workload so clients can spot bottlenecks faster and act before they become expensive fire drills.',
     date: '2026-03-05',
-    image: '/assets/images/solutions/8053086a-a535-4a34-a4b9-810b49271058.png',
-    ctaLabel: 'Read agent updates',
-    ctaHref: '/about',
+    image: analyticsImage,
+    ctaLabel: 'View services',
+    ctaHref: '/services',
   },
   {
-    id: 'venture-expansion-partnership-announcement',
-    title: 'Business venture: strategic delivery partnership expansion',
-    category: 'latest business ventures',
+    id: 'business-partnership-expansion',
+    title: 'Partnership conversations continue to expand delivery and support capacity.',
+    category: 'business',
     summary:
-      'Coordinated strategic discussions and handshake agreements with corporate business partners to expand delivery networks; deployed partnership frameworks, aligning service protocols and integration points; executed joint operations through pilot programs to test route efficiencies and cross-service logistics; resulting in expanded reach, improved delivery times, and stronger client relationships across enterprise accounts.',
+      'We are continuing to shape new operating partnerships around service coverage, delivery coordination, and shared systems so more businesses can run with fewer manual handoffs.',
     date: '2026-02-24',
-    image: '/assets/images/solutions/48a604cc-735d-434c-8561-b10b1c6fd76c.png',
-    ctaLabel: 'Explore venture highlights',
+    image: partnershipImage,
+    ctaLabel: 'Contact Us',
     ctaHref: '/contact',
   },
 ];
@@ -46,31 +50,54 @@ const humanDateFormatter = new Intl.DateTimeFormat('en-US', {
 
 const ReleaseNotes = () => (
   <Layout
-    title="Changelog | NeoLabs"
-    description="Concise product, platform, and partnership updates from the NeoLabs team."
+    title="Business | NeoLabs"
+    description="Latest NeoLabs business updates, launches, rollouts, and partnership milestones."
   >
     <GradientSection className="py-20 md:py-24">
       <div className="section-container space-y-12">
         <header className="max-w-4xl space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Changelog
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Business</p>
           <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl">
-            What&apos;s new at NeoLabs
+            Latest updates from NeoLabs
           </h1>
-          <p className="text-lg leading-relaxed text-light/80 max-w-3xl">
-            This section shares our latest updates and changelog entries, including IAM launches, agent improvements,
-            and new business venture milestones.
+          <p className="max-w-3xl text-lg leading-relaxed text-light/80">
+            Follow recent launches, workflow improvements, reporting rollouts, and partnership progress in one place.
           </p>
         </header>
 
-        <section className="space-y-6" aria-labelledby="changelog-updates-heading">
-          <h2 id="changelog-updates-heading" className="text-2xl font-semibold tracking-tight text-light">
+        <section className="grid gap-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-xl backdrop-blur-sm lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-8">
+          <div className="space-y-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-light/65">Featured post</p>
+            <h2 className="text-3xl font-semibold leading-tight text-white sm:text-4xl">
+              Modern systems, current rollouts, and practical AI progress.
+            </h2>
+            <p className="max-w-2xl text-base leading-relaxed text-light/80 sm:text-lg">
+              This page now carries the homepage latest-updates path so visitors can move directly from the main hero into live business progress.
+            </p>
+            <a
+              href="/contact"
+              className="inline-flex items-center justify-center rounded-full border border-primary/40 bg-primary/10 px-6 py-3 text-sm font-semibold text-primary transition hover:border-primary/60 hover:bg-primary/15"
+            >
+              Schedule a call
+            </a>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30 p-2">
+            <img
+              src={dashboardImage}
+              alt="NeoLabs business update overview"
+              className="aspect-[16/10] w-full rounded-[1.25rem] object-cover"
+            />
+          </div>
+        </section>
+
+        <section className="space-y-6" aria-labelledby="business-updates-heading">
+          <h2 id="business-updates-heading" className="text-2xl font-semibold tracking-tight text-light">
             Recent updates
           </h2>
 
-          <ul className="space-y-6" aria-label="NeoLabs changelog entries">
-            {RELEASE_NOTE_ENTRIES.map((entry) => (
+          <ul className="space-y-6" aria-label="NeoLabs business updates">
+            {BUSINESS_UPDATES.map((entry) => (
               <li key={entry.id} className="list-none">
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm md:flex-row md:min-h-[320px]">
                   <img
@@ -100,8 +127,6 @@ const ReleaseNotes = () => (
                       </time>
                       <a
                         href={entry.ctaHref}
-                        target={entry.ctaHref.startsWith('http') ? '_blank' : undefined}
-                        rel={entry.ctaHref.startsWith('http') ? 'noreferrer' : undefined}
                         className="rounded-md px-2 py-1 text-sm font-semibold text-secondary transition-colors hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                       >
                         {entry.ctaLabel}

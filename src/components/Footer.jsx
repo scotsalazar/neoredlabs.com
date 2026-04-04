@@ -15,12 +15,12 @@ const policyLinks = [
 
 const Footer = () => (
   <footer className="mt-20 bg-slate-950 text-slate-200">
-    <div className="section-container py-16">
-      <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+    <div className="section-container py-14">
+      <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
         <div className="space-y-4">
           <p className="font-display text-3xl font-semibold text-white">NeoLabs</p>
           <p className="max-w-lg text-sm leading-7 text-slate-400">
-            Modern app development, automation, integrations, and operational systems for Philippine businesses that need clarity, control, and reliable delivery.
+            Personalized app development, automation, and integrations for teams that need fast delivery and dependable support.
           </p>
           <div className="space-y-1 text-sm text-slate-400">
             <p>Makati City, Metro Manila, Philippines</p>
@@ -51,14 +51,14 @@ const Footer = () => (
           </ul>
           <a href="/careers" className="inline-flex items-center gap-2 text-sm font-semibold text-secondary hover:text-white">
             Careers
-            <span aria-hidden>→</span>
+            <span aria-hidden>{'->'}</span>
           </a>
         </div>
       </div>
 
       <div className="mt-12 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex sm:items-center sm:justify-between">
-        <p>© {new Date().getFullYear()} NeoLabs. All rights reserved.</p>
-        <p className="mt-3 sm:mt-0">Professional delivery for SMEs, scaling teams, and enterprise operations.</p>
+        <p>Copyright {new Date().getFullYear()} NeoLabs. All rights reserved.</p>
+        <p className="mt-3 sm:mt-0">Modern systems aligned to real operations.</p>
       </div>
     </div>
   </footer>

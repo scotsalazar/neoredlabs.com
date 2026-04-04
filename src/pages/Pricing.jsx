@@ -100,9 +100,9 @@ const Pricing = () => (
         <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">Pricing</p>
-            <h1 className="section-title">Structured packages for businesses that want premium work with clearer commercial fit.</h1>
+            <h1 className="section-title">Simple pricing that scales with the work.</h1>
             <p className="lede">
-              Each tier increases in scope, security, integration depth, and operational readiness. That makes it easier to match the right offer to business size, complexity, and delivery risk.
+              Each tier increases in scope, security, integration depth, and operational readiness so it is easier to match the right package to the business.
             </p>
           </div>
           <div className="surface-panel overflow-hidden">
@@ -116,7 +116,7 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-slate-100">
+    <section className="bg-[#f7f4ee]">
       <div className="section-container py-20">
         <div className="grid gap-6 lg:grid-cols-2">
           {packages.map((item) => (
@@ -149,7 +149,7 @@ const Pricing = () => (
         <div className="space-y-8">
           <div className="max-w-2xl space-y-4">
             <p className="eyebrow">Monthly pricing guide</p>
-            <h2 className="section-title">Commercially simpler pricing for the first conversation.</h2>
+            <h2 className="section-title">A cleaner guide for the first conversation.</h2>
           </div>
 
           <div className="surface-panel overflow-hidden">
@@ -170,14 +170,14 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-slate-100">
+    <section className="bg-[#f7f4ee]">
       <div className="section-container py-20">
         <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
           <div className="space-y-4">
             <p className="eyebrow">Scale package</p>
             <h2 className="section-title">What makes a Scale app different.</h2>
             <p className="lede">
-              Scale projects are different because the operating risk is different. Security, governance, performance, and system reliability matter more as complexity and organizational stakes rise.
+              Scale projects carry more operational risk, so security, governance, performance, and reliability matter more.
             </p>
           </div>
 
@@ -212,7 +212,7 @@ const Pricing = () => (
       </div>
     </section>
 
-    <section className="bg-slate-100">
+    <section className="bg-[#f7f4ee]">
       <div className="section-container py-20">
         <div className="flex flex-col gap-6 rounded-[2rem] border border-slate-200 bg-white p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
           <div className="max-w-2xl space-y-4">

@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+import fallbackPostsSource from '../../data/defaultBusinessPosts.js';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 function buildError(message, details) {
   const error = new Error(message);
@@ -8,16 +10,61 @@ function buildError(message, details) {
   return error;
 }
 
-async function handleResponse(response) {
-  if (response.ok) {
-    return response.json();
+function formatDateLabel(value) {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
   }
 
-  let payload;
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(date);
+}
+
+function normalizePost(post, index = 0) {
+  return {
+    ...post,
+    id: post.id ?? index + 1,
+    publishedAtLabel: post.publishedAtLabel || formatDateLabel(post.publishedAt),
+  };
+}
+
+const fallbackPosts = fallbackPostsSource.map(normalizePost);
+
+async function parseResponseBody(response) {
+  const contentType = response.headers.get('content-type') || '';
+  const rawText = await response.text();
+
+  if (!rawText) {
+    return null;
+  }
+
+  if (!contentType.includes('application/json')) {
+    throw buildError('Business feed is unavailable right now.', {
+      code: 'NON_JSON_RESPONSE',
+      preview: rawText.slice(0, 120)
+    });
+  }
+
   try {
-    payload = await response.json();
+    return JSON.parse(rawText);
   } catch (error) {
-    payload = null;
+    throw buildError('Business feed returned invalid JSON.', {
+      code: 'INVALID_JSON',
+      preview: rawText.slice(0, 120)
+    });
+  }
+}
+
+async function handleResponse(response) {
+  const payload = await parseResponseBody(response);
+
+  if (response.ok) {
+    return payload;
   }
 
   throw buildError(payload?.error || `Request failed with status ${response.status}`, payload);
@@ -28,13 +75,31 @@ function adminHeaders(token) {
 }
 
 export async function fetchBusinessPosts() {
-  const response = await fetch(`${API_BASE}/business-posts`);
-  return handleResponse(response);
+  try {
+    const response = await fetch(`${API_BASE}/business-posts`);
+    const payload = await handleResponse(response);
+    return {
+      posts: (payload?.posts || []).map(normalizePost)
+    };
+  } catch (error) {
+    return { posts: fallbackPosts };
+  }
 }
 
 export async function fetchBusinessPost(slug) {
-  const response = await fetch(`${API_BASE}/business-posts/${slug}`);
-  return handleResponse(response);
+  try {
+    const response = await fetch(`${API_BASE}/business-posts/${slug}`);
+    const payload = await handleResponse(response);
+    return {
+      post: payload?.post ? normalizePost(payload.post) : null
+    };
+  } catch (error) {
+    const fallbackPost = fallbackPosts.find((post) => post.slug === slug);
+    if (fallbackPost) {
+      return { post: fallbackPost };
+    }
+    throw error;
+  }
 }
 
 export async function fetchAdminBusinessPosts(token) {
@@ -44,7 +109,10 @@ export async function fetchAdminBusinessPosts(token) {
     }
   });
 
-  return handleResponse(response);
+  const payload = await handleResponse(response);
+  return {
+    posts: (payload?.posts || []).map(normalizePost)
+  };
 }
 
 export async function createBusinessPost(data, token) {

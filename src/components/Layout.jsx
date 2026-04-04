@@ -18,17 +18,17 @@ const Layout = ({ title, description, image, children }) => {
       ? `${window.location.origin}${location.pathname}`
       : '';
 
-  const metaTitle = title || 'NeoLabs | Philippine App Development Company';
+  const metaTitle = title || 'NeoLabs | Modern App Development Company';
   const metaDescription =
     description ||
-    'NeoLabs builds modern business apps, automation, and AI-enabled systems for Philippine SMEs, scaling companies, and enterprise operations.';
+    'NeoLabs builds personalized modern apps, automation, and integrations for teams that need fast delivery, operational fit, and dependable support.';
   const metaImage = image || undefined;
 
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'NeoLabs',
-    url: currentUrl,
+    url: currentUrl || 'https://neoredlabs.com',
     logo: '/favicon.png',
     description: metaDescription,
     address: {
@@ -46,14 +46,24 @@ const Layout = ({ title, description, image, children }) => {
     ]
   };
 
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'NeoLabs',
+    url: currentUrl || 'https://neoredlabs.com'
+  };
+
   return (
     <>
       <Helmet>
         <title>{metaTitle}</title>
         {metaDescription && <meta name="description" content={metaDescription} />}
+        <meta name="robots" content="index,follow" />
+        <meta name="theme-color" content="#0f1724" />
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="NeoLabs" />
         {metaImage && <meta property="og:image" content={metaImage} />}
         {currentUrl && <meta property="og:url" content={currentUrl} />}
         <meta name="twitter:card" content="summary_large_image" />
@@ -62,6 +72,7 @@ const Layout = ({ title, description, image, children }) => {
         {metaImage && <meta name="twitter:image" content={metaImage} />}
         {currentUrl && <link rel="canonical" href={currentUrl} />}
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
       </Helmet>
 
       <div className="min-h-screen bg-transparent text-slate-900">

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import { fetchBusinessPosts } from '../lib/api/businessPosts.js';
 
@@ -18,7 +19,7 @@ const ReleaseNotes = () => {
         setPosts(payload.posts || []);
       } catch (err) {
         if (active) {
-          setError(err?.message || 'Unable to load business updates right now.');
+          setError(err?.message || 'Unable to load latest updates right now.');
         }
       } finally {
         if (active) {
@@ -38,24 +39,24 @@ const ReleaseNotes = () => {
 
   return (
     <Layout
-      title="Business | NeoLabs"
-      description="Follow NeoLabs delivery milestones, operational improvements, and company updates."
+      title="Latest | NeoLabs"
+      description="Follow the latest NeoLabs delivery stories, operational improvements, and client updates."
     >
       <section className="bg-page">
         <div className="section-container py-20">
           <div className="max-w-2xl space-y-5">
-            <p className="eyebrow">Business</p>
-            <h1 className="section-title">Delivery milestones, operational improvements, and company updates.</h1>
+            <p className="eyebrow">Latest</p>
+            <h1 className="section-title">Latest delivery stories, rollout updates, and operational milestones.</h1>
             <p className="lede">
-              This page keeps a cleaner record of rollout outcomes, reporting improvements, and milestone-style updates tied to real client work.
+              This page keeps a cleaner index of client rollout stories, operational improvements, and the latest updates tied to real delivery work.
             </p>
           </div>
         </div>
       </section>
 
-    <section className="bg-page-muted">
+      <section className="bg-page-muted">
         <div className="section-container py-20">
-          {loading && <p className="text-base text-copy">Loading business updates...</p>}
+          {loading && <p className="text-base text-copy">Loading latest updates...</p>}
           {error && <p className="text-base text-red-500">{error}</p>}
 
           {!loading && !error && featured && (
@@ -65,13 +66,7 @@ const ReleaseNotes = () => {
                 <h2 className="text-4xl font-semibold tracking-tight text-ink-strong sm:text-5xl">{featured.title}</h2>
                 <p className="text-sm uppercase tracking-[0.18em] text-copy">{featured.category} | {featured.publishedAtLabel}</p>
                 <p className="text-base leading-8 text-copy">{featured.summary}</p>
-                {featured.content && (
-                  <div className="space-y-4 text-base leading-8 text-copy">
-                    {featured.content.split('\n\n').map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
-                  </div>
-                )}
+                <Link to={`/latest/${featured.slug}`} className="btn-primary">Read more</Link>
               </article>
 
               <div className="surface-panel overflow-hidden">
@@ -88,7 +83,7 @@ const ReleaseNotes = () => {
             <div className="mt-16">
               <div className="max-w-2xl space-y-4">
                 <p className="eyebrow">Archive</p>
-                <h2 className="section-title">Previous updates</h2>
+                <h2 className="section-title">Previous latest stories</h2>
               </div>
 
               <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -98,6 +93,9 @@ const ReleaseNotes = () => {
                     <h3 className="mt-3 text-2xl font-semibold tracking-tight text-ink-strong">{post.title}</h3>
                     <p className="mt-3 text-sm uppercase tracking-[0.18em] text-copy">{post.publishedAtLabel}</p>
                     <p className="mt-4 text-base leading-7 text-copy">{post.summary}</p>
+                    <div className="mt-6">
+                      <Link to={`/latest/${post.slug}`} className="btn-secondary">Read more</Link>
+                    </div>
                   </article>
                 ))}
               </div>

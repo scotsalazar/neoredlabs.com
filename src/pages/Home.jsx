@@ -131,8 +131,8 @@ const Home = () => (
             <Link to="/contact" className="btn-primary">
               Contact Us
             </Link>
-            <Link to="/business" className="btn-secondary btn-secondary-on-dark">
-              Business updates
+            <Link to="/latest" className="btn-secondary btn-secondary-on-dark">
+              Latest updates
             </Link>
           </div>
         </div>

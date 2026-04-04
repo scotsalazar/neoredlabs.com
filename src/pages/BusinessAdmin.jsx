@@ -50,7 +50,7 @@ const BusinessAdmin = () => {
       const payload = await fetchAdminBusinessPosts(adminToken);
       setPosts(payload.posts || []);
     } catch (err) {
-      setError(err?.message || 'Unable to load admin business posts.');
+      setError(err?.message || 'Unable to load admin latest posts.');
     } finally {
       setLoading(false);
     }
@@ -125,22 +125,22 @@ const BusinessAdmin = () => {
     try {
       if (editingId) {
         await updateBusinessPost(editingId, payload, token);
-        setMessage('Business post updated.');
+        setMessage('Latest post updated.');
       } else {
         await createBusinessPost(payload, token);
-        setMessage('Business post created.');
+        setMessage('Latest post created.');
       }
       resetForm();
       await loadPosts(token);
     } catch (err) {
-      setError(err?.message || 'Unable to save business post.');
+      setError(err?.message || 'Unable to save latest post.');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (typeof window !== 'undefined' && !window.confirm('Delete this business post?')) {
+    if (typeof window !== 'undefined' && !window.confirm('Delete this latest post?')) {
       return;
     }
 
@@ -151,17 +151,17 @@ const BusinessAdmin = () => {
       if (editingId === id) {
         resetForm();
       }
-      setMessage('Business post deleted.');
+      setMessage('Latest post deleted.');
       await loadPosts(token);
     } catch (err) {
-      setError(err?.message || 'Unable to delete business post.');
+      setError(err?.message || 'Unable to delete latest post.');
     }
   };
 
   return (
     <Layout
-      title="Business Admin | NeoLabs"
-      description="Internal business post management for NeoLabs."
+      title="Latest Admin | NeoLabs"
+      description="Internal latest post management for NeoLabs."
     >
       <section className="bg-page-muted">
         <div className="section-container py-16">
@@ -169,9 +169,9 @@ const BusinessAdmin = () => {
             <div className="surface-panel p-8">
               <div className="space-y-4">
                 <p className="eyebrow">Internal admin</p>
-                <h1 className="text-3xl font-semibold tracking-tight text-ink-strong">Manage Business posts</h1>
+                <h1 className="text-3xl font-semibold tracking-tight text-ink-strong">Manage Latest posts</h1>
                 <p className="text-sm leading-7 text-copy">
-                  Use this page to keep the Business section historical in SQLite rather than hardcoded locally. If `ADMIN_API_TOKEN` is configured on the server, enter it below.
+                  Use this page to keep the Latest section historical in SQLite rather than hardcoded locally. If `ADMIN_API_TOKEN` is configured on the server, enter it below.
                 </p>
               </div>
 
@@ -224,7 +224,7 @@ const BusinessAdmin = () => {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">History</p>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink-strong">Saved business posts</h2>
+                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink-strong">Saved latest posts</h2>
                 </div>
                 {loading && <p className="text-sm text-copy">Loading...</p>}
               </div>

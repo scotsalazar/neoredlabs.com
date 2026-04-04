@@ -23,18 +23,71 @@ const normalizePath = (path) => {
     : normalized || '/';
 };
 
-const matchPath = (routePath, currentPathname, { end = true } = {}) => {
-  if (!routePath) return false;
-  if (routePath === '*') return true;
+const shallowEqualObject = (left, right) => {
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+
+  if (leftKeys.length !== rightKeys.length) {
+    return false;
+  }
+
+  return leftKeys.every((key) => left[key] === right[key]);
+};
+
+const getPathMatch = (routePath, currentPathname, { end = true } = {}) => {
+  if (!routePath) return null;
+  if (routePath === '*') {
+    return { params: {} };
+  }
 
   const normalizedRoute = normalizePath(routePath);
   const normalizedCurrent = normalizePath(currentPathname);
+  const routeSegments = normalizedRoute.split('/').filter(Boolean);
+  const currentSegments = normalizedCurrent.split('/').filter(Boolean);
 
-  if (end) {
-    return normalizedRoute === normalizedCurrent;
+  if (!routeSegments.some((segment) => segment.startsWith(':'))) {
+    if (end) {
+      return normalizedRoute === normalizedCurrent ? { params: {} } : null;
+    }
+
+    return normalizedCurrent === normalizedRoute || normalizedCurrent.startsWith(`${normalizedRoute}/`)
+      ? { params: {} }
+      : null;
   }
 
-  return normalizedCurrent === normalizedRoute || normalizedCurrent.startsWith(`${normalizedRoute}/`);
+  if (end && routeSegments.length !== currentSegments.length) {
+    return null;
+  }
+
+  if (!end && routeSegments.length > currentSegments.length) {
+    return null;
+  }
+
+  const params = {};
+
+  for (let index = 0; index < routeSegments.length; index += 1) {
+    const routeSegment = routeSegments[index];
+    const currentSegment = currentSegments[index];
+
+    if (routeSegment?.startsWith(':')) {
+      if (!currentSegment) {
+        return null;
+      }
+
+      params[routeSegment.slice(1)] = decodeURIComponent(currentSegment);
+      continue;
+    }
+
+    if (routeSegment !== currentSegment) {
+      return null;
+    }
+  }
+
+  return { params };
+};
+
+const matchPath = (routePath, currentPathname, options) => {
+  return Boolean(getPathMatch(routePath, currentPathname, options));
 };
 
 const useRouterContext = (componentName) => {
@@ -49,6 +102,7 @@ const useRouterContext = (componentName) => {
 
 export const BrowserRouter = ({ children }) => {
   const [location, setLocation] = useState(() => getLocationSnapshot());
+  const [params, setParams] = useState({});
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -82,22 +136,31 @@ export const BrowserRouter = ({ children }) => {
     setLocation(getLocationSnapshot());
   }, []);
 
+  const syncParams = useCallback((nextParams) => {
+    setParams((currentParams) => (
+      shallowEqualObject(currentParams, nextParams) ? currentParams : nextParams
+    ));
+  }, []);
+
   const contextValue = useMemo(
     () => ({
       location,
-      navigate
+      navigate,
+      params,
+      setParams: syncParams
     }),
-    [location, navigate]
+    [location, navigate, params, syncParams]
   );
 
   return <RouterContext.Provider value={contextValue}>{children}</RouterContext.Provider>;
 };
 
 export const Routes = ({ children }) => {
-  const { location } = useRouterContext('Routes');
+  const { location, setParams } = useRouterContext('Routes');
   const childArray = React.Children.toArray(children);
 
   let elementToRender = null;
+  let matchedParams = {};
 
   childArray.some((child) => {
     if (!React.isValidElement(child)) {
@@ -108,16 +171,24 @@ export const Routes = ({ children }) => {
 
     if (index && matchPath('/', location.pathname)) {
       elementToRender = element;
+      matchedParams = {};
       return true;
     }
 
-    if (matchPath(path, location.pathname, { end: end !== undefined ? end : true })) {
+    const matchedRoute = getPathMatch(path, location.pathname, { end: end !== undefined ? end : true });
+
+    if (matchedRoute) {
       elementToRender = element;
+      matchedParams = matchedRoute.params;
       return true;
     }
 
     return false;
   });
+
+  useEffect(() => {
+    setParams(matchedParams);
+  }, [matchedParams, setParams]);
 
   return elementToRender;
 };
@@ -196,6 +267,11 @@ export const useNavigate = () => {
   return navigate;
 };
 
+export const useParams = () => {
+  const { params } = useRouterContext('useParams');
+  return params;
+};
+
 export default {
   BrowserRouter,
   Routes,
@@ -203,5 +279,6 @@ export default {
   Link,
   NavLink,
   useLocation,
-  useNavigate
+  useNavigate,
+  useParams
 };

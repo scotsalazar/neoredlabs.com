@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { useTheme } from './ThemeProvider.jsx';
 
 const navLinks = [
-  { label: 'Business', to: '/business' },
+  { label: 'Latest', to: '/latest' },
   { label: 'Services', to: '/services' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'About', to: '/about' },

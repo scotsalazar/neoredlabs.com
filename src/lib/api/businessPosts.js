@@ -44,7 +44,7 @@ async function parseResponseBody(response) {
   }
 
   if (!contentType.includes('application/json')) {
-    throw buildError('Business feed is unavailable right now.', {
+    throw buildError('Latest feed is unavailable right now.', {
       code: 'NON_JSON_RESPONSE',
       preview: rawText.slice(0, 120)
     });
@@ -53,7 +53,7 @@ async function parseResponseBody(response) {
   try {
     return JSON.parse(rawText);
   } catch (error) {
-    throw buildError('Business feed returned invalid JSON.', {
+    throw buildError('Latest feed returned invalid JSON.', {
       code: 'INVALID_JSON',
       preview: rawText.slice(0, 120)
     });

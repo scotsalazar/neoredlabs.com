@@ -3,7 +3,7 @@ import React from 'react';
 const footerLinks = [
   { label: 'Services', href: '/services' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Business', href: '/business' },
+  { label: 'Latest', href: '/latest' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];

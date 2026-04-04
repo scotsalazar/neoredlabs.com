@@ -5,6 +5,7 @@ import BusinessAdmin from './pages/BusinessAdmin.jsx';
 import Careers from './pages/Careers.jsx';
 import Contact from './pages/Contact';
 import Home from './pages/Home.jsx';
+import LatestPost from './pages/LatestPost.jsx';
 import Pricing from './pages/Pricing.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import ReleaseNotes from './pages/ReleaseNotes.jsx';
@@ -14,7 +15,10 @@ import TermsOfService from './pages/TermsOfService.jsx';
 const App = () => (
   <Routes>
     <Route path="/" element={<Home />} />
+    <Route path="/latest" element={<ReleaseNotes />} />
+    <Route path="/latest/:slug" element={<LatestPost />} />
     <Route path="/business" element={<ReleaseNotes />} />
+    <Route path="/business/:slug" element={<LatestPost />} />
     <Route path="/release-notes" element={<ReleaseNotes />} />
     <Route path="/admin/business" element={<BusinessAdmin />} />
     <Route path="/services" element={<Services />} />

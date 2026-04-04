@@ -1,47 +1,55 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import Layout from '../components/Layout.jsx';
 import ContactForm from '../components/ContactForm';
-import GradientSection from '../components/GradientSection.jsx';
 
 const Contact = (): JSX.Element => (
   <Layout
     title="Contact Us | NeoLabs"
-    description="Partner with NeoLabs for enterprise software, AI, and automation initiatives."
+    description="Contact NeoLabs to discuss your app development, automation, integration, or enterprise delivery requirements."
   >
-    <GradientSection className="py-24">
-      <div className="section-container max-w-3xl">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="space-y-12 text-center"
-        >
+    <section className="bg-white">
+      <div className="section-container py-20">
+        <div className="grid gap-12 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
+          <div className="space-y-5">
+            <p className="eyebrow">Contact Us</p>
+            <h1 className="section-title">Tell us what you need to build, improve, or modernize.</h1>
+            <p className="lede">
+              Whether you already know your package fit or you need help shaping the right rollout, NeoLabs can help map the next step clearly.
+            </p>
+
+            <div className="grid gap-4 pt-2">
+              <article className="surface-panel p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Best for</p>
+                <p className="mt-3 text-base leading-7 text-slate-600">SMEs, scaling businesses, enterprise teams, and government-oriented delivery needs.</p>
+              </article>
+              <article className="surface-panel p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Useful details to share</p>
+                <p className="mt-3 text-base leading-7 text-slate-600">Preferred package, workflow complexity, integrations, timeline, users, and deployment expectations.</p>
+              </article>
+              <article className="surface-panel p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Direct contact</p>
+                <p className="mt-3 text-base leading-7 text-slate-600">
+                  <a className="font-semibold text-slate-900 hover:text-primary" href="mailto:info@neolabs.com">info@neolabs.com</a>
+                  <span className="mx-2 text-slate-300">•</span>
+                  <span>+63 906-437-0420</span>
+                </p>
+              </article>
+            </div>
+          </div>
+
           <div className="space-y-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">NeoLabs Partnerships</p>
-            <h1 className="text-4xl font-semibold text-light sm:text-5xl">Contact our Team</h1>
-            <p className="mx-auto max-w-2xl text-base leading-relaxed text-light/80">
-              Whether you're exploring digital transformation, AI automation, or custom app solutions, our NeoLabs team is
-              ready to collaborate. Share your details and our consultants will reach out to discuss how we can empower your
-              business.
-            </p>
+            <div className="surface-panel overflow-hidden">
+              <img
+                src="/illustrations/service-support.svg"
+                alt="NeoLabs coordinating client delivery and software consultations"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <ContactForm />
           </div>
-
-          <ContactForm />
-
-          <div className="space-y-4 text-left text-light/70">
-            <h2 className="text-lg font-semibold text-light">Need something else?</h2>
-            <p>
-              Prefer a direct introduction? Reach us at{' '}
-              <a className="text-primary hover:underline" href="mailto:info@neoredlabs.com">
-                info@neoredlabs.com
-              </a>{' '}
-              and a NeoLabs consultant will respond within one business day.
-            </p>
-          </div>
-        </motion.div>
+        </div>
       </div>
-    </GradientSection>
+    </section>
   </Layout>
 );
 

@@ -1,25 +1,21 @@
-/**
- * TailwindCSS configuration for the revamped NeoLabs site.
- *
- * We adopt a dark theme by default and extend the colour palette
- * with neon and emerald greens for vibrant accents.  Custom
- * font families are defined for body copy and headings.
- */
 module.exports = {
-  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        dark: '#010a13',      // primary background colour
-        light: '#f8fafc',     // fallback light colour (unused but kept)
-        primary: '#00E676',   // neon green used for CTAs and highlights
-        secondary: '#34D399', // emerald green for secondary accents
-        accent: '#6EE7B7'     // mint accent for subtle highlights
+        dark: '#0D1B2A',
+        light: '#F8FAFC',
+        primary: '#168B80',
+        secondary: '#6FD3C6',
+        accent: '#E2F3EF'
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-        display: ['Space Grotesk', 'Inter', 'ui-sans-serif', 'system-ui'],
-        heading: ['Space Grotesk', 'Inter', 'ui-sans-serif', 'system-ui']
+        sans: ['Manrope', 'ui-sans-serif', 'system-ui'],
+        display: ['Newsreader', 'Georgia', 'serif'],
+        heading: ['Manrope', 'ui-sans-serif', 'system-ui']
+      },
+      boxShadow: {
+        soft: '0 30px 80px rgba(15, 23, 42, 0.08)'
       }
     }
   },

@@ -1,73 +1,68 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import heroImage from '../assets/images/new-hero-banner.webp';
-
-const containerVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { staggerChildren: 0.15, ease: 'easeOut' }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
 
 const Hero = () => (
-  <motion.section
-    className="relative flex min-h-[72vh] items-center justify-center overflow-hidden"
-    variants={containerVariants}
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true, amount: 0.3 }}
-  >
-    <motion.img
-      src={heroImage}
-      alt="NeoLabs platform overview"
-      width={1536}
-      height={1024}
-      fetchpriority="high"
-      loading="eager"
-      decoding="async"
-      className="absolute inset-0 h-full w-full object-cover"
-      variants={itemVariants}
+  <section className="relative overflow-hidden bg-slate-950 text-white">
+    <img
+      src="/illustrations/hero-ph-software.svg"
+      alt="NeoLabs building modern business software for Philippine companies"
+      className="absolute inset-0 h-full w-full object-cover opacity-80"
     />
+    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,16,27,0.88)_0%,rgba(9,16,27,0.72)_42%,rgba(9,16,27,0.32)_100%)]" />
 
-    <motion.div
-      className="absolute inset-0 bg-black/70"
-      aria-hidden="true"
-      variants={itemVariants}
-    />
-
-    <motion.div className="relative z-10 section-container text-center" variants={itemVariants}>
-      <motion.h1
-        className="text-4xl font-heading font-bold text-light md:text-6xl"
-        variants={itemVariants}
+    <div className="section-container relative flex min-h-[calc(100svh-6rem)] items-center py-16 lg:min-h-[760px]">
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+        className="max-w-3xl space-y-7"
       >
-        Power your Business with Modern and Agentic Solutions
-      </motion.h1>
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-slate-200">
+          NeoLabs
+          <span className="h-1.5 w-1.5 rounded-full bg-secondary" aria-hidden />
+          Built in the Philippines
+        </span>
 
-      <motion.p
-        className="mx-auto mt-4 max-w-2xl text-base text-light/80 md:text-lg"
-        variants={itemVariants}
-      >
-        Accelerate growth with tailored AI agents, automation, and modern solutions built for today&apos;s businesses.
-      </motion.p>
+        <div className="space-y-5">
+          <p className="font-display text-6xl font-semibold leading-none tracking-tight text-white sm:text-7xl">
+            NeoLabs
+          </p>
+          <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
+            Modern app development for businesses that need better systems, not more friction.
+          </h1>
+        </div>
 
-      <motion.div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row" variants={itemVariants}>
-        <Link to="/contact#schedule-call" className="btn-primary" aria-label="Schedule a Call">
-          Schedule a Call
-        </Link>
-        <Link to="/business" className="btn-primary bg-secondary text-dark" aria-label="Latest Updates">
-          Latest Updates
-        </Link>
+        <p className="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+          We design and deliver premium business apps, automation, AI-enabled workflows, and operational systems for SMEs, scaling teams, and enterprise environments.
+        </p>
+
+        <div className="flex flex-wrap gap-4">
+          <Link to="/contact" className="btn-primary">
+            Schedule a consultation
+          </Link>
+          <Link to="/pricing" className="btn-secondary border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+            View pricing guide
+          </Link>
+        </div>
+
+        <div className="grid gap-4 pt-3 text-sm text-slate-300 sm:grid-cols-3">
+          <div className="border-l border-white/15 pl-4">
+            <p className="text-white">Company-owned delivery</p>
+            <p className="mt-1 text-slate-400">Practical systems, executive clarity, accountable execution.</p>
+          </div>
+          <div className="border-l border-white/15 pl-4">
+            <p className="text-white">Fair premium pricing</p>
+            <p className="mt-1 text-slate-400">Structured packages with room to scale by complexity.</p>
+          </div>
+          <div className="border-l border-white/15 pl-4">
+            <p className="text-white">Philippine-based partner</p>
+            <p className="mt-1 text-slate-400">Built for local operating realities and modern growth.</p>
+          </div>
+        </div>
       </motion.div>
-    </motion.div>
-  </motion.section>
+    </div>
+  </section>
 );
 
 export default Hero;

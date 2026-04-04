@@ -1,100 +1,229 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
-import GradientSection from '../components/GradientSection.jsx';
 
-const pricingOptions = [
+const packages = [
   {
-    name: 'Starter Sprint',
-    description: 'Best for teams validating one workflow, one integration path, or one high-friction process.',
-    price: 'Starts at project scope',
+    name: 'Free Trial',
+    price: 'Concept preview',
+    positioning: 'Best for showing the concept before a paid rollout.',
     points: [
-      'Discovery, workflow mapping, and delivery plan',
-      'One focused automation or app module',
-      'Launch support with handoff documentation',
+      'Basic branded setup',
+      'Simple feature preview',
+      'Personalized for initial use case',
+      'Limited revisions',
+      'Support upon availability',
     ],
   },
   {
-    name: 'Growth Build',
-    description: 'Best for businesses modernizing multiple processes with custom apps, AI, and integrations.',
-    price: 'Custom proposal',
+    name: 'Starter',
+    price: 'PHP 3,500 - 5,000',
+    positioning: 'Best for SMEs that need a working operational app.',
     points: [
-      'Multi-step automations and connected systems',
-      'Operational dashboards, alerts, and reporting',
-      'Weekly progress reviews with staged rollouts',
+      'Admin control page',
+      'Web and mobile version',
+      'Login / user access',
+      'CRUD availability',
+      'Basic dashboards and forms',
+      '24/7 support',
     ],
   },
   {
-    name: 'Ongoing Partnership',
-    description: 'Best for teams that want a long-term product and automation partner instead of adding headcount.',
-    price: 'Monthly engagement',
+    name: 'Growth',
+    price: 'PHP 6,000 - 12,000',
+    positioning: 'Best for scaling businesses that want efficiency and automation.',
     points: [
-      'Continuous improvements and roadmap support',
-      'Monitoring, optimization, and issue response',
-      'Strategic guidance across product, ops, and AI delivery',
+      'Modern UI/UX',
+      'Improved security setup',
+      'App integrations',
+      'AI features',
+      'Automations',
+      'Email workflows',
+      'Approval flows and notifications',
     ],
   },
+  {
+    name: 'Scale',
+    price: 'PHP 20,000+',
+    positioning: 'Best for government and large businesses that require compliance, scale, and reliability.',
+    points: [
+      'Role-based access and permissions',
+      'Audit trails and activity logs',
+      'Large data handling',
+      'Multi-department workflows',
+      'API integrations across systems',
+      'Advanced reporting',
+      'Backup and recovery planning',
+      'Performance optimization',
+      'Security hardening',
+      'Deployment readiness for mission-critical use',
+    ],
+  }
+];
+
+const scaleDifferentiators = [
+  {
+    title: 'Security',
+    description: 'Stronger access controls, approval layers, audit logs, data protection, and tighter deployment practices.',
+  },
+  {
+    title: 'Scalability',
+    description: 'Designed for larger user bases, heavier data volume, more transactions, and multiple departments.',
+  },
+  {
+    title: 'Reliability',
+    description: 'Built for stable operations with monitoring, backup plans, recovery readiness, and reduced downtime risk.',
+  },
+  {
+    title: 'Integration',
+    description: 'Can connect with internal systems, third-party services, government tools, CRMs, ERPs, and reporting platforms.',
+  },
+  {
+    title: 'Governance',
+    description: 'A better fit for organizations needing traceability, process control, accountability, and compliance-aware workflows.',
+  }
+];
+
+const pricingGuide = [
+  ['Starter', 'PHP 3,500 - 5,000', 'Entry package for basic business apps'],
+  ['Growth', 'PHP 6,000 - 12,000', 'Value package for automation and smarter workflows'],
+  ['Scale', 'PHP 20,000+', 'Enterprise-grade delivery based on scope, security, and data volume'],
 ];
 
 const Pricing = () => (
   <Layout
     title="Pricing | NeoLabs"
-    description="Flexible NeoLabs pricing for custom apps, automations, AI agents, and operational support."
+    description="Explore NeoLabs pricing for Free Trial, Starter, Growth, and Scale app development packages."
   >
-    <GradientSection className="py-20 md:py-24">
-      <div className="section-container space-y-12">
-        <header className="max-w-4xl space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Pricing</p>
-          <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl">
-            Flexible pricing for custom builds and ongoing support
-          </h1>
-          <p className="max-w-3xl text-lg leading-relaxed text-light/80">
-            Most NeoLabs work is scoped around your actual workflows, systems, and outcomes, so we keep pricing simple:
-            start with the right engagement shape, then tailor the build around your team.
-          </p>
-        </header>
+    <section className="bg-white">
+      <div className="section-container py-20">
+        <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+          <div className="space-y-5">
+            <p className="eyebrow">Pricing</p>
+            <h1 className="section-title">Structured packages for businesses that want premium work with clearer commercial fit.</h1>
+            <p className="lede">
+              Each tier increases in scope, security, integration depth, and operational readiness. That makes it easier to match the right offer to business size, complexity, and delivery risk.
+            </p>
+          </div>
+          <div className="surface-panel overflow-hidden">
+            <img
+              src="/illustrations/service-custom-apps.svg"
+              alt="NeoLabs pricing and package overview for modern business app development"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <section className="grid gap-6 lg:grid-cols-3">
-          {pricingOptions.map((option) => (
-            <article
-              key={option.name}
-              className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-xl backdrop-blur-sm"
-            >
+    <section className="bg-slate-100">
+      <div className="section-container py-20">
+        <div className="grid gap-6 lg:grid-cols-2">
+          {packages.map((item) => (
+            <article key={item.name} className="surface-panel p-8">
               <div className="space-y-4">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary/90">{option.name}</p>
-                  <p className="mt-3 text-2xl font-semibold text-light">{option.price}</p>
+                <div className="flex flex-wrap items-end justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">{item.name}</p>
+                    <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{item.price}</p>
+                  </div>
+                  <p className="max-w-xs text-sm leading-6 text-slate-500">{item.positioning}</p>
                 </div>
-                <p className="text-base leading-relaxed text-light/80">{option.description}</p>
+                <ul className="space-y-3 text-sm leading-7 text-slate-600 sm:text-base">
+                  {item.points.map((point) => (
+                    <li key={point} className="flex gap-3">
+                      <span className="mt-2 h-2 w-2 rounded-full bg-primary" aria-hidden />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <ul className="mt-6 space-y-3 text-sm leading-relaxed text-light/85">
-                {option.points.map((point) => (
-                  <li key={point} className="flex gap-3">
-                    <span className="mt-2 h-[6px] w-[6px] rounded-full bg-primary" aria-hidden />
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
             </article>
           ))}
-        </section>
+        </div>
+      </div>
+    </section>
 
-        <section className="flex flex-col gap-5 rounded-3xl border border-white/10 bg-black/20 p-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-light/60">Need an exact quote?</p>
-            <h2 className="text-2xl font-semibold text-light sm:text-3xl">Let&apos;s scope the right starting point together.</h2>
-            <p className="max-w-2xl text-base leading-relaxed text-light/80">
-              Share your workflows, bottlenecks, and goals and we&apos;ll recommend the fastest path to a real business outcome.
+    <section className="bg-white">
+      <div className="section-container py-20">
+        <div className="space-y-8">
+          <div className="max-w-2xl space-y-4">
+            <p className="eyebrow">Monthly pricing guide</p>
+            <h2 className="section-title">Commercially simpler pricing for the first conversation.</h2>
+          </div>
+
+          <div className="surface-panel overflow-hidden">
+            <div className="grid grid-cols-1 border-b border-slate-200 bg-slate-950 px-6 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-200 md:grid-cols-[0.9fr_0.8fr_1.3fr]">
+              <span>Package</span>
+              <span>Price range</span>
+              <span>Commercial intent</span>
+            </div>
+            {pricingGuide.map((row) => (
+              <div key={row[0]} className="grid grid-cols-1 gap-2 border-b border-slate-200 px-6 py-5 text-sm text-slate-600 last:border-b-0 md:grid-cols-[0.9fr_0.8fr_1.3fr] md:gap-6 md:text-base">
+                <span className="font-semibold text-slate-900">{row[0]}</span>
+                <span>{row[1]}</span>
+                <span>{row[2]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="bg-slate-100">
+      <div className="section-container py-20">
+        <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+          <div className="space-y-4">
+            <p className="eyebrow">Scale package</p>
+            <h2 className="section-title">What makes a Scale app different.</h2>
+            <p className="lede">
+              Scale projects are different because the operating risk is different. Security, governance, performance, and system reliability matter more as complexity and organizational stakes rise.
             </p>
           </div>
 
-          <Link to="/contact" className="btn-primary">
-            Contact Us
-          </Link>
-        </section>
+          <div className="grid gap-5">
+            {scaleDifferentiators.map((item) => (
+              <article key={item.title} className="surface-panel p-7">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">{item.title}</p>
+                <p className="mt-3 text-base leading-7 text-slate-600">{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
-    </GradientSection>
+    </section>
+
+    <section className="bg-white">
+      <div className="section-container py-20">
+        <div className="grid gap-6 rounded-[2rem] border border-slate-200 bg-slate-950 p-8 text-white lg:grid-cols-[0.95fr_1.05fr] lg:p-12">
+          <div className="space-y-4">
+            <p className="eyebrow border-white/10 bg-white/5 text-slate-200">Deployment & hosting</p>
+            <h2 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+              Production setup is priced according to operational responsibility.
+            </h2>
+          </div>
+
+          <div className="space-y-5 text-sm leading-7 text-slate-300 sm:text-base">
+            <p><span className="font-semibold text-white">Starter:</span> Deployment is an optional add-on depending on project scope and client requirements.</p>
+            <p><span className="font-semibold text-white">Growth:</span> Deployment may be included in the proposal or billed separately based on app complexity, third-party integrations, and support requirements.</p>
+            <p><span className="font-semibold text-white">Scale:</span> Deployment, infrastructure, security, backups, monitoring, and maintenance are quoted separately to match enterprise-grade requirements.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="bg-slate-100">
+      <div className="section-container py-20">
+        <div className="flex flex-col gap-6 rounded-[2rem] border border-slate-200 bg-white p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
+          <div className="max-w-2xl space-y-4">
+            <p className="eyebrow">Next step</p>
+            <h2 className="section-title">If you know your likely tier, we can scope the right version of it.</h2>
+            <p className="lede">Tell us your business goals, integrations, workflow complexity, and delivery timeline. We'll help shape the right package fit and rollout approach.</p>
+          </div>
+          <Link to="/contact" className="btn-primary">Request a quote</Link>
+        </div>
+      </div>
+    </section>
   </Layout>
 );
 

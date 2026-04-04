@@ -1,105 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/*
- * Global styles for the NeoLabs site.
- *
- * We enable a dark mode by default and keep typography on the
- * Tailwind-configured sans/display stacks for consistency.  Utility classes from Tailwind
- * handle the majority of styling, with a few custom classes defined
- * here to enforce consistent spacing, headings and button styling.
- */
+:root {
+  --page-surface: #f4f7fb;
+  --page-muted: #e8eef4;
+  --ink: #102033;
+  --copy: #5d697a;
+  --line: #d6e0e8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  @apply bg-dark text-light antialiased font-sans;
+  @apply bg-slate-50 font-sans text-slate-900 antialiased;
+  background:
+    radial-gradient(circle at top left, rgba(22, 139, 128, 0.08), transparent 28%),
+    linear-gradient(180deg, #f8fbfd 0%, #f1f5f9 100%);
+}
+
+a {
+  @apply transition-colors duration-200;
 }
 
 .section-container {
-  @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8;
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
 }
 
 .section-title {
-  @apply text-3xl md:text-4xl font-bold tracking-tight font-heading text-light;
+  @apply font-display text-4xl font-semibold leading-[1.02] tracking-tight text-slate-950 sm:text-5xl;
+}
+
+.eyebrow {
+  @apply inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.26em] text-primary;
+}
+
+.lede {
+  @apply text-base leading-7 text-slate-600 sm:text-lg;
+}
+
+.surface-panel {
+  @apply rounded-[2rem] border border-slate-200/80 bg-white shadow-soft;
+}
+
+.subtle-divider {
+  @apply border-t border-slate-200/80;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 font-medium text-dark shadow-lg transition-colors duration-300 hover:bg-secondary hover:text-dark focus:outline-none;
+  @apply inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(15,23,42,0.18)] transition duration-300 hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-950/30;
 }
 
-/* Glassmorphism effect for containers like the navigation bar */
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition duration-300 hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300;
+}
+
 .glass {
-  @apply backdrop-blur-md bg-dark/70 border border-white/10;
-}
-:root {
-  --announcement-speed: 36s;
-}
-
-.announcement-track {
-  animation: announcement-scroll var(--announcement-speed) linear infinite;
-  width: max-content;
-  will-change: transform;
-}
-
-.announcement-segment {
-  flex: 0 0 auto;
-}
-
-.announcement-ticker:hover .announcement-track,
-.announcement-ticker:focus-within .announcement-track {
-  animation-play-state: paused;
-}
-
-@keyframes announcement-scroll {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (max-width: 640px) {
-  .announcement-ticker .section-container {
-    gap: 0.5rem;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-
-  .announcement-badge {
-    font-size: 10px;
-    padding: 0.2rem 0.45rem;
-  }
-
-  .announcement-item {
-    font-size: 0.75rem;
-  }
-
-  .announcement-separator {
-    font-size: 0.75rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .announcement-track {
-    animation: none;
-    transform: none;
-    width: 100%;
-    justify-content: flex-start;
-    white-space: normal;
-    will-change: auto;
-  }
-
-  .announcement-segment {
-    width: 100%;
-  }
-
-  .announcement-segment[aria-hidden='true'] {
-    display: none;
-  }
-
-  .announcement-separator {
-    display: none;
-  }
+  @apply border border-white/10 bg-slate-950/80 backdrop-blur-xl;
 }

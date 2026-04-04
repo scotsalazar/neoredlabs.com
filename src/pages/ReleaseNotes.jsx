@@ -1,146 +1,120 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout.jsx';
-import GradientSection from '../components/GradientSection.jsx';
-import workflowImage from '../assets/images/workflow.png';
-import dashboardImage from '../assets/images/product-erp.png';
-import analyticsImage from '../assets/images/revenue-dashboard.png';
-import partnershipImage from '../assets/images/about.png';
+import { fetchBusinessPost, fetchBusinessPosts } from '../lib/api/businessPosts.js';
 
-const BUSINESS_UPDATES = [
-  {
-    id: 'business-po-agent-release',
-    title: 'PO Agent v1.01 is active across daily order handling.',
-    category: 'latest update',
-    summary:
-      'We rolled out a more stable purchase-order automation flow with stronger monitoring, cleaner exception handling, and better delivery scheduling coverage for day-to-day operations.',
-    date: '2026-03-16',
-    image: workflowImage,
-    ctaLabel: 'Talk to the team',
-    ctaHref: '/contact',
-  },
-  {
-    id: 'business-dashboard-rollout',
-    title: 'Live reporting dashboards now surface finance and ops signals sooner.',
-    category: 'operations',
-    summary:
-      'Recent delivery work focused on real-time views for revenue, fulfillment, and team workload so clients can spot bottlenecks faster and act before they become expensive fire drills.',
-    date: '2026-03-05',
-    image: analyticsImage,
-    ctaLabel: 'View services',
-    ctaHref: '/services',
-  },
-  {
-    id: 'business-partnership-expansion',
-    title: 'Partnership conversations continue to expand delivery and support capacity.',
-    category: 'business',
-    summary:
-      'We are continuing to shape new operating partnerships around service coverage, delivery coordination, and shared systems so more businesses can run with fewer manual handoffs.',
-    date: '2026-02-24',
-    image: partnershipImage,
-    ctaLabel: 'Contact Us',
-    ctaHref: '/contact',
-  },
-];
+const ReleaseNotes = () => {
+  const [posts, setPosts] = useState([]);
+  const [featured, setFeatured] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-const humanDateFormatter = new Intl.DateTimeFormat('en-US', {
-  month: 'long',
-  day: 'numeric',
-  year: 'numeric',
-});
+  useEffect(() => {
+    let active = true;
 
-const ReleaseNotes = () => (
-  <Layout
-    title="Business | NeoLabs"
-    description="Latest NeoLabs business updates, launches, rollouts, and partnership milestones."
-  >
-    <GradientSection className="py-20 md:py-24">
-      <div className="section-container space-y-12">
-        <header className="max-w-4xl space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Business</p>
-          <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl">
-            Latest updates from NeoLabs
-          </h1>
-          <p className="max-w-3xl text-lg leading-relaxed text-light/80">
-            Follow recent launches, workflow improvements, reporting rollouts, and partnership progress in one place.
-          </p>
-        </header>
+    const load = async () => {
+      try {
+        setLoading(true);
+        const payload = await fetchBusinessPosts();
+        if (!active) return;
+        const nextPosts = payload.posts || [];
+        setPosts(nextPosts);
+        if (nextPosts[0]?.slug) {
+          const detail = await fetchBusinessPost(nextPosts[0].slug);
+          if (active) {
+            setFeatured(detail.post || nextPosts[0]);
+          }
+        }
+      } catch (err) {
+        if (active) {
+          setError(err?.message || 'Unable to load business updates right now.');
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
 
-        <section className="grid gap-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-xl backdrop-blur-sm lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-8">
-          <div className="space-y-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-light/65">Featured post</p>
-            <h2 className="text-3xl font-semibold leading-tight text-white sm:text-4xl">
-              Modern systems, current rollouts, and practical AI progress.
-            </h2>
-            <p className="max-w-2xl text-base leading-relaxed text-light/80 sm:text-lg">
-              This page now carries the homepage latest-updates path so visitors can move directly from the main hero into live business progress.
-            </p>
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-primary/40 bg-primary/10 px-6 py-3 text-sm font-semibold text-primary transition hover:border-primary/60 hover:bg-primary/15"
-            >
-              Schedule a call
-            </a>
+    load();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <Layout
+      title="Business | NeoLabs"
+      description="Follow NeoLabs business updates, releases, rollouts, and company transition notes."
+    >
+      <section className="bg-white">
+        <div className="section-container py-20">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="space-y-5">
+              <p className="eyebrow">Business</p>
+              <h1 className="section-title">Company updates, release notes, and operational milestones.</h1>
+              <p className="lede">
+                Business is where NeoLabs keeps historical updates about platform rollouts, reporting improvements, and company-level transition notes such as the IAM update.
+              </p>
+            </div>
+
+            <div className="surface-panel overflow-hidden">
+              <img
+                src={featured?.imageUrl || '/illustrations/business-dashboard-rollout.svg'}
+                alt={featured?.title || 'NeoLabs business updates'}
+                className="h-full w-full object-cover"
+              />
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30 p-2">
-            <img
-              src={dashboardImage}
-              alt="NeoLabs business update overview"
-              className="aspect-[16/10] w-full rounded-[1.25rem] object-cover"
-            />
-          </div>
-        </section>
+      <section className="bg-slate-100">
+        <div className="section-container py-20">
+          {loading && <p className="text-base text-slate-600">Loading business updates...</p>}
+          {error && <p className="text-base text-red-500">{error}</p>}
 
-        <section className="space-y-6" aria-labelledby="business-updates-heading">
-          <h2 id="business-updates-heading" className="text-2xl font-semibold tracking-tight text-light">
-            Recent updates
-          </h2>
-
-          <ul className="space-y-6" aria-label="NeoLabs business updates">
-            {BUSINESS_UPDATES.map((entry) => (
-              <li key={entry.id} className="list-none">
-                <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm md:flex-row md:min-h-[320px]">
-                  <img
-                    src={entry.image}
-                    alt={entry.title}
-                    className="h-56 w-full object-cover md:h-auto md:w-[38%] lg:w-[42%]"
-                    loading="lazy"
-                  />
-
-                  <div className="flex h-full flex-col gap-4 p-6">
-                    <div className="space-y-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/70">
-                        {entry.category}
-                      </p>
-                      <h3 className="text-2xl font-semibold leading-tight tracking-tight text-light">
-                        {entry.title}
-                      </h3>
-                      <p className="text-base leading-relaxed text-light/90">{entry.summary}</p>
+          {!loading && !error && featured && (
+            <article className="surface-panel overflow-hidden">
+              <div className="grid gap-0 lg:grid-cols-[1.02fr_0.98fr]">
+                <div className="p-8 lg:p-12">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Featured update</p>
+                  <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{featured.title}</h2>
+                  <p className="mt-4 text-sm uppercase tracking-[0.18em] text-slate-500">{featured.category} / {featured.publishedAtLabel}</p>
+                  <p className="mt-5 text-base leading-8 text-slate-600">{featured.summary}</p>
+                  {featured.content && (
+                    <div className="mt-6 space-y-4 text-sm leading-7 text-slate-600 sm:text-base">
+                      {featured.content.split('\n\n').map((paragraph) => (
+                        <p key={paragraph}>{paragraph}</p>
+                      ))}
                     </div>
+                  )}
+                </div>
+                <div className="h-full">
+                  <img src={featured.imageUrl} alt={featured.title} className="h-full w-full object-cover" />
+                </div>
+              </div>
+            </article>
+          )}
 
-                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-                      <time
-                        dateTime={entry.date}
-                        className="text-xs font-medium uppercase tracking-[0.16em] text-light/70"
-                      >
-                        {humanDateFormatter.format(new Date(entry.date))}
-                      </time>
-                      <a
-                        href={entry.ctaHref}
-                        className="rounded-md px-2 py-1 text-sm font-semibold text-secondary transition-colors hover:text-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-                      >
-                        {entry.ctaLabel}
-                      </a>
-                    </div>
+          {!loading && !error && posts.length > 1 && (
+            <div className="mt-10 grid gap-6 lg:grid-cols-2">
+              {posts.slice(1).map((post) => (
+                <article key={post.id} className="surface-panel overflow-hidden">
+                  <img src={post.imageUrl} alt={post.title} className="h-64 w-full object-cover" />
+                  <div className="p-7">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{post.category}</p>
+                    <h3 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">{post.title}</h3>
+                    <p className="mt-3 text-sm uppercase tracking-[0.18em] text-slate-500">{post.publishedAtLabel}</p>
+                    <p className="mt-4 text-base leading-7 text-slate-600">{post.summary}</p>
                   </div>
                 </article>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-    </GradientSection>
-  </Layout>
-);
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </Layout>
+  );
+};
 
 export default ReleaseNotes;

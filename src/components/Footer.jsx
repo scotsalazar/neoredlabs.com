@@ -1,137 +1,64 @@
 import React from 'react';
 
-/**
- * Footer component containing contact details and social links.
- *
- * Uses a gradient dark background and provides clear spacing.  Email
- * addresses use the neolabs.com domain to reflect the new branding.
- */
-const contactDetails = [
-  {
-    label: 'Address',
-    value: 'Makati City, Metro Manila, Philippines',
-    href: null
-  },
-  {
-    label: 'Email',
-    value: 'info@neolabs.com',
-    href: 'mailto:info@neolabs.com'
-  },
-  {
-    label: 'Phone',
-    value: '+63 906-437-0420',
-    href: 'tel:+639064370420'
-  }
+const footerLinks = [
+  { label: 'Services', href: '/services' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Business', href: '/business' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ];
 
-const socialLinks = [
-  {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/company/neolabs',
-    icon: (
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        fill="currentColor"
-      >
-        <path d="M4.983 3.5a2.5 2.5 0 1 1-.001 5.001 2.5 2.5 0 0 1 .001-5.001ZM3 9h3.968v12H3zM9.691 9h3.804v1.733h.054c.53-1.004 1.825-2.06 3.756-2.06 4.016 0 4.758 2.645 4.758 6.083V21H18V15.5c0-1.309-.024-2.993-1.824-2.993-1.827 0-2.107 1.43-2.107 2.902V21H9.691z" />
-      </svg>
-    )
-  },
-  {
-    label: 'X',
-    href: 'https://twitter.com/neolabs',
-    icon: (
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        fill="currentColor"
-      >
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.089-6.658-5.823 6.658H1.95l7.73-8.838L1.5 2.25h7.598l4.6 6.034 4.546-6.034Zm-1.161 18.31h1.833L7.045 4.072H5.077l12.006 16.488Z" />
-      </svg>
-    )
-  },
-  {
-    label: 'Facebook',
-    href: 'https://www.facebook.com/share/1H37s6GMVw/',
-    icon: (
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        fill="currentColor"
-      >
-        <path d="M13.5 9H16l.5-3h-3V4.5a1.5 1.5 0 0 1 1.5-1.5H16V0h-2.5A3.5 3.5 0 0 0 10 3.5V6H7.5v3H10v12h3.5z" />
-      </svg>
-    )
-  }
+const policyLinks = [
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms of Service', href: '/terms-of-service' },
 ];
 
 const Footer = () => (
-  <footer className="bg-gradient-to-r from-dark via-gray-900 to-black py-20 text-light">
-    <div className="section-container">
-      <div className="grid gap-12 md:grid-cols-2 md:items-start">
-        <div className="space-y-4 text-center md:text-left">
-          <h2 className="text-xl font-semibold font-heading">Get in touch</h2>
-          <address className="not-italic space-y-2 text-sm md:text-base">
-            {contactDetails.map((detail) => (
-              <div key={detail.label}>
-                <span className="font-medium">{detail.label}:</span>{' '}
-                {detail.href ? (
-                  <a
-                    href={detail.href}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {detail.value}
-                  </a>
-                ) : (
-                  <span>{detail.value}</span>
-                )}
-              </div>
-            ))}
-          </address>
-        </div>
-        <div className="space-y-4 text-center md:text-left">
-          <h2 className="text-xl font-semibold font-heading">Follow us</h2>
-          <div className="flex justify-center gap-4 md:justify-start">
-            {socialLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={`Visit NeoLabs on ${link.label}`}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-light transition-colors hover:bg-primary/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-dark"
-              >
-                <span className="sr-only">{link.label} social icon</span>
-                {link.icon}
-              </a>
-            ))}
+  <footer className="mt-20 bg-slate-950 text-slate-200">
+    <div className="section-container py-16">
+      <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+        <div className="space-y-4">
+          <p className="font-display text-3xl font-semibold text-white">NeoLabs</p>
+          <p className="max-w-lg text-sm leading-7 text-slate-400">
+            Modern app development, automation, integrations, and operational systems for Philippine businesses that need clarity, control, and reliable delivery.
+          </p>
+          <div className="space-y-1 text-sm text-slate-400">
+            <p>Makati City, Metro Manila, Philippines</p>
+            <a href="mailto:info@neolabs.com" className="hover:text-white">info@neolabs.com</a>
+            <p>+63 906-437-0420</p>
           </div>
         </div>
-      </div>
-      <div className="mt-12 space-y-4 border-t border-white/10 pt-6 text-center text-xs md:text-sm">
-        <p>
-          We respect your privacy. Any details you share are used solely for coordination and ongoing support.
-        </p>
-        <div className="flex flex-col items-center justify-center gap-2 text-light/80 md:flex-row md:gap-4">
-          <a
-            href="/privacy-policy"
-            className="hover:text-primary transition-colors"
-          >
-            Privacy Policy
-          </a>
-          <span className="hidden text-white/30 md:inline">|</span>
-          <a
-            href="/terms-of-service"
-            className="hover:text-primary transition-colors"
-          >
-            Terms of Service
+
+        <div className="space-y-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Company</p>
+          <ul className="space-y-3 text-sm text-slate-300">
+            {footerLinks.map((link) => (
+              <li key={link.label}>
+                <a href={link.href} className="hover:text-white">{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="space-y-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Policies</p>
+          <ul className="space-y-3 text-sm text-slate-300">
+            {policyLinks.map((link) => (
+              <li key={link.label}>
+                <a href={link.href} className="hover:text-white">{link.label}</a>
+              </li>
+            ))}
+          </ul>
+          <a href="/careers" className="inline-flex items-center gap-2 text-sm font-semibold text-secondary hover:text-white">
+            Careers
+            <span aria-hidden>→</span>
           </a>
         </div>
+      </div>
+
+      <div className="mt-12 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex sm:items-center sm:justify-between">
         <p>© {new Date().getFullYear()} NeoLabs. All rights reserved.</p>
+        <p className="mt-3 sm:mt-0">Professional delivery for SMEs, scaling teams, and enterprise operations.</p>
       </div>
     </div>
   </footer>

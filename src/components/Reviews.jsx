@@ -1,61 +1,40 @@
 import React from 'react';
-import logo1pls from '../assets/images/logo-1pls.png';
-import logoGPFresh from '../assets/images/logo-gpfresh.png';
-import logoKiapatApp from '../assets/images/8dbbfc73-2878-4538-8f5b-2f09dac70db2.png';
-import GradientSection from './GradientSection.jsx';
 
-
-/**
- * Testimonials section displaying succinct impact statements from
- * clients.  Each card features the client logo, their name and a
- * one‑sentence quote about the difference NeoLabs made.  Cards use a
- * semi‑transparent background to stand out against the dark page.
- */
 const testimonials = [
   {
     name: '1PLS Logistics Solutions',
-    logo: logo1pls,
-    quote:
-      'NeoLabs automated our supply chain analytics and cut report time by 70%.'
+    quote: 'NeoLabs helped tighten reporting and workflow visibility so our operations team could move faster with less manual follow-up.',
   },
   {
     name: 'GPFresh Inc.',
-    logo: logoGPFresh,
-    quote:
-      'Their AI chat agents handle 80% of customer inquiries, freeing our team to focus on growth.'
+    quote: 'Their team understood the business side, not just the code. The result felt like a system built around how we actually work.',
   },
   {
     name: 'Kiapat App',
-   logo: logoKiapatApp,
-    quote:
-      'The custom ERP dashboard built by NeoLabs transformed our inventory management.'
+    quote: 'The delivery approach was structured, responsive, and premium without being impractical. That balance mattered to us.',
   }
 ];
 
 const Reviews = () => (
-  <GradientSection className="py-20" id="reviews">
-    <div className="section-container">
-      <h2 className="text-center font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-        What Our Clients Say
-      </h2>
-      <div className="mt-12 grid gap-8 md:grid-cols-3">
-        {testimonials.map((test) => (
-          <article
-            key={test.name}
-            className="rounded-xl bg-white/5 p-8 text-center shadow-lg transition-transform duration-300 hover:-translate-y-2"
-          >
-            <img
-              src={test.logo}
-              alt={`${test.name} logo`}
-              className="mx-auto mb-4 h-14 w-auto object-contain filter grayscale opacity-70 transition hover:grayscale-0 hover:opacity-100"
-            />
-            <p className="text-base italic text-light/80">“{test.quote}”</p>
-            <p className="mt-4 font-medium text-light">{test.name}</p>
+  <section className="bg-slate-950 text-white">
+    <div className="section-container py-20">
+      <div className="max-w-2xl">
+        <p className="eyebrow border-white/10 bg-white/5 text-slate-200">Client perspective</p>
+        <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          The work should feel dependable, not experimental.
+        </h2>
+      </div>
+
+      <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        {testimonials.map((item) => (
+          <article key={item.name} className="flex h-full flex-col justify-between rounded-[1.75rem] border border-white/10 bg-white/5 p-8">
+            <p className="text-lg leading-8 text-slate-200">&ldquo;{item.quote}&rdquo;</p>
+            <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-secondary">{item.name}</p>
           </article>
         ))}
       </div>
     </div>
-  </GradientSection>
+  </section>
 );
 
 export default Reviews;

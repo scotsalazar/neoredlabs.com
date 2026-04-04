@@ -3,13 +3,16 @@ const path = require('node:path');
 const fs = require('node:fs');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
+const defaultBusinessPosts = require('./data/default-business-posts');
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const app = express();
 const prisma = new PrismaClient();
 app.locals.prisma = prisma;
+
 const jobsFilePath = path.join(__dirname, 'data', 'open-positions.json');
+const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN?.trim() || '';
 
 const DEFAULT_SLOTS = [
   { slot: '09:00', capacity: 5 },
@@ -23,36 +26,26 @@ const DEFAULT_SLOTS = [
 const SLOT_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIGRATIONS = [
+  {
+    table: 'SlotAvailability',
+    filePath: path.resolve(__dirname, '../prisma/migrations/20231109000000_init/migration.sql')
+  },
+  {
+    table: 'BusinessPost',
+    filePath: path.resolve(__dirname, '../prisma/migrations/20260404000100_business_posts/migration.sql')
+  }
+];
 
 app.use(express.json());
-
-app.get('/api/jobs', async (_req, res) => {
-  try {
-    const raw = await fs.promises.readFile(jobsFilePath, 'utf8');
-    const jobs = JSON.parse(raw);
-
-    const response = jobs.map((job) => ({
-      id: job.id,
-      title: job.title,
-      team: job.team,
-      location: job.location,
-      applyUrl: job.applyUrl,
-    }));
-
-    return res.json({ jobs: response });
-  } catch (error) {
-    console.error('Failed to load job openings', error);
-    return res.status(500).json({ error: 'Unable to load job openings' });
-  }
-});
 
 function parseDateOnly(dateStr) {
   if (typeof dateStr !== 'string' || !DATE_REGEX.test(dateStr)) {
     return null;
   }
+
   const [year, month, day] = dateStr.split('-').map(Number);
-  const utcDate = new Date(Date.UTC(year, month - 1, day));
-  return utcDate;
+  return new Date(Date.UTC(year, month - 1, day));
 }
 
 function startOfNextDay(date) {
@@ -61,6 +54,158 @@ function startOfNextDay(date) {
 
 function formatDateOnly(date) {
   return date.toISOString().slice(0, 10);
+}
+
+function formatDateLabel(date) {
+  if (!date) return '';
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(new Date(date));
+}
+
+function toBusinessPostResponse(post) {
+  return {
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    category: post.category,
+    summary: post.summary,
+    content: post.content,
+    imageUrl: post.imageUrl,
+    publishedAt: post.publishedAt,
+    publishedAtLabel: formatDateLabel(post.publishedAt),
+    isPublished: post.isPublished,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt
+  };
+}
+
+function slugify(value) {
+  return String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function parseOptionalDate(value) {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed;
+}
+
+function isAdminAuthorized(req) {
+  if (!ADMIN_TOKEN) {
+    return true;
+  }
+
+  return req.get('x-admin-token') === ADMIN_TOKEN;
+}
+
+function requireAdmin(req, res, next) {
+  if (!isAdminAuthorized(req)) {
+    return res.status(401).json({ error: 'Admin authorization failed.' });
+  }
+
+  return next();
+}
+
+function validateBusinessPostPayload(body, { partial = false } = {}) {
+  const errors = [];
+  const data = {};
+
+  const textFields = ['title', 'slug', 'category', 'summary', 'content', 'imageUrl'];
+  textFields.forEach((field) => {
+    const value = body?.[field];
+    if (value === undefined) {
+      if (!partial) {
+        errors.push(`${field} is required.`);
+      }
+      return;
+    }
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      errors.push(`${field} must be a non-empty string.`);
+      return;
+    }
+    data[field] = value.trim();
+  });
+
+  if (data.slug) {
+    data.slug = slugify(data.slug) || slugify(data.title);
+  } else if (data.title) {
+    data.slug = slugify(data.title);
+  }
+
+  if (!partial && !data.slug) {
+    errors.push('slug is required.');
+  }
+
+  if (body?.isPublished !== undefined) {
+    data.isPublished = Boolean(body.isPublished);
+  } else if (!partial) {
+    data.isPublished = true;
+  }
+
+  if (body?.publishedAt !== undefined) {
+    const parsedDate = parseOptionalDate(body.publishedAt);
+    if (body.publishedAt && !parsedDate) {
+      errors.push('publishedAt must be a valid ISO date.');
+    } else {
+      data.publishedAt = parsedDate;
+    }
+  } else if (!partial) {
+    data.publishedAt = new Date();
+  }
+
+  return {
+    errors,
+    data
+  };
+}
+
+function parseSqlStatements(sql) {
+  return sql
+    .split(';')
+    .map((statement) =>
+      statement
+        .split('\n')
+        .filter((line) => !line.trim().startsWith('--'))
+        .join('\n')
+        .trim()
+    )
+    .filter(Boolean);
+}
+
+async function tableExists(tableName) {
+  const result = await prisma.$queryRawUnsafe(
+    `SELECT name FROM sqlite_master WHERE type = 'table' AND name = '${tableName}' LIMIT 1;`
+  );
+
+  return Array.isArray(result) && result.length > 0;
+}
+
+async function applyMigrationFile(filePath) {
+  const sql = await fs.promises.readFile(filePath, 'utf8');
+  const statements = parseSqlStatements(sql);
+
+  for (const statement of statements) {
+    await prisma.$executeRawUnsafe(statement);
+  }
+}
+
+async function ensureDatabaseSchema() {
+  for (const migration of MIGRATIONS) {
+    const exists = await tableExists(migration.table);
+    if (!exists) {
+      await applyMigrationFile(migration.filePath);
+    }
+  }
 }
 
 async function ensureSlotsForDate(slotDate) {
@@ -110,6 +255,164 @@ async function loadSlotsWithCounts(slotDate) {
     }
   });
 }
+
+async function ensureDefaultBusinessPosts() {
+  for (const post of defaultBusinessPosts) {
+    const exists = await prisma.businessPost.findUnique({
+      where: { slug: post.slug }
+    });
+
+    if (!exists) {
+      await prisma.businessPost.create({
+        data: {
+          ...post,
+          publishedAt: post.publishedAt ? new Date(post.publishedAt) : null
+        }
+      });
+    }
+  }
+}
+
+app.get('/api/jobs', async (_req, res) => {
+  try {
+    const raw = await fs.promises.readFile(jobsFilePath, 'utf8');
+    const jobs = JSON.parse(raw);
+
+    const response = jobs.map((job) => ({
+      id: job.id,
+      title: job.title,
+      team: job.team,
+      location: job.location,
+      applyUrl: job.applyUrl,
+    }));
+
+    return res.json({ jobs: response });
+  } catch (error) {
+    console.error('Failed to load job openings', error);
+    return res.status(500).json({ error: 'Unable to load job openings' });
+  }
+});
+
+app.get('/api/business-posts', async (_req, res) => {
+  try {
+    const posts = await prisma.businessPost.findMany({
+      where: { isPublished: true },
+      orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }]
+    });
+
+    return res.json({ posts: posts.map(toBusinessPostResponse) });
+  } catch (error) {
+    console.error('Failed to load business posts', error);
+    return res.status(500).json({ error: 'Unable to load business posts' });
+  }
+});
+
+app.get('/api/business-posts/:slug', async (req, res) => {
+  try {
+    const post = await prisma.businessPost.findUnique({
+      where: { slug: req.params.slug }
+    });
+
+    if (!post || !post.isPublished) {
+      return res.status(404).json({ error: 'Business post not found.' });
+    }
+
+    return res.json({ post: toBusinessPostResponse(post) });
+  } catch (error) {
+    console.error('Failed to load business post', error);
+    return res.status(500).json({ error: 'Unable to load business post' });
+  }
+});
+
+app.get('/api/admin/business-posts', requireAdmin, async (_req, res) => {
+  try {
+    const posts = await prisma.businessPost.findMany({
+      orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }]
+    });
+    return res.json({ posts: posts.map(toBusinessPostResponse) });
+  } catch (error) {
+    console.error('Failed to load admin business posts', error);
+    return res.status(500).json({ error: 'Unable to load admin business posts' });
+  }
+});
+
+app.post('/api/admin/business-posts', requireAdmin, async (req, res) => {
+  const { errors, data } = validateBusinessPostPayload(req.body);
+
+  if (errors.length > 0) {
+    return res.status(400).json({ error: errors[0] });
+  }
+
+  try {
+    const existing = await prisma.businessPost.findUnique({
+      where: { slug: data.slug }
+    });
+
+    if (existing) {
+      return res.status(409).json({ error: 'A business post with that slug already exists.' });
+    }
+
+    const created = await prisma.businessPost.create({
+      data
+    });
+
+    return res.status(201).json({ post: toBusinessPostResponse(created) });
+  } catch (error) {
+    console.error('Failed to create business post', error);
+    return res.status(500).json({ error: 'Unable to create business post' });
+  }
+});
+
+app.put('/api/admin/business-posts/:id', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: 'Invalid business post id.' });
+  }
+
+  const { errors, data } = validateBusinessPostPayload(req.body, { partial: true });
+  if (errors.length > 0) {
+    return res.status(400).json({ error: errors[0] });
+  }
+
+  try {
+    const existing = await prisma.businessPost.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Business post not found.' });
+    }
+
+    if (data.slug && data.slug !== existing.slug) {
+      const slugTaken = await prisma.businessPost.findUnique({ where: { slug: data.slug } });
+      if (slugTaken) {
+        return res.status(409).json({ error: 'A business post with that slug already exists.' });
+      }
+    }
+
+    const updated = await prisma.businessPost.update({
+      where: { id },
+      data
+    });
+
+    return res.json({ post: toBusinessPostResponse(updated) });
+  } catch (error) {
+    console.error('Failed to update business post', error);
+    return res.status(500).json({ error: 'Unable to update business post' });
+  }
+});
+
+app.delete('/api/admin/business-posts/:id', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: 'Invalid business post id.' });
+  }
+
+  try {
+    await prisma.businessPost.delete({ where: { id } });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete business post', error);
+    return res.status(500).json({ error: 'Unable to delete business post' });
+  }
+});
 
 app.get('/api/available-slots', async (req, res) => {
   try {
@@ -236,9 +539,11 @@ const port = process.env.PORT || 4000;
 async function start() {
   try {
     await prisma.$connect();
+    await ensureDatabaseSchema();
+    await ensureDefaultBusinessPosts();
     app.locals.prisma = prisma;
     app.listen(port, () => {
-      console.log(`Appointments service listening on port ${port}`);
+      console.log(`NeoLabs API listening on port ${port}`);
     });
   } catch (error) {
     console.error('Failed to start server', error);
@@ -248,7 +553,7 @@ async function start() {
 
 function shutdown(signal) {
   return async () => {
-    console.log(`Received ${signal}. Closing appointments service.`);
+    console.log(`Received ${signal}. Closing NeoLabs API.`);
     await prisma.$disconnect().catch((err) => {
       console.error('Error disconnecting Prisma', err);
     });

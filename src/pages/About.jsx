@@ -1,93 +1,102 @@
 import React from 'react';
-import Layout from '../components/Layout.jsx';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import GradientSection from '../components/GradientSection.jsx';
+import Layout from '../components/Layout.jsx';
 
-/**
- * About page detailing NeoLabs' story, expertise, and mission.
- *
- * Content fades into view using Framer Motion for a subtle and
- * professional feel. Visitors are invited to connect with the team
- * through a clear call-to-action at the end of the page.
- */
+const commitments = [
+  'Professional delivery built around the reality of operations, not just the appearance of innovation.',
+  'Premium execution standards with fair package framing so scope and value are easier to understand.',
+  'A Philippine-based team that understands local business context while building for modern software expectations.',
+];
+
 const About = () => (
   <Layout
-    title="About NeoLabs | AI, Automation, and API-First Integrations"
-    description="NeoLabs helps SMEs and enterprises modernize with custom apps, AI-driven automation, and real-time API-first integrations. Based in the Philippines."
+    title="About NeoLabs | Philippines-Based App Development Company"
+    description="Learn about NeoLabs, a Philippines-based app development company delivering premium business apps, automation, integrations, and operational systems."
   >
-    <GradientSection
-      as={motion.section}
-      className="py-20"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      <div className="section-container space-y-16">
-        <div>
-          <h1 className="section-title">Who We Are</h1>
-          <p className="mt-6 text-lg leading-relaxed text-light/80">
-            NeoLabs is a technology company based in the Philippines that fuses
-            engineering excellence with business insight. We build intelligent,
-            automated software that accelerates growth and digital transformation.
-          </p>
-        </div>
-        <div>
-          <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Expertise</h2>
-          <ul className="mt-6 space-y-4 text-lg leading-relaxed text-light/80">
-            <li>
-              <strong className="text-light">Proven Leadership:</strong> With over <strong>30 years</strong> of success in
-              business development and operations, we guide organizations in building intelligent, scalable systems
-              powered by AI and innovation.
-            </li>
-            <li>
-              <strong className="text-light">Expert Engineering:</strong> Our team of seasoned engineers—adept in the latest
-              AI models, automation frameworks, and modern technologies—delivers end-to-end digital solutions that drive
-              efficiency, precision, and sustainable growth.
-            </li>
-            <li>
-              <strong className="text-light">Strategic Consultation:</strong> Our consultation-driven approach ensures every
-              solution is built around your business DNA. We work closely with you to design personalized, AI-enabled
-              systems that streamline operations, connect data, and future-proof your growth.
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Mission</h2>
-          <p className="mt-4 text-lg leading-relaxed text-light/80">
-            Empowering Filipino entrepreneurs and SMEs to evolve into future-ready businesses through personalized apps,
-            AI automation, and expert consultation—bridging the gap between traditional operations and intelligent,
-            data-driven growth.
-          </p>
-        </div>
-        <div>
-          <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Our Vision</h2>
-          <p className="mt-4 text-lg leading-relaxed text-light/80">
-            To shape a new generation of Filipino businesses that compete globally through digital empowerment, AI
-            integration, and continuous innovation.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-xl backdrop-blur">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-3 md:max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">Connect to the team</p>
-              <h2 className="text-2xl md:text-3xl font-heading font-semibold text-light">Let's build what's next together</h2>
-              <p className="text-base md:text-lg leading-relaxed text-light/80">
-                Share your challenges, your roadmap, or the spark of an idea. We'll pair you with strategists and engineers who
-                can translate ambition into delivery—whether that's AI automation, product launches, or tightening the systems
-                you already rely on.
-              </p>
-            </div>
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:scale-[1.02] hover:bg-primary/90"
-            >
-              Talk to the team
-            </Link>
+    <section className="bg-white">
+      <div className="section-container py-20">
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div className="space-y-5">
+            <p className="eyebrow">About NeoLabs</p>
+            <h1 className="section-title">A Philippine software company focused on practical modern systems.</h1>
+            <p className="lede">
+              NeoLabs exists to help businesses move from fragmented manual work into clearer, more modern app-driven operations. We build software that feels commercial, usable, and operationally grounded.
+            </p>
+          </div>
+
+          <div className="surface-panel overflow-hidden">
+            <img
+              src="/illustrations/service-support.svg"
+              alt="NeoLabs collaborating with clients on business systems and software delivery"
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       </div>
-    </GradientSection>
+    </section>
+
+    <section className="bg-slate-100">
+      <div className="section-container py-20">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1fr]">
+          <div className="space-y-5">
+            <p className="eyebrow">Who we serve</p>
+            <h2 className="section-title">Built for SMEs, scaling companies, and high-stakes business environments.</h2>
+            <p className="lede">
+              Our work spans custom internal apps, automation, workflow approvals, integrations, reporting, and operational tooling for teams that need more than a generic off-the-shelf solution.
+            </p>
+          </div>
+
+          <div className="grid gap-5">
+            {commitments.map((item) => (
+              <article key={item} className="surface-panel p-7">
+                <p className="text-base leading-7 text-slate-600">{item}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="bg-white">
+      <div className="section-container py-20">
+        <div className="grid gap-10 lg:grid-cols-3">
+          <article className="surface-panel p-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Mission</p>
+            <p className="mt-4 text-base leading-7 text-slate-600">
+              Help Philippine businesses modernize with better apps, clearer workflows, and systems that support real growth.
+            </p>
+          </article>
+          <article className="surface-panel p-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Approach</p>
+            <p className="mt-4 text-base leading-7 text-slate-600">
+              Translate operations into software deliberately, with structured scope, disciplined execution, and clear communication.
+            </p>
+          </article>
+          <article className="surface-panel p-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Positioning</p>
+            <p className="mt-4 text-base leading-7 text-slate-600">
+              Professional, premium, and fair. We are not positioned as the cheapest option, but as the right long-term systems partner.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section className="bg-slate-950 text-white">
+      <div className="section-container py-20">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl space-y-4">
+            <p className="eyebrow border-white/10 bg-white/5 text-slate-200">Work with NeoLabs</p>
+            <h2 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+              If the systems matter, the delivery partner should too.
+            </h2>
+          </div>
+          <Link to="/contact" className="btn-primary">
+            Talk to the team
+          </Link>
+        </div>
+      </div>
+    </section>
   </Layout>
 );
 

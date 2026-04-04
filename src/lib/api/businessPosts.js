@@ -1,6 +1,6 @@
 import fallbackPostsSource from '../../data/defaultBusinessPosts.js';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE = '/api';
 
 function buildError(message, details) {
   const error = new Error(message);

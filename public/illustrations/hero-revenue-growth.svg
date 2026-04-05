@@ -1,0 +1,91 @@
+<svg width="1400" height="1000" viewBox="0 0 1400 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="surface" x1="212" y1="124" x2="1170" y2="866" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCF8F1"/>
+      <stop offset="1" stop-color="#F3EEE6"/>
+    </linearGradient>
+    <linearGradient id="bar1" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#A8B6C8"/>
+      <stop offset="1" stop-color="#7D8EA3"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#C8AE77"/>
+      <stop offset="1" stop-color="#A98A4E"/>
+    </linearGradient>
+    <linearGradient id="bar3" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#D6A18E"/>
+      <stop offset="1" stop-color="#B97962"/>
+    </linearGradient>
+    <linearGradient id="bar4" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#9DB192"/>
+      <stop offset="1" stop-color="#74886A"/>
+    </linearGradient>
+    <linearGradient id="line" x1="318" y1="624" x2="1084" y2="284" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3E5566"/>
+      <stop offset="1" stop-color="#1F3445"/>
+    </linearGradient>
+    <filter id="softShadow" x="120" y="80" width="1160" height="840" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feOffset dy="20"/>
+      <feGaussianBlur stdDeviation="26"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.156863 0 0 0 0 0.184314 0 0 0 0 0.223529 0 0 0 0.08 0"/>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="1000" rx="44" fill="#EAE3D9"/>
+
+  <g filter="url(#softShadow)">
+    <rect x="170" y="118" width="1060" height="764" rx="36" fill="url(#surface)"/>
+  </g>
+
+  <rect x="226" y="176" width="140" height="56" rx="28" fill="#F0E7D9"/>
+  <circle cx="266" cy="204" r="10" fill="#3E5566"/>
+  <text x="286" y="211" fill="#617586" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="600">Revenue</text>
+
+  <rect x="386" y="176" width="140" height="56" rx="28" fill="#F0E7D9"/>
+  <circle cx="426" cy="204" r="10" fill="#B97962"/>
+  <text x="446" y="211" fill="#7A6656" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="600">Margin</text>
+
+  <rect x="546" y="176" width="140" height="56" rx="28" fill="#F0E7D9"/>
+  <circle cx="586" cy="204" r="10" fill="#74886A"/>
+  <text x="606" y="211" fill="#5D7154" font-family="Manrope, Arial, sans-serif" font-size="22" font-weight="600">Efficiency</text>
+
+  <g opacity="0.82">
+    <path d="M272 706H1122" stroke="#DDD4C7" stroke-width="2"/>
+    <path d="M272 598H1122" stroke="#E5DDD2" stroke-width="2"/>
+    <path d="M272 490H1122" stroke="#E5DDD2" stroke-width="2"/>
+    <path d="M272 382H1122" stroke="#E5DDD2" stroke-width="2"/>
+    <path d="M272 274H1122" stroke="#E5DDD2" stroke-width="2"/>
+    <path d="M272 274V706" stroke="#D8CEBF" stroke-width="2"/>
+    <path d="M442 274V706" stroke="#EBE4D8" stroke-width="2"/>
+    <path d="M612 274V706" stroke="#EBE4D8" stroke-width="2"/>
+    <path d="M782 274V706" stroke="#EBE4D8" stroke-width="2"/>
+    <path d="M952 274V706" stroke="#EBE4D8" stroke-width="2"/>
+    <path d="M1122 274V706" stroke="#EBE4D8" stroke-width="2"/>
+  </g>
+
+  <rect x="316" y="594" width="86" height="112" rx="24" fill="url(#bar1)"/>
+  <rect x="486" y="522" width="86" height="184" rx="24" fill="url(#bar2)"/>
+  <rect x="656" y="452" width="86" height="254" rx="24" fill="url(#bar3)"/>
+  <rect x="826" y="376" width="86" height="330" rx="24" fill="url(#bar4)"/>
+  <rect x="996" y="296" width="86" height="410" rx="24" fill="url(#bar1)"/>
+
+  <path d="M359 616C433 602 499 556 573 514C650 470 719 418 792 398C868 378 938 390 1039 302" stroke="url(#line)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="359" cy="616" r="10" fill="#3E5566"/>
+  <circle cx="573" cy="514" r="10" fill="#3E5566"/>
+  <circle cx="792" cy="398" r="10" fill="#3E5566"/>
+  <circle cx="1039" cy="302" r="12" fill="#3E5566"/>
+  <path d="M1018 304L1039 280L1062 304" stroke="#3E5566" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="902" y="164" width="248" height="108" rx="26" fill="#F7F2EA" stroke="#E0D6C8"/>
+  <text x="934" y="204" fill="#7A8B97" font-family="Manrope, Arial, sans-serif" font-size="20" font-weight="600">Growth outlook</text>
+  <text x="934" y="234" fill="#5D7154" font-family="Manrope, Arial, sans-serif" font-size="18" font-weight="600">Revenue up</text>
+  <text x="934" y="260" fill="#8A6757" font-family="Manrope, Arial, sans-serif" font-size="18" font-weight="600">Margins stronger</text>
+  <circle cx="1094" cy="220" r="20" fill="#E7DDD1"/>
+  <path d="M1082 220L1091 229L1108 209" stroke="#3E5566" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="272" y="764" width="108" height="18" rx="9" fill="#D6CABC"/>
+  <rect x="442" y="764" width="108" height="18" rx="9" fill="#D6CABC"/>
+  <rect x="612" y="764" width="108" height="18" rx="9" fill="#D6CABC"/>
+  <rect x="782" y="764" width="108" height="18" rx="9" fill="#D6CABC"/>
+  <rect x="952" y="764" width="108" height="18" rx="9" fill="#D6CABC"/>
+</svg>

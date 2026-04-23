@@ -107,7 +107,7 @@ const Pricing = () => (
           </div>
           <div className="surface-panel aspect-[16/10] overflow-hidden">
             <img
-              src="/assets/images/generated/service-custom-app.png"
+              src="/assets/images/generated/pricing-scope-planning.png"
               alt="NeoLabs pricing and package overview for modern business app development"
               className="h-full w-full object-cover"
             />

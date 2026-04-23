@@ -38,7 +38,7 @@ const About = () => (
 
           <div className="surface-panel aspect-[16/10] overflow-hidden">
             <img
-              src="/assets/images/generated/consultation-support.png"
+              src="/assets/images/generated/about-delivery-team.png"
               alt="NeoLabs collaborating with clients on software delivery"
               className="h-full w-full object-cover"
             />

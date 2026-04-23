@@ -13,7 +13,7 @@ const initialForm = {
   category: '',
   summary: '',
   content: '',
-  imageUrl: '/assets/images/generated/case-dashboard-alerts.png',
+  imageUrl: '',
   publishedAt: '',
   isPublished: true,
 };
@@ -194,7 +194,7 @@ const BusinessAdmin = () => {
                   <input name="slug" value={form.slug} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Slug" required />
                   <input name="category" value={form.category} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Category" required />
                 </div>
-                <input name="imageUrl" value={form.imageUrl} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="/assets/images/generated/case-dashboard-alerts.png" required />
+                <input name="imageUrl" value={form.imageUrl} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="/assets/images/generated/new-story-image.png" required />
                 <textarea name="summary" rows={3} value={form.summary} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Summary" required />
                 <textarea name="content" rows={8} value={form.content} onChange={handleChange} className="rounded-2xl border border-line bg-page px-4 py-3 text-ink" placeholder="Full content" required />
                 <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">

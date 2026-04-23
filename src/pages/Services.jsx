@@ -51,7 +51,7 @@ const Services = () => (
 
           <div className="surface-panel aspect-[16/10] overflow-hidden">
             <img
-              src="/assets/images/generated/service-automation-integrations.png"
+              src="/assets/images/generated/services-ai-platform.png"
               alt="NeoLabs services for automation, apps, and operational systems"
               className="h-full w-full object-cover"
             />

@@ -269,6 +269,18 @@ async function ensureDefaultBusinessPosts() {
           publishedAt: post.publishedAt ? new Date(post.publishedAt) : null
         }
       });
+      continue;
+    }
+
+    const hasLegacyImageUrl =
+      exists.imageUrl?.startsWith('/illustrations/') ||
+      exists.imageUrl?.startsWith('/assets/images/solutions/');
+
+    if (hasLegacyImageUrl && exists.imageUrl !== post.imageUrl) {
+      await prisma.businessPost.update({
+        where: { slug: post.slug },
+        data: { imageUrl: post.imageUrl }
+      });
     }
   }
 }

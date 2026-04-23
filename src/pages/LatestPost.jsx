@@ -91,7 +91,7 @@ const LatestPost = () => {
                 </div>
               </div>
 
-              <div className="surface-panel overflow-hidden">
+              <div className="surface-panel aspect-[16/9] overflow-hidden">
                 <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" />
               </div>
 

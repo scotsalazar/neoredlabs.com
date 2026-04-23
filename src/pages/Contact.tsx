@@ -42,9 +42,9 @@ const Contact = (): JSX.Element => (
           </div>
 
           <div className="space-y-6">
-            <div className="surface-panel overflow-hidden">
+            <div className="surface-panel aspect-[16/10] overflow-hidden">
               <img
-                src="/illustrations/service-support.svg"
+                src="/assets/images/generated/consultation-support.png"
                 alt="NeoLabs coordinating client delivery and consultations"
                 className="h-full w-full object-cover"
               />

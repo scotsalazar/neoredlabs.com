@@ -5,19 +5,19 @@ import Layout from '../components/Layout.jsx';
 const services = [
   {
     title: 'Personalized app development',
-    image: '/illustrations/service-custom-apps.svg',
+    image: '/assets/images/generated/service-custom-app.png',
     summary: 'Replace scattered manual steps with a working app built around how your team already operates.',
     proof: 'Built around your approvals, users, dashboards, and internal workflows.',
   },
   {
     title: 'Automation and integrations',
-    image: '/illustrations/service-automation.svg',
+    image: '/assets/images/generated/service-automation-integrations.png',
     summary: 'Reduce repetitive work and missed handoffs by connecting tasks, approvals, and system triggers.',
     proof: 'Ideal for teams that need fewer manual interventions across daily work.',
   },
   {
     title: 'Reporting and operational visibility',
-    image: '/illustrations/service-reporting.svg',
+    image: '/assets/images/generated/service-reporting-visibility.png',
     summary: 'Give owners and teams clearer visibility with dashboards, reporting layers, and alerts that surface issues sooner.',
     proof: 'Built for operations that need 24/7 visibility instead of delayed updates.',
   }
@@ -49,9 +49,9 @@ const Services = () => (
             </div>
           </div>
 
-          <div className="surface-panel overflow-hidden">
+          <div className="surface-panel aspect-[16/10] overflow-hidden">
             <img
-              src="/illustrations/service-automation.svg"
+              src="/assets/images/generated/service-automation-integrations.png"
               alt="NeoLabs services for automation, apps, and operational systems"
               className="h-full w-full object-cover"
             />
@@ -65,7 +65,7 @@ const Services = () => (
         <div className="grid gap-10">
           {services.map((service, index) => (
             <article key={service.title} className="grid gap-6 border-b border-line pb-10 last:border-b-0 last:pb-0 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
-              <div className={`${index % 2 === 1 ? 'lg:order-2' : ''} surface-panel overflow-hidden`}>
+              <div className={`${index % 2 === 1 ? 'lg:order-2' : ''} surface-panel aspect-[16/10] overflow-hidden`}>
                 <img src={service.image} alt={service.title} className="h-full w-full object-cover" />
               </div>
               <div className={`${index % 2 === 1 ? 'lg:order-1' : ''} space-y-4`}>

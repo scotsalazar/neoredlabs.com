@@ -105,9 +105,9 @@ const Pricing = () => (
               Each package reflects how much of the business workflow needs to be replaced, connected, automated, and supported.
             </p>
           </div>
-          <div className="surface-panel overflow-hidden">
+          <div className="surface-panel aspect-[16/10] overflow-hidden">
             <img
-              src="/illustrations/service-custom-apps.svg"
+              src="/assets/images/generated/service-custom-app.png"
               alt="NeoLabs pricing and package overview for modern business app development"
               className="h-full w-full object-cover"
             />

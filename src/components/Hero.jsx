@@ -18,8 +18,18 @@ const strengths = [
 ];
 
 const Hero = () => (
-  <section className="bg-hero-surface overflow-hidden">
-    <div className="section-container grid gap-12 py-14 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:py-20">
+  <section className="relative isolate overflow-hidden bg-surface-dark text-light">
+    <img
+      src="/assets/images/generated/hero-operations-command.png"
+      alt=""
+      className="absolute inset-0 -z-20 h-full w-full object-cover"
+      loading="eager"
+      decoding="async"
+    />
+    <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(var(--color-surface-dark)/0.96)_0%,rgb(var(--color-surface-dark)/0.82)_38%,rgb(var(--color-surface-dark)/0.2)_100%)]" aria-hidden />
+    <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-surface-dark/80 to-transparent" aria-hidden />
+
+    <div className="section-container min-h-[calc(100svh-5rem)] py-14 lg:flex lg:items-center lg:py-20">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -31,10 +41,10 @@ const Hero = () => (
           <p className="text-sm font-semibold uppercase tracking-[0.26em] text-primary">
             Personalized modern apps
           </p>
-          <h1 className="text-ink-strong font-display text-5xl font-semibold leading-[0.95] tracking-tight sm:text-6xl lg:text-[5.35rem]">
+          <h1 className="font-display text-5xl font-semibold leading-[0.95] tracking-tight text-light sm:text-6xl lg:text-[5.35rem]">
             Modern apps built fast and shaped around your operations.
           </h1>
-          <p className="max-w-xl text-lg leading-8 text-copy">
+          <p className="max-w-xl text-lg leading-8 text-light/75">
             We help businesses build modern applications, connect existing tools, and apply AI-powered automation for clearer, more efficient operations.
           </p>
         </div>
@@ -48,32 +58,13 @@ const Hero = () => (
           </Link>
         </div>
 
-        <div className="grid gap-4 border-t border-line pt-6 sm:grid-cols-3">
+        <div className="grid gap-4 border-t border-light/15 pt-6 sm:grid-cols-3">
           {strengths.map((item) => (
             <div key={item.label} className="space-y-2">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-strong">{item.label}</p>
-              <p className="text-sm leading-6 text-copy">{item.description}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-light">{item.label}</p>
+              <p className="text-sm leading-6 text-light/70">{item.description}</p>
             </div>
           ))}
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
-        className="relative"
-      >
-        <div className="surface-panel overflow-hidden bg-[#e9e1d6]">
-          <img
-            src="/illustrations/hero-revenue-growth.svg"
-            alt="Revenue growth dashboard showing rising revenue, stronger profit margins, and improved efficiency"
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div className="bg-ink-float absolute bottom-6 left-6 rounded-[1.5rem] border border-light/10 px-5 py-4 text-light shadow-[0_18px_50px_rgb(var(--color-dark)/0.26)] backdrop-blur">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-light/65">Increase revenue</p>
-          <p className="mt-2 text-lg font-semibold">Upgrade your business with modern tech and unlock new growth channels.</p>
         </div>
       </motion.div>
     </div>

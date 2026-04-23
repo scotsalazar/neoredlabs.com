@@ -69,7 +69,7 @@ const ReleaseNotes = () => {
                 <Link to={`/latest/${featured.slug}`} className="btn-primary">Read more</Link>
               </article>
 
-              <div className="surface-panel overflow-hidden">
+              <div className="surface-panel aspect-[16/10] overflow-hidden">
                 <img
                   src={featured.imageUrl}
                   alt={featured.title}

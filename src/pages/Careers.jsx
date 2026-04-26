@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import GradientSection from '../components/GradientSection.jsx';
+import { validateApplicantToken } from '../lib/api/applicantTokens.js';
 
 const jobOpenings = [
   {
@@ -89,9 +91,15 @@ const stepVariants = {
 };
 
 const Careers = () => {
+  const location = useLocation();
   const [showApplicationFlow, setShowApplicationFlow] = useState(false);
   const [wizardStep, setWizardStep] = useState(0);
   const [formState, setFormState] = useState(initialFormState);
+  const [inviteToken, setInviteToken] = useState('');
+  const [inviteApplicant, setInviteApplicant] = useState(null);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteMessage, setInviteMessage] = useState('');
+  const [inviteError, setInviteError] = useState('');
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [formMessage, setFormMessage] = useState('');
@@ -112,9 +120,15 @@ const Careers = () => {
   );
   const showingQuestionsIntro = wizardStep === 3 && !questionsIntroComplete;
 
+  const getInitialInviteFormState = () => ({
+    ...initialFormState,
+    name: inviteApplicant?.name || '',
+    email: inviteApplicant?.email || ''
+  });
+
   const resetFlow = () => {
     setWizardStep(0);
-    setFormState(initialFormState);
+    setFormState(getInitialInviteFormState());
     setErrors({});
     setFormMessage('');
     setSubmissionStage('');
@@ -135,12 +149,76 @@ const Careers = () => {
     setVideoProgress(0);
   }, [showApplicationFlow, wizardStep]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token') || '';
+    const controller = new AbortController();
+
+    async function validateInvite() {
+      if (!token) {
+        setInviteToken('');
+        setInviteApplicant(null);
+        setInviteMessage('');
+        setInviteError('Use your secure assessment invite link to access Apply Now.');
+        return;
+      }
+
+      setInviteLoading(true);
+      setInviteError('');
+      setInviteMessage('Checking your secure assessment invite...');
+
+      try {
+        const payload = await validateApplicantToken(token, { signal: controller.signal });
+
+        if (!payload?.valid) {
+          setInviteToken('');
+          setInviteApplicant(null);
+          setInviteMessage('');
+          setInviteError('This assessment invite is invalid, expired, or already used.');
+          return;
+        }
+
+        setInviteToken(token);
+        setInviteApplicant(payload.applicant);
+        setFormState((prev) => ({
+          ...prev,
+          name: payload.applicant?.name || '',
+          email: payload.applicant?.email || ''
+        }));
+        setInviteMessage(`Assessment unlocked for ${payload.applicant?.name || 'this applicant'}.`);
+        setInviteError('');
+
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({}, '', '/careers');
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setInviteToken('');
+          setInviteApplicant(null);
+          setInviteMessage('');
+          setInviteError(error.message || 'Unable to validate this assessment invite.');
+        }
+      } finally {
+        setInviteLoading(false);
+      }
+    }
+
+    validateInvite();
+
+    return () => controller.abort();
+  }, [location.search]);
+
   const closeFlow = () => {
     setShowApplicationFlow(false);
     resetFlow();
   };
 
   const openFlow = () => {
+    if (!inviteToken || !inviteApplicant) {
+      setBannerMessage('Use your secure assessment invite link to access Apply Now.');
+      return;
+    }
+
     resetFlow();
     setShowApplicationFlow(true);
   };
@@ -263,6 +341,10 @@ const Careers = () => {
     const questionsAreValid = validateQuestionsStep();
 
     if (!profileIsValid || !roleIsValid || !questionsAreValid) return;
+    if (!inviteToken) {
+      setFormMessage('This assessment invite is invalid or has expired.');
+      return;
+    }
 
     setSubmitting(true);
     setFormMessage('');
@@ -275,6 +357,7 @@ const Careers = () => {
       name: formState.name.trim(),
       email: formState.email.trim(),
       role: formState.role,
+      token: inviteToken,
       answers: {
         q1: formState.answers.q1.trim(),
         q2: formState.answers.q2.trim(),
@@ -328,7 +411,7 @@ const Careers = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Unable to submit right now.');
+        console.warn('Career webhook submission failed after assessment was saved.');
       }
 
       setBannerMessage('Application received. We will be in touch soon.');
@@ -357,8 +440,17 @@ const Careers = () => {
             Join a modern AI startup shaping the next generation of intelligent apps.
           </h1>
           <p className="mt-4 text-base text-light/80">
-            Start with a short guided application for the Prompt Engineer role.
+            Secure invite links unlock the Prompt Engineer assessment.
           </p>
+          {(inviteMessage || inviteError || inviteLoading) && (
+            <div className={`mx-auto mt-6 max-w-xl rounded-xl border px-4 py-3 text-sm font-semibold ${
+              inviteError
+                ? 'border-secondary/30 bg-secondary/10 text-secondary'
+                : 'border-secondary/30 bg-secondary/10 text-light'
+            }`}>
+              {inviteLoading ? 'Checking secure invite...' : inviteError || inviteMessage}
+            </div>
+          )}
           {bannerMessage && (
             <div className="mx-auto mt-6 max-w-xl rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm font-semibold text-light">
               {bannerMessage}
@@ -386,8 +478,13 @@ const Careers = () => {
             ))}
           </div>
           <div className="mt-14 flex flex-col items-center justify-center gap-4 md:flex-row">
-            <button type="button" className="btn-primary" onClick={openFlow}>
-              Apply Now
+            <button
+              type="button"
+              className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={openFlow}
+              disabled={!inviteToken || inviteLoading}
+            >
+              {inviteToken ? 'Apply Now' : 'Apply Now requires invite'}
             </button>
           </div>
         </div>
@@ -618,7 +715,7 @@ const Careers = () => {
                         What should we call you?
                       </h2>
                       <p className="mt-4 text-base leading-7 text-light/65">
-                        We will use your name and email for the next steps if your first assessment is successful.
+                        This secure invite is assigned to your name and email.
                       </p>
 
                       <div className="mt-9 grid gap-5">
@@ -629,6 +726,7 @@ const Careers = () => {
                             name="name"
                             value={formState.name}
                             onChange={updateField('name')}
+                            readOnly
                             placeholder="Alex Johnson"
                             className="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-5 py-4 text-lg text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
                           />
@@ -642,6 +740,7 @@ const Careers = () => {
                             name="email"
                             value={formState.email}
                             onChange={updateField('email')}
+                            readOnly
                             placeholder="alex@company.com"
                             className="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-5 py-4 text-lg text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
                           />

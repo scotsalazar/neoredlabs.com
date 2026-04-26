@@ -354,6 +354,10 @@ function buildNextStepUrl(token) {
   return `${CAREERS_BASE_URL}/next-step?token=${encodeURIComponent(token)}`;
 }
 
+function buildAssessmentInviteUrl(token) {
+  return `${CAREERS_BASE_URL}/careers?token=${encodeURIComponent(token)}`;
+}
+
 function getApplicantTokenExpiry(now = new Date()) {
   return new Date(now.getTime() + APPLICANT_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
 }
@@ -414,13 +418,35 @@ function toApplicantPrefill(application) {
   };
 }
 
+function toApplicantTokenPrefill(token) {
+  return {
+    name: token.applicantName,
+    email: token.applicantEmail,
+    role: 'Prompt Engineer'
+  };
+}
+
+function toApplicantTokenResponse(token) {
+  return {
+    id: token.id,
+    name: token.applicantName,
+    email: token.applicantEmail,
+    status: getApplicantTokenStatus(token),
+    expiresAt: token.expiresAt,
+    usedAt: token.usedAt,
+    revokedAt: token.revokedAt,
+    sentAt: token.sentAt,
+    createdAt: token.createdAt,
+    careerApplicationId: token.careerApplicationId
+  };
+}
+
 async function findUsableApplicantToken(prismaClient, rawToken) {
   const tokenHash = hashApplicantToken(rawToken);
   if (!tokenHash) return null;
 
   const token = await prismaClient.applicantToken.findUnique({
-    where: { tokenHash },
-    include: { careerApplication: true }
+    where: { tokenHash }
   });
 
   return isApplicantTokenUsable(token) ? token : null;
@@ -651,11 +677,79 @@ app.get('/api/admin/career-applications', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/admin/applicant-tokens', requireAdmin, async (req, res) => {
+  const prismaClient = getPrismaClient(req);
+
+  try {
+    const tokens = await prismaClient.applicantToken.findMany({
+      orderBy: [{ createdAt: 'desc' }],
+      take: 50
+    });
+
+    return res.json({ tokens: tokens.map(toApplicantTokenResponse) });
+  } catch (error) {
+    console.error('Failed to load applicant tokens', error);
+    return res.status(500).json({ error: 'Unable to load applicant tokens.' });
+  }
+});
+
+app.post('/api/admin/applicant-tokens', requireAdmin, async (req, res) => {
+  const name = typeof req.body?.name === 'string' ? req.body.name.trim() : '';
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const prismaClient = getPrismaClient(req);
+
+  if (!name) {
+    return res.status(400).json({ error: 'Applicant name is required.' });
+  }
+
+  if (!email || !EMAIL_REGEX.test(email)) {
+    return res.status(400).json({ error: 'A valid applicant email is required.' });
+  }
+
+  try {
+    const rawToken = generateApplicantToken();
+    const tokenHash = hashApplicantToken(rawToken);
+    const expiresAt = getApplicantTokenExpiry();
+
+    await prismaClient.applicantToken.updateMany({
+      where: {
+        applicantEmail: email,
+        usedAt: null,
+        revokedAt: null
+      },
+      data: {
+        revokedAt: new Date()
+      }
+    });
+
+    const createdToken = await prismaClient.applicantToken.create({
+      data: {
+        applicantName: name,
+        applicantEmail: email,
+        tokenHash,
+        expiresAt
+      }
+    });
+
+    return res.status(201).json({
+      token: toApplicantTokenResponse(createdToken),
+      inviteUrl: buildAssessmentInviteUrl(rawToken)
+    });
+  } catch (error) {
+    console.error('Failed to create assessment invite token', error);
+    return res.status(500).json({ error: 'Unable to create assessment invite link.' });
+  }
+});
+
 app.post('/api/admin/career-applications/:id/next-step-email', requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {
     return res.status(400).json({ error: 'Invalid career application id.' });
   }
+
+  return res.status(410).json({
+    error: 'Next-step emails have been replaced by manual assessment invite links.'
+  });
 
   if (!NEXT_STEP_EMAIL_WEBHOOK_URL) {
     return res.status(500).json({ error: 'Next-step email webhook is not configured.' });
@@ -700,6 +794,8 @@ app.post('/api/admin/career-applications/:id/next-step-email', requireAdmin, asy
       return tx.applicantToken.create({
         data: {
           careerApplicationId: application.id,
+          applicantName: application.name,
+          applicantEmail: application.email,
           tokenHash,
           expiresAt
         }
@@ -781,9 +877,16 @@ app.post('/api/admin/business-posts', requireAdmin, async (req, res) => {
 app.post('/api/career-assessment', async (req, res) => {
   const { name, role, answers } = req.body || {};
   const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const inviteToken = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const tokenHash = hashApplicantToken(inviteToken);
+  const prismaClient = getPrismaClient(req);
 
   if (!OPENAI_API_KEY) {
     return res.status(500).json({ error: 'OpenAI API key is not configured.' });
+  }
+
+  if (!tokenHash) {
+    return res.status(400).json({ error: 'A valid assessment invite link is required.' });
   }
 
   if (typeof name !== 'string' || name.trim().length === 0) {
@@ -809,30 +912,72 @@ app.post('/api/career-assessment', async (req, res) => {
   }
 
   try {
+    const applicantToken = await findUsableApplicantToken(prismaClient, inviteToken);
+
+    if (!applicantToken) {
+      return res.status(400).json({ error: 'This assessment invite is invalid or has expired.' });
+    }
+
+    if (applicantToken.applicantName.trim() !== name.trim() || applicantToken.applicantEmail !== email) {
+      return res.status(400).json({ error: 'This assessment invite does not match the applicant profile.' });
+    }
+
     const assessment = await scoreCareerAssessment({
       name: name.trim(),
       role,
       answers: normalizedAnswers
     });
 
-    const application = await prisma.careerApplication.create({
-      data: {
-        name: name.trim(),
-        email,
-        role,
-        answerAiTools: normalizedAnswers.q1,
-        answerApi: normalizedAnswers.q2,
-        answerModernWorkflows: normalizedAnswers.q3,
-        score: assessment.score,
-        passed: assessment.passed,
-        passingScore: assessment.passingScore,
-        recommendation: assessment.recommendation,
-        aiGeneratedRisk: assessment.aiGeneratedRisk,
-        categoryScores: assessment.categoryScores,
-        strengths: assessment.strengths,
-        concerns: assessment.concerns,
-        summary: assessment.summary
+    const application = await prismaClient.$transaction(async (tx) => {
+      const now = new Date();
+      const claimed = await tx.applicantToken.updateMany({
+        where: {
+          tokenHash,
+          usedAt: null,
+          revokedAt: null,
+          expiresAt: {
+            gt: now
+          }
+        },
+        data: {
+          usedAt: now
+        }
+      });
+
+      if (claimed.count !== 1) {
+        const error = new Error('Applicant token is not usable.');
+        error.code = 'TOKEN_NOT_USABLE';
+        throw error;
       }
+
+      const createdApplication = await tx.careerApplication.create({
+        data: {
+          name: name.trim(),
+          email,
+          role,
+          answerAiTools: normalizedAnswers.q1,
+          answerApi: normalizedAnswers.q2,
+          answerModernWorkflows: normalizedAnswers.q3,
+          score: assessment.score,
+          passed: assessment.passed,
+          passingScore: assessment.passingScore,
+          recommendation: assessment.recommendation,
+          aiGeneratedRisk: assessment.aiGeneratedRisk,
+          categoryScores: assessment.categoryScores,
+          strengths: assessment.strengths,
+          concerns: assessment.concerns,
+          summary: assessment.summary
+        }
+      });
+
+      await tx.applicantToken.update({
+        where: { tokenHash },
+        data: {
+          careerApplicationId: createdApplication.id
+        }
+      });
+
+      return createdApplication;
     });
 
     return res.json({
@@ -842,6 +987,10 @@ app.post('/api/career-assessment', async (req, res) => {
       }
     });
   } catch (error) {
+    if (error.code === 'TOKEN_NOT_USABLE') {
+      return res.status(400).json({ error: 'This assessment invite is invalid or has expired.' });
+    }
+
     console.error('Failed to score career assessment', error);
     return res.status(502).json({
       error: 'Unable to score the assessment right now.'
@@ -862,7 +1011,7 @@ app.post('/api/applicant-tokens/validate', async (req, res) => {
 
     return res.json({
       valid: true,
-      applicant: toApplicantPrefill(applicantToken.careerApplication),
+      applicant: toApplicantTokenPrefill(applicantToken),
       expiresAt: applicantToken.expiresAt
     });
   } catch (error) {
@@ -872,61 +1021,9 @@ app.post('/api/applicant-tokens/validate', async (req, res) => {
 });
 
 app.post('/api/applicant-tokens/submit', async (req, res) => {
-  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
-  const confirmed = req.body?.confirmed === true;
-  const tokenHash = hashApplicantToken(token);
-  const prismaClient = getPrismaClient(req);
-
-  if (!confirmed) {
-    return res.status(400).json({ error: 'Confirmation is required.' });
-  }
-
-  if (!tokenHash) {
-    return res.status(400).json({ error: 'This link is invalid or has expired.' });
-  }
-
-  try {
-    const now = new Date();
-    const applicantToken = await prismaClient.$transaction(async (tx) => {
-      const updated = await tx.applicantToken.updateMany({
-        where: {
-          tokenHash,
-          usedAt: null,
-          revokedAt: null,
-          expiresAt: {
-            gt: now
-          }
-        },
-        data: {
-          usedAt: now
-        }
-      });
-
-      if (updated.count !== 1) {
-        const error = new Error('Applicant token is not usable.');
-        error.code = 'TOKEN_NOT_USABLE';
-        throw error;
-      }
-
-      return tx.applicantToken.findUnique({
-        where: { tokenHash },
-        include: { careerApplication: true }
-      });
-    });
-
-    return res.json({
-      success: true,
-      applicant: toApplicantPrefill(applicantToken.careerApplication),
-      usedAt: applicantToken.usedAt
-    });
-  } catch (error) {
-    if (error.code === 'TOKEN_NOT_USABLE') {
-      return res.status(400).json({ error: 'This link is invalid or has expired.' });
-    }
-
-    console.error('Failed to submit applicant continuation', error);
-    return res.status(500).json({ error: 'Unable to submit next-step confirmation.' });
-  }
+  return res.status(410).json({
+    error: 'Assessment invites must be submitted through the Careers assessment.'
+  });
 });
 
 app.put('/api/admin/business-posts/:id', requireAdmin, async (req, res) => {
@@ -1137,6 +1234,7 @@ module.exports = Object.assign(app, {
   generateApplicantToken,
   hashApplicantToken,
   buildNextStepUrl,
+  buildAssessmentInviteUrl,
   isApplicantTokenUsable,
   getApplicantTokenStatus
 });

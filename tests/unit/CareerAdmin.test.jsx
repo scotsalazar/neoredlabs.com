@@ -2,13 +2,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import CareerAdmin from '../../src/pages/CareerAdmin.jsx';
 import {
-  fetchCareerApplications,
-  sendCareerNextStepEmail
+  createApplicantToken,
+  fetchApplicantTokens
 } from '../../src/lib/api/careerAdmin.js';
 
 vi.mock('../../src/lib/api/careerAdmin.js', () => ({
-  fetchCareerApplications: vi.fn(),
-  sendCareerNextStepEmail: vi.fn()
+  createApplicantToken: vi.fn(),
+  fetchApplicantTokens: vi.fn()
 }));
 
 function renderPage() {
@@ -22,21 +22,20 @@ function renderPage() {
 describe('CareerAdmin page', () => {
   beforeEach(() => {
     window.localStorage.clear();
-    fetchCareerApplications.mockReset();
-    sendCareerNextStepEmail.mockReset();
+    createApplicantToken.mockReset();
+    fetchApplicantTokens.mockReset();
   });
 
-  it('loads passed applicants and shows token status', async () => {
-    fetchCareerApplications.mockResolvedValue({
-      applications: [
+  it('loads recent assessment invites and shows token status', async () => {
+    fetchApplicantTokens.mockResolvedValue({
+      tokens: [
         {
           id: 11,
           name: 'Alex Johnson',
           email: 'alex@example.com',
-          role: 'Prompt Engineer',
-          score: 88,
-          summary: 'Strong practical answers.',
-          latestToken: { status: 'sent' }
+          status: 'created',
+          expiresAt: '2026-05-03T00:00:00.000Z',
+          careerApplicationId: null
         }
       ]
     });
@@ -44,32 +43,37 @@ describe('CareerAdmin page', () => {
     renderPage();
 
     expect(await screen.findByText('Alex Johnson')).toBeInTheDocument();
-    expect(screen.getByText(/link status: sent/i)).toBeInTheDocument();
+    expect(screen.getByText(/active/i)).toBeInTheDocument();
   });
 
-  it('sends a next-step email and refreshes the list', async () => {
-    fetchCareerApplications.mockResolvedValue({
-      applications: [
-        {
-          id: 11,
-          name: 'Alex Johnson',
-          email: 'alex@example.com',
-          role: 'Prompt Engineer',
-          score: 88,
-          summary: 'Strong practical answers.',
-          latestToken: null
-        }
-      ]
+  it('creates an assessment invite and displays the manual link', async () => {
+    fetchApplicantTokens.mockResolvedValue({ tokens: [] });
+    createApplicantToken.mockResolvedValue({
+      inviteUrl: 'https://careers.neoredlabs.com/careers?token=secure-token',
+      token: {
+        id: 12,
+        name: 'Alex Johnson',
+        email: 'alex@example.com',
+        status: 'created'
+      }
     });
-    sendCareerNextStepEmail.mockResolvedValue({ success: true });
 
     renderPage();
 
-    fireEvent.click(await screen.findByRole('button', { name: /send next-step email/i }));
+    fireEvent.change(await screen.findByLabelText(/applicant name/i), {
+      target: { value: 'Alex Johnson' }
+    });
+    fireEvent.change(screen.getByLabelText(/applicant email/i), {
+      target: { value: 'alex@example.com' }
+    });
+    fireEvent.click(screen.getByRole('button', { name: /create secure link/i }));
 
     await waitFor(() => {
-      expect(sendCareerNextStepEmail).toHaveBeenCalledWith(11, '');
+      expect(createApplicantToken).toHaveBeenCalledWith(
+        { name: 'Alex Johnson', email: 'alex@example.com' },
+        ''
+      );
     });
-    expect(await screen.findByText(/next-step email sent/i)).toBeInTheDocument();
+    expect(await screen.findByDisplayValue('https://careers.neoredlabs.com/careers?token=secure-token')).toBeInTheDocument();
   });
 });

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import {
+  clearAdminSession,
   createJobOfferFollowUp,
   createApplicantToken,
   fetchCareerApplications,
@@ -107,7 +108,8 @@ const CareerAdmin = () => {
     await loadDesk(adminToken);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await clearAdminSession(adminToken).catch(() => {});
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(adminTokenStorageKey);
     }

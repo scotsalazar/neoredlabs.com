@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CareerAdminLogin from '../../src/pages/CareerAdminLogin.jsx';
-import { fetchApplicantTokens } from '../../src/lib/api/careerAdmin.js';
+import { createAdminSession } from '../../src/lib/api/careerAdmin.js';
 
 vi.mock('../../src/lib/api/careerAdmin.js', () => ({
-  fetchApplicantTokens: vi.fn()
+  createAdminSession: vi.fn()
 }));
 
 function renderPage() {
@@ -21,11 +21,11 @@ function renderPage() {
 describe('CareerAdminLogin page', () => {
   beforeEach(() => {
     window.localStorage.clear();
-    fetchApplicantTokens.mockReset();
+    createAdminSession.mockReset();
   });
 
   it('stores a valid admin key and opens the desk', async () => {
-    fetchApplicantTokens.mockResolvedValue({ tokens: [] });
+    createAdminSession.mockResolvedValue({ authenticated: true });
     renderPage();
 
     fireEvent.change(screen.getByLabelText(/admin key/i), {
@@ -34,14 +34,14 @@ describe('CareerAdminLogin page', () => {
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
     await waitFor(() => {
-      expect(fetchApplicantTokens).toHaveBeenCalledWith('admin-test-token');
+      expect(createAdminSession).toHaveBeenCalledWith('admin-test-token');
     });
     expect(await screen.findByText('Desk opened')).toBeInTheDocument();
     expect(window.localStorage.getItem('neolabs_admin_token')).toBe('admin-test-token');
   });
 
   it('shows an error when the admin key is rejected', async () => {
-    fetchApplicantTokens.mockRejectedValue(new Error('Admin authorization failed.'));
+    createAdminSession.mockRejectedValue(new Error('Admin authorization failed.'));
     renderPage();
 
     fireEvent.change(screen.getByLabelText(/admin key/i), {

@@ -1,8 +1,18 @@
 [build]
-command = "npm run build"
+command = "npx prisma generate && npm run build"
 publish = "dist"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["prisma/**", "server/data/**", "node_modules/.prisma/client/**"]
 
 [[redirects]]
   from = "/api/*"
-  to = "http://localhost:4000/api/:splat"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
   status = 200

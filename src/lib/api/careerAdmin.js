@@ -1,31 +1,38 @@
-const API_BASE = '/api';
-
-function buildError(message, details) {
-  const error = new Error(message);
-  if (details) {
-    error.details = details;
-  }
-  return error;
-}
+import { API_BASE, handleJsonResponse } from './config.js';
 
 function adminHeaders(token) {
   return token ? { 'x-admin-token': token } : {};
 }
 
 async function handleResponse(response) {
-  let payload = null;
+  return handleJsonResponse(response, 'Admin API is unavailable right now.');
+}
 
-  try {
-    payload = await response.json();
-  } catch (error) {
-    // ignore empty or malformed JSON
-  }
+export async function createAdminSession(token) {
+  const response = await fetch(`${API_BASE}/admin/session`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify({ token })
+  });
 
-  if (response.ok) {
-    return payload || {};
-  }
+  return handleResponse(response);
+}
 
-  throw buildError(payload?.error || `Request failed with status ${response.status}`, payload);
+export async function clearAdminSession(token) {
+  const response = await fetch(`${API_BASE}/admin/session`, {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      ...adminHeaders(token)
+    }
+  });
+
+  return handleResponse(response);
 }
 
 export async function fetchCareerApplications(token, { passed = true } = {}) {
@@ -35,6 +42,7 @@ export async function fetchCareerApplications(token, { passed = true } = {}) {
   }
 
   const response = await fetch(`${API_BASE}/admin/career-applications?${search.toString()}`, {
+    credentials: 'include',
     headers: {
       ...adminHeaders(token)
     }
@@ -46,6 +54,7 @@ export async function fetchCareerApplications(token, { passed = true } = {}) {
 export async function sendCareerNextStepEmail(applicationId, token) {
   const response = await fetch(`${API_BASE}/admin/career-applications/${applicationId}/next-step-email`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       Accept: 'application/json',
       ...adminHeaders(token)
@@ -58,6 +67,7 @@ export async function sendCareerNextStepEmail(applicationId, token) {
 export async function createJobOfferFollowUp(applicationId, token) {
   const response = await fetch(`${API_BASE}/admin/career-applications/${applicationId}/follow-up`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       Accept: 'application/json',
       ...adminHeaders(token)
@@ -69,6 +79,7 @@ export async function createJobOfferFollowUp(applicationId, token) {
 
 export async function fetchApplicantTokens(token) {
   const response = await fetch(`${API_BASE}/admin/applicant-tokens`, {
+    credentials: 'include',
     headers: {
       ...adminHeaders(token)
     }
@@ -80,6 +91,7 @@ export async function fetchApplicantTokens(token) {
 export async function createApplicantToken(data, token) {
   const response = await fetch(`${API_BASE}/admin/applicant-tokens`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -92,6 +104,8 @@ export async function createApplicantToken(data, token) {
 }
 
 export default {
+  createAdminSession,
+  clearAdminSession,
   fetchCareerApplications,
   createJobOfferFollowUp,
   sendCareerNextStepEmail,

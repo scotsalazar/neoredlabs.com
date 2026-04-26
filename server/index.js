@@ -14,6 +14,8 @@ app.locals.prisma = prisma;
 
 const jobsFilePath = path.join(__dirname, 'data', 'open-positions.json');
 const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN?.trim() || '';
+const ADMIN_SESSION_COOKIE = 'neolabs_admin_session';
+const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY?.trim() || '';
 const OPENAI_ASSESSMENT_MODEL = process.env.OPENAI_ASSESSMENT_MODEL?.trim() || 'gpt-5.4-nano';
 const CAREER_ASSESSMENT_PASSING_SCORE = 70;
@@ -28,6 +30,11 @@ const APPLICANT_TOKEN_TTL_DAYS = Math.max(
 const CAREERS_BASE_URL = (process.env.CAREERS_BASE_URL?.trim() || 'https://careers.neoredlabs.com')
   .replace(/\/+$/, '');
 const NEXT_STEP_EMAIL_WEBHOOK_URL = process.env.NEXT_STEP_EMAIL_WEBHOOK_URL?.trim() || '';
+const ADMIN_SESSION_SECRET =
+  process.env.ADMIN_SESSION_SECRET?.trim() ||
+  APPLICANT_TOKEN_HASH_SECRET ||
+  ADMIN_TOKEN ||
+  'development-admin-session-secret-change-me';
 
 const DEFAULT_SLOTS = [
   { slot: '09:00', capacity: 5 },
@@ -107,6 +114,7 @@ const CAREER_ASSESSMENT_SCHEMA = {
     'concerns'
   ]
 };
+app.set('trust proxy', 1);
 app.use(express.json());
 
 function clampInteger(value, min, max) {
@@ -343,16 +351,105 @@ function parseOptionalDate(value) {
   return parsed;
 }
 
-function isAdminAuthorized(req) {
+function timingSafeStringEqual(actual, expected) {
+  const expectedBuffer = Buffer.from(expected);
+  const actualBuffer = Buffer.from(actual);
+
+  return (
+    actualBuffer.length === expectedBuffer.length &&
+    crypto.timingSafeEqual(actualBuffer, expectedBuffer)
+  );
+}
+
+function isAdminTokenValid(token) {
   if (!ADMIN_TOKEN) {
     return false;
   }
 
-  const providedToken = req.get('x-admin-token') || '';
-  const expected = Buffer.from(ADMIN_TOKEN);
-  const provided = Buffer.from(providedToken);
+  return timingSafeStringEqual(token || '', ADMIN_TOKEN);
+}
 
-  return provided.length === expected.length && crypto.timingSafeEqual(provided, expected);
+function parseCookies(header = '') {
+  return header.split(';').reduce((cookies, part) => {
+    const index = part.indexOf('=');
+    if (index === -1) return cookies;
+
+    const name = part.slice(0, index).trim();
+    const value = part.slice(index + 1).trim();
+    if (!name) return cookies;
+
+    cookies[name] = decodeURIComponent(value);
+    return cookies;
+  }, {});
+}
+
+function signAdminSessionPayload(payload) {
+  return crypto
+    .createHmac('sha256', ADMIN_SESSION_SECRET)
+    .update(payload)
+    .digest('base64url');
+}
+
+function createAdminSessionValue(now = new Date()) {
+  const expiresAt = now.getTime() + ADMIN_SESSION_TTL_MS;
+  const nonce = crypto.randomBytes(16).toString('base64url');
+  const payload = `${expiresAt}.${nonce}`;
+  const signature = signAdminSessionPayload(payload);
+
+  return `${payload}.${signature}`;
+}
+
+function verifyAdminSessionValue(value, now = new Date()) {
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
+
+  const parts = value.split('.');
+  if (parts.length !== 3) {
+    return false;
+  }
+
+  const [expiresAtRaw, nonce, signature] = parts;
+  const expiresAt = Number(expiresAtRaw);
+  if (!Number.isFinite(expiresAt) || expiresAt <= now.getTime() || !nonce || !signature) {
+    return false;
+  }
+
+  return timingSafeStringEqual(signature, signAdminSessionPayload(`${expiresAtRaw}.${nonce}`));
+}
+
+function getAdminSession(req) {
+  const cookies = parseCookies(req.get('cookie') || '');
+  return cookies[ADMIN_SESSION_COOKIE] || '';
+}
+
+function setAdminSessionCookie(req, res) {
+  const secure = req.secure || req.get('x-forwarded-proto') === 'https' || process.env.NODE_ENV === 'production';
+  const parts = [
+    `${ADMIN_SESSION_COOKIE}=${encodeURIComponent(createAdminSessionValue())}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${Math.floor(ADMIN_SESSION_TTL_MS / 1000)}`
+  ];
+
+  if (secure) {
+    parts.push('Secure');
+  }
+
+  res.setHeader('Set-Cookie', parts.join('; '));
+}
+
+function clearAdminSessionCookie(res) {
+  res.setHeader('Set-Cookie', `${ADMIN_SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+}
+
+function isAdminAuthorized(req) {
+  if (isAdminTokenValid(req.get('x-admin-token') || '')) {
+    return true;
+  }
+
+  return verifyAdminSessionValue(getAdminSession(req));
 }
 
 function requireAdmin(req, res, next) {
@@ -765,6 +862,27 @@ app.get('/api/business-posts/:slug', async (req, res) => {
     console.error('Failed to load business post', error);
     return res.status(500).json({ error: 'Unable to load business post' });
   }
+});
+
+app.get('/api/health', (_req, res) => {
+  return res.json({ ok: true });
+});
+
+app.post('/api/admin/session', (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+
+  if (!isAdminTokenValid(token)) {
+    clearAdminSessionCookie(res);
+    return res.status(401).json({ error: 'Admin authorization failed.' });
+  }
+
+  setAdminSessionCookie(req, res);
+  return res.json({ authenticated: true });
+});
+
+app.delete('/api/admin/session', (_req, res) => {
+  clearAdminSessionCookie(res);
+  return res.json({ authenticated: false });
 });
 
 app.get('/api/admin/business-posts', requireAdmin, async (_req, res) => {
@@ -1679,6 +1797,20 @@ app.post('/api/appointments', async (req, res) => {
     return res.status(500).json({ error: 'Unable to create appointment' });
   }
 });
+
+const distPath = path.resolve(__dirname, '..', 'dist');
+const indexPath = path.join(distPath, 'index.html');
+
+if (fs.existsSync(indexPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+
+    return res.sendFile(indexPath);
+  });
+}
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not Found' });

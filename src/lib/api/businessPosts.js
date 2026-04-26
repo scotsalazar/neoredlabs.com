@@ -1,14 +1,5 @@
 import fallbackPostsSource from '../../data/defaultBusinessPosts.js';
-
-const API_BASE = '/api';
-
-function buildError(message, details) {
-  const error = new Error(message);
-  if (details) {
-    error.details = details;
-  }
-  return error;
-}
+import { API_BASE, buildError, handleJsonResponse } from './config.js';
 
 function formatDateLabel(value) {
   if (!value) return '';
@@ -61,13 +52,7 @@ async function parseResponseBody(response) {
 }
 
 async function handleResponse(response) {
-  const payload = await parseResponseBody(response);
-
-  if (response.ok) {
-    return payload;
-  }
-
-  throw buildError(payload?.error || `Request failed with status ${response.status}`, payload);
+  return handleJsonResponse(response, 'Latest feed is unavailable right now.');
 }
 
 function adminHeaders(token) {

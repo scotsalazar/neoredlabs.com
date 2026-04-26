@@ -58,6 +58,42 @@ afterEach(() => {
 });
 
 describe('assessment invite token routes', () => {
+  it('creates an http-only admin session cookie for a valid admin key', async () => {
+    const response = await request(app)
+      .post('/api/admin/session')
+      .send({ token: 'admin-test-token' })
+      .expect(200);
+
+    expect(response.body).toEqual({ authenticated: true });
+    expect(response.headers['set-cookie']?.[0]).toContain('neolabs_admin_session=');
+    expect(response.headers['set-cookie']?.[0]).toContain('HttpOnly');
+  });
+
+  it('allows admin routes with a valid admin session cookie', async () => {
+    app.locals.prisma = {
+      applicantToken: {
+        findMany: vi.fn().mockResolvedValue([])
+      }
+    };
+
+    const loginResponse = await request(app)
+      .post('/api/admin/session')
+      .send({ token: 'admin-test-token' })
+      .expect(200);
+
+    await request(app)
+      .get('/api/admin/applicant-tokens')
+      .set('Cookie', loginResponse.headers['set-cookie'])
+      .expect(200);
+  });
+
+  it('rejects admin session creation with a wrong admin key', async () => {
+    await request(app)
+      .post('/api/admin/session')
+      .send({ token: 'wrong-token' })
+      .expect(401);
+  });
+
   it('validates a usable assessment invite without returning token material', async () => {
     const rawToken = app.generateApplicantToken();
     app.locals.prisma = {

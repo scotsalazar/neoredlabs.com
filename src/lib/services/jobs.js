@@ -32,7 +32,7 @@ const normalizeJob = (job) => ({
 
 export const fetchJobOpenings = async () => {
   try {
-    const response = await fetch('/api/jobs');
+    const response = await fetch(`${API_BASE}/jobs`);
     if (!response.ok) {
       throw new Error('Unable to load open positions right now.');
     }
@@ -66,3 +66,4 @@ export const fetchJobOpenings = async () => {
 };
 
 export default { fetchJobOpenings };
+import { API_BASE } from '../api/config.js';

@@ -1,27 +1,7 @@
-const API_BASE = '/api';
-
-function buildError(message, details) {
-  const error = new Error(message);
-  if (details) {
-    error.details = details;
-  }
-  return error;
-}
+import { API_BASE, handleJsonResponse } from './config.js';
 
 async function handleResponse(response) {
-  let payload = null;
-
-  try {
-    payload = await response.json();
-  } catch (error) {
-    // ignore empty or malformed JSON
-  }
-
-  if (response.ok) {
-    return payload;
-  }
-
-  throw buildError(payload?.error || `Request failed with status ${response.status}`, payload);
+  return handleJsonResponse(response, 'Assessment invite API is unavailable right now.');
 }
 
 export async function validateApplicantToken(token, { signal } = {}) {

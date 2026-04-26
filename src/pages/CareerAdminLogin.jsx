@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
-import { fetchApplicantTokens } from '../lib/api/careerAdmin.js';
+import { createAdminSession } from '../lib/api/careerAdmin.js';
 
 const adminTokenStorageKey = 'neolabs_admin_token';
 
@@ -31,7 +31,7 @@ const CareerAdminLogin = () => {
     setError('');
 
     try {
-      await fetchApplicantTokens(trimmedToken);
+      await createAdminSession(trimmedToken);
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(adminTokenStorageKey, trimmedToken);
       }

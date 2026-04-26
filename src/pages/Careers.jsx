@@ -8,6 +8,7 @@ import {
   resumeApplicantToken,
   validateApplicantToken
 } from '../lib/api/applicantTokens.js';
+import { API_BASE } from '../lib/api/config.js';
 
 const jobOpenings = [
   {
@@ -534,7 +535,7 @@ const Careers = () => {
     };
 
     try {
-      const assessmentResponse = await fetch('/api/career-assessment', {
+      const assessmentResponse = await fetch(`${API_BASE}/career-assessment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,29 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-const API_BASE = '/api';
-
-function buildError(message, details) {
-  const error = new Error(message);
-  if (details) {
-    error.details = details;
-  }
-  return error;
-}
+import { API_BASE, buildError, handleJsonResponse } from './config.js';
 
 async function handleResponse(response) {
-  if (response.ok) {
-    return response.json();
-  }
-
-  let payload;
-  try {
-    payload = await response.json();
-  } catch (error) {
-    // ignore json parse errors
-  }
-
-  const message = payload?.error || `Request failed with status ${response.status}`;
-  throw buildError(message, payload);
+  return handleJsonResponse(response, 'Appointments API is unavailable right now.');
 }
 
 export async function fetchAvailableSlots(date, { signal } = {}) {

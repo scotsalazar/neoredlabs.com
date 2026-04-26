@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import CareerAdmin from '../../src/pages/CareerAdmin.jsx';
 import {
+  clearAdminSession,
   createJobOfferFollowUp,
   createApplicantToken,
   fetchCareerApplications,
@@ -9,6 +10,7 @@ import {
 } from '../../src/lib/api/careerAdmin.js';
 
 vi.mock('../../src/lib/api/careerAdmin.js', () => ({
+  clearAdminSession: vi.fn(),
   createJobOfferFollowUp: vi.fn(),
   createApplicantToken: vi.fn(),
   fetchCareerApplications: vi.fn(),
@@ -27,6 +29,8 @@ describe('CareerAdmin page', () => {
   beforeEach(() => {
     window.localStorage.clear();
     window.localStorage.setItem('neolabs_admin_token', 'admin-test-token');
+    clearAdminSession.mockReset();
+    clearAdminSession.mockResolvedValue({ authenticated: false });
     createJobOfferFollowUp.mockReset();
     createApplicantToken.mockReset();
     fetchCareerApplications.mockReset();

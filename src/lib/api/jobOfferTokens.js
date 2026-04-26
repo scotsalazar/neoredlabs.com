@@ -1,19 +1,7 @@
-const API_BASE = '/api';
+import { API_BASE, handleJsonResponse } from './config.js';
 
 async function handleResponse(response) {
-  let payload = null;
-
-  try {
-    payload = await response.json();
-  } catch (error) {
-    // ignore empty or malformed JSON
-  }
-
-  if (response.ok) {
-    return payload;
-  }
-
-  throw new Error(payload?.error || `Request failed with status ${response.status}`);
+  return handleJsonResponse(response, 'Job offer API is unavailable right now.');
 }
 
 export async function validateJobOfferToken(token, { signal } = {}) {

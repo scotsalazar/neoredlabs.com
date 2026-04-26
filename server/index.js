@@ -9,6 +9,38 @@ const openPositions = require('./data/open-positions.json');
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+function normalizeEnvValue(value) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const trimmed = value.trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+
+  return trimmed;
+}
+
+[
+  'DATABASE_URL',
+  'ADMIN_API_TOKEN',
+  'ADMIN_SESSION_SECRET',
+  'OPENAI_API_KEY',
+  'OPENAI_ASSESSMENT_MODEL',
+  'APPLICANT_TOKEN_HASH_SECRET',
+  'APPLICANT_TOKEN_TTL_DAYS',
+  'CAREERS_BASE_URL',
+  'NEXT_STEP_EMAIL_WEBHOOK_URL'
+].forEach((key) => {
+  if (process.env[key] !== undefined) {
+    process.env[key] = normalizeEnvValue(process.env[key]);
+  }
+});
+
 const app = express();
 const prisma = new PrismaClient();
 app.locals.prisma = prisma;

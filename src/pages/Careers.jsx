@@ -75,8 +75,6 @@ const promptEngineerQuestions = [
 
 const steps = ['Intro', 'Role', 'Questions', 'Thanks'];
 const introVideoSrc = '/assets/videos/career-application-intro.mp4';
-const roleSelectionVideoSrc = '/assets/videos/career-application-role-select.mp4';
-const questionsVideoSrc = '/assets/videos/career-application-questions.mp4';
 const assessmentSessionStorageKey = 'neolabs_career_assessment_session';
 
 const initialFormState = {
@@ -118,16 +116,14 @@ const Careers = () => {
   const [videoComplete, setVideoComplete] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoReady, setVideoReady] = useState(false);
-  const [questionsIntroComplete, setQuestionsIntroComplete] = useState(false);
   const overlayRef = useRef(null);
   const videoRef = useRef(null);
+  const videoProgressFrameRef = useRef(0);
 
   const selectedRole = useMemo(
     () => roleCards.find((role) => role.title === formState.role),
     [formState.role]
   );
-  const showingQuestionsIntro = wizardStep === 2 && !questionsIntroComplete;
-
   const getInitialInviteFormState = () => ({
     ...initialFormState,
     name: inviteApplicant?.name || '',
@@ -153,7 +149,6 @@ const Careers = () => {
       applicant: inviteApplicant,
       formState,
       wizardStep,
-      questionsIntroComplete,
       ...overrides
     };
 
@@ -180,7 +175,6 @@ const Careers = () => {
     setVideoComplete(false);
     setVideoProgress(0);
     setVideoReady(false);
-    setQuestionsIntroComplete(false);
   };
 
   useEffect(() => {
@@ -221,7 +215,6 @@ const Careers = () => {
                 email: nextApplicant?.email || ''
               });
               setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 2));
-              setQuestionsIntroComplete(Boolean(storedSession.questionsIntroComplete));
               setShowApplicationFlow(true);
               setInviteMessage(`Assessment resumed for ${nextApplicant?.name || 'this applicant'}.`);
               return;
@@ -277,7 +270,6 @@ const Careers = () => {
         setVideoComplete(false);
         setVideoProgress(0);
         setVideoReady(false);
-        setQuestionsIntroComplete(false);
         setShowApplicationFlow(true);
         setInviteMessage(`Assessment opened for ${payload.applicant?.name || 'this applicant'}.`);
         setInviteError('');
@@ -311,8 +303,7 @@ const Careers = () => {
     inviteApplicant,
     showApplicationFlow,
     formState,
-    wizardStep,
-    questionsIntroComplete
+    wizardStep
   ]);
 
   const closeFlow = () => {
@@ -332,7 +323,6 @@ const Careers = () => {
           email: inviteApplicant.email || ''
         });
         setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 2));
-        setQuestionsIntroComplete(Boolean(storedSession.questionsIntroComplete));
       }
 
       setShowApplicationFlow(true);
@@ -379,8 +369,7 @@ const Careers = () => {
         resumeToken: payload.resumeToken,
         applicant: nextApplicant,
         formState: nextFormState,
-        wizardStep: 1,
-        questionsIntroComplete: false
+        wizardStep: 1
       });
       setInviteMessage(`Assessment started for ${nextApplicant?.name || 'this applicant'}.`);
 
@@ -417,14 +406,28 @@ const Careers = () => {
     });
   };
 
-  const updateVideoProgress = (event) => {
-    const video = event.currentTarget;
-    const duration = video.duration || 0;
+  useEffect(() => {
+    if (!showApplicationFlow || wizardStep !== 0 || !videoAvailable || !videoReady || videoComplete) {
+      return undefined;
+    }
 
-    if (!duration) return;
+    const updateProgress = () => {
+      const video = videoRef.current;
+      const duration = video?.duration || 0;
 
-    setVideoProgress(Math.min(100, (video.currentTime / duration) * 100));
-  };
+      if (duration && Number.isFinite(duration)) {
+        setVideoProgress(Math.min(100, (video.currentTime / duration) * 100));
+      }
+
+      videoProgressFrameRef.current = window.requestAnimationFrame(updateProgress);
+    };
+
+    videoProgressFrameRef.current = window.requestAnimationFrame(updateProgress);
+
+    return () => {
+      window.cancelAnimationFrame(videoProgressFrameRef.current);
+    };
+  }, [showApplicationFlow, wizardStep, videoAvailable, videoReady, videoComplete]);
 
   const updateField = (field) => (event) => {
     const value = event.target.value;
@@ -497,7 +500,6 @@ const Careers = () => {
 
   const handleRoleNext = () => {
     if (validateRoleStep()) {
-      setQuestionsIntroComplete(false);
       goToStep(2);
     }
   };
@@ -674,82 +676,43 @@ const Careers = () => {
             aria-modal="true"
             aria-labelledby="career-flow-title"
           >
-            <div
-              className={`relative min-h-screen overflow-hidden ${
-                showingQuestionsIntro ? 'px-0 py-0' : 'px-4 py-5 sm:px-6 lg:px-10'
-              }`}
-            >
+            <div className="relative min-h-screen overflow-hidden px-4 py-5 sm:px-6 lg:px-10">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(60,183,171,0.24),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08)_0,transparent_28%,rgba(255,255,255,0.04)_100%)]" />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#050b12] via-[#050b12]/85 to-transparent" />
 
-              <AnimatePresence>
-                {showingQuestionsIntro && (
-                  <motion.div
-                    key="questions-video-interlude"
-                    className="absolute inset-0 z-30 overflow-hidden bg-[#050b12]"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.45, ease: 'easeOut' }}
-                  >
-                    <video
-                      className="absolute inset-0 h-full w-full scale-[1.65] object-cover"
-                      src={questionsVideoSrc}
-                      playsInline
-                      autoPlay
-                      preload="auto"
-                      aria-label="Prompt Engineer role preview"
-                      onEnded={() => setQuestionsIntroComplete(true)}
-                      onError={() => setQuestionsIntroComplete(true)}
+              <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-secondary/80">
+                    Career Application
+                  </p>
+                  <p className="mt-1 text-sm text-light/55">
+                    Step {wizardStep + 1} of {steps.length}: {steps[wizardStep]}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-lg text-light/80 transition hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
+                  aria-label="Close career application"
+                  onClick={closeFlow}
+                >
+                  x
+                </button>
+              </header>
+
+              <div className="relative z-10 mx-auto mt-6 grid max-w-6xl grid-cols-5 gap-2">
+                {steps.map((step, index) => (
+                  <div key={step} className="h-1 rounded-full bg-white/10">
+                    <motion.div
+                      className="h-full rounded-full bg-secondary"
+                      initial={false}
+                      animate={{ width: index <= wizardStep ? '100%' : '0%' }}
+                      transition={{ duration: 0.3 }}
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0,rgba(5,11,18,0.08)_48%,rgba(5,11,18,0.38)_100%)]" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {!showingQuestionsIntro && (
-                <>
-                  <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-4">
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-secondary/80">
-                        Career Application
-                      </p>
-                      <p className="mt-1 text-sm text-light/55">
-                        Step {wizardStep + 1} of {steps.length}: {steps[wizardStep]}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-lg text-light/80 transition hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
-                      aria-label="Close career application"
-                      onClick={closeFlow}
-                    >
-                      x
-                    </button>
-                  </header>
-
-                  <div className="relative z-10 mx-auto mt-6 grid max-w-6xl grid-cols-5 gap-2">
-                    {steps.map((step, index) => (
-                      <div key={step} className="h-1 rounded-full bg-white/10">
-                        <motion.div
-                          className="h-full rounded-full bg-secondary"
-                          initial={false}
-                          animate={{ width: index <= wizardStep ? '100%' : '0%' }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      </div>
-                    ))}
                   </div>
-                </>
-              )}
+                ))}
+              </div>
 
-              <main
-                className={`relative z-10 mx-auto flex items-center ${
-                  showingQuestionsIntro
-                    ? 'min-h-screen w-full max-w-none p-0'
-                    : 'min-h-[calc(100svh-132px)] max-w-6xl py-8'
-                }`}
-              >
+              <main className="relative z-10 mx-auto flex min-h-[calc(100svh-132px)] max-w-6xl items-center py-8">
                 <AnimatePresence mode="wait">
                   {wizardStep === 0 && (
                     <motion.section
@@ -775,11 +738,11 @@ const Careers = () => {
                             autoPlay
                             preload="metadata"
                             onCanPlay={() => setVideoReady(true)}
+                            onLoadedMetadata={() => setVideoProgress(0)}
                             onEnded={() => {
                               setVideoComplete(true);
                               setVideoProgress(100);
                             }}
-                            onTimeUpdate={updateVideoProgress}
                             onError={() => {
                               setVideoAvailable(false);
                               setVideoReady(false);
@@ -790,10 +753,11 @@ const Careers = () => {
                         <div className="absolute left-6 right-6 top-6 flex items-center justify-between gap-3">
                           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
                             <motion.div
-                              className="h-full rounded-full bg-secondary"
+                              className="h-full w-full rounded-full bg-secondary"
+                              style={{ originX: 0 }}
                               initial={false}
-                              animate={{ width: `${videoProgress}%` }}
-                              transition={{ duration: 0.18 }}
+                              animate={{ scaleX: videoProgress / 100 }}
+                              transition={{ duration: 0.08, ease: 'linear' }}
                             />
                           </div>
                           <button
@@ -884,16 +848,7 @@ const Careers = () => {
                       exit="exit"
                       transition={{ duration: 0.34, ease: 'easeOut' }}
                     >
-                      <video
-                        className="absolute inset-0 h-full w-full object-cover opacity-35"
-                        src={roleSelectionVideoSrc}
-                        muted
-                        playsInline
-                        autoPlay
-                        loop
-                        preload="metadata"
-                        aria-hidden="true"
-                      />
+                      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(60,183,171,0.14),rgba(5,11,18,0.04)),linear-gradient(90deg,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:auto,76px_76px,76px_76px]" />
                       <div className="absolute inset-0 bg-[linear-gradient(90deg,#050b12_0%,rgba(5,11,18,0.86)_38%,rgba(5,11,18,0.58)_100%)]" />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#050b12] via-transparent to-[#050b12]/30" />
 
@@ -1007,17 +962,6 @@ const Careers = () => {
                       exit="exit"
                       transition={{ duration: 0.34, ease: 'easeOut' }}
                     >
-                      <AnimatePresence mode="wait">
-                        {!questionsIntroComplete ? (
-                          <motion.div
-                            key="questions-intro"
-                            className="h-screen w-full bg-[#050b12]"
-                            initial={{ opacity: 0, scale: 1.015 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 1.025 }}
-                            transition={{ duration: 0.55, ease: 'easeOut' }}
-                          />
-                        ) : (
                           <motion.div
                             key="questions-form"
                             className="mx-auto w-full max-w-4xl"
@@ -1092,8 +1036,6 @@ const Careers = () => {
                               </div>
                             </form>
                           </motion.div>
-                        )}
-                      </AnimatePresence>
                     </motion.section>
                   )}
 

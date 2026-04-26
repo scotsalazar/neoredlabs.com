@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import {
   createApplicantToken,
+  fetchCareerApplications,
   fetchApplicantTokens
 } from '../lib/api/careerAdmin.js';
+import { adminTokenStorageKey } from './CareerAdminLogin.jsx';
 
 const statusLabels = {
   sent: 'Sent',
@@ -20,8 +23,24 @@ const initialInviteForm = {
   email: ''
 };
 
+const answerLabels = {
+  aiTools: 'AI tools',
+  api: 'API understanding',
+  modernWorkflows: 'Modern workflows'
+};
+
+const categoryLabels = {
+  authenticity: 'Authenticity',
+  detail: 'Detail',
+  structure: 'Structure',
+  processThinking: 'Process',
+  modernTechExperience: 'Modern tech'
+};
+
 const CareerAdmin = () => {
+  const navigate = useNavigate();
   const [tokens, setTokens] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [form, setForm] = useState(initialInviteForm);
   const [adminToken, setAdminToken] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
@@ -29,36 +48,60 @@ const CareerAdmin = () => {
   const [creating, setCreating] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
 
-  const loadTokens = async (token = adminToken) => {
+  const selectedApplication = useMemo(
+    () => applications.find((application) => application.id === selectedApplicationId) || applications[0] || null,
+    [applications, selectedApplicationId]
+  );
+
+  const loadDesk = async (token = adminToken) => {
     setLoading(true);
     setError('');
 
     try {
-      const payload = await fetchApplicantTokens(token);
-      setTokens(payload.tokens || []);
+      const [tokenPayload, applicationPayload] = await Promise.all([
+        fetchApplicantTokens(token),
+        fetchCareerApplications(token, { passed: undefined })
+      ]);
+      const nextApplications = applicationPayload.applications || [];
+      setTokens(tokenPayload.tokens || []);
+      setApplications(nextApplications);
+      setSelectedApplicationId((currentId) => {
+        if (currentId && nextApplications.some((application) => application.id === currentId)) {
+          return currentId;
+        }
+        return nextApplications[0]?.id || null;
+      });
     } catch (err) {
-      setError(err.message || 'Unable to load assessment invites.');
+      setError(err.message || 'Unable to load admin desk.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const stored = typeof window !== 'undefined' ? window.localStorage.getItem('neolabs_admin_token') : '';
+    const stored = typeof window !== 'undefined' ? window.localStorage.getItem(adminTokenStorageKey) : '';
     if (stored) {
       setAdminToken(stored);
-      loadTokens(stored);
+      loadDesk(stored);
     } else {
-      loadTokens('');
+      navigate('/admin/login');
     }
   }, []);
 
-  const handleTokenSave = async () => {
+  const handleRefresh = async () => {
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('neolabs_admin_token', adminToken);
+      window.localStorage.setItem(adminTokenStorageKey, adminToken);
     }
-    await loadTokens(adminToken);
+    await loadDesk(adminToken);
+  };
+
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(adminTokenStorageKey);
+    }
+    navigate('/admin/login');
   };
 
   const handleChange = (event) => {
@@ -78,7 +121,7 @@ const CareerAdmin = () => {
       setGeneratedLink(payload.inviteUrl || '');
       setMessage('Assessment invite link created. Send this link manually to the applicant.');
       setForm(initialInviteForm);
-      await loadTokens(adminToken);
+      await loadDesk(adminToken);
     } catch (err) {
       setError(err.message || 'Unable to create assessment invite link.');
     } finally {
@@ -93,10 +136,25 @@ const CareerAdmin = () => {
     >
       <section className="bg-page-muted">
         <div className="section-container py-16">
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">Internal admin</p>
+              <h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink-strong">
+                Admin desk
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-copy">
+                Generate assessment invites, review applicants, and inspect scores, answers, and status details.
+              </p>
+            </div>
+            <button type="button" onClick={handleLogout} className="btn-secondary self-start sm:self-auto">
+              Logout
+            </button>
+          </div>
+
+          <div className="grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
             <div className="surface-panel p-8">
               <div>
-                <p className="eyebrow">Internal admin</p>
+                <p className="eyebrow">Invite tool</p>
                 <h1 className="mt-3 text-3xl font-semibold tracking-tight text-ink-strong">
                   Create assessment invite
                 </h1>
@@ -113,7 +171,7 @@ const CareerAdmin = () => {
                   className="w-full rounded-2xl border border-line bg-page px-4 py-3 text-sm text-ink outline-none transition focus:border-primary"
                   placeholder="Admin token"
                 />
-                <button type="button" onClick={handleTokenSave} className="btn-secondary">
+                <button type="button" onClick={handleRefresh} className="btn-secondary">
                   Refresh
                 </button>
               </div>
@@ -211,6 +269,166 @@ const CareerAdmin = () => {
                   <p className="text-sm text-copy">No assessment invites found.</p>
                 )}
               </div>
+            </div>
+          </div>
+
+          <div className="mt-8 grid gap-8 xl:grid-cols-[0.75fr_1.25fr]">
+            <div className="surface-panel p-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="eyebrow">Applicants</p>
+                  <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ink-strong">
+                    Assessment submissions
+                  </h2>
+                </div>
+                {loading && <p className="text-sm text-copy">Loading...</p>}
+              </div>
+
+              <div className="mt-6 space-y-3">
+                {!loading && applications.map((application) => (
+                  <button
+                    key={application.id}
+                    type="button"
+                    onClick={() => setSelectedApplicationId(application.id)}
+                    className={`w-full rounded-[1.25rem] border p-4 text-left transition ${
+                      selectedApplication?.id === application.id
+                        ? 'border-primary bg-primary/5'
+                        : 'border-line bg-page hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-semibold text-ink-strong">{application.name}</h3>
+                        <p className="mt-1 text-sm text-copy">{application.email}</p>
+                      </div>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        application.passed ? 'bg-secondary/15 text-primary' : 'bg-line text-copy'
+                      }`}>
+                        {application.passed ? 'Passed' : 'Review'}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-copy">
+                      Score {application.score}/{application.passingScore} / {application.role}
+                    </p>
+                  </button>
+                ))}
+
+                {!loading && applications.length === 0 && (
+                  <p className="text-sm text-copy">No applicant submissions found.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="surface-panel p-8">
+              {selectedApplication ? (
+                <div>
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                      <p className="eyebrow">Applicant detail</p>
+                      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink-strong">
+                        {selectedApplication.name}
+                      </h2>
+                      <p className="mt-2 text-sm text-copy">{selectedApplication.email}</p>
+                    </div>
+                    <div className="rounded-[1.25rem] border border-line bg-page px-5 py-4 text-right">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-copy">
+                        Score
+                      </p>
+                      <p className="mt-1 text-4xl font-bold text-ink-strong">
+                        {selectedApplication.score}
+                      </p>
+                      <p className={`text-sm font-semibold ${
+                        selectedApplication.passed ? 'text-primary' : 'text-copy'
+                      }`}>
+                        {selectedApplication.passed ? 'Passed' : 'Below benchmark'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid gap-4 md:grid-cols-3">
+                    <div className="rounded-[1.25rem] border border-line bg-page p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                        Recommendation
+                      </p>
+                      <p className="mt-2 font-semibold text-ink-strong">{selectedApplication.recommendation}</p>
+                    </div>
+                    <div className="rounded-[1.25rem] border border-line bg-page p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                        AI risk
+                      </p>
+                      <p className="mt-2 font-semibold text-ink-strong">{selectedApplication.aiGeneratedRisk}</p>
+                    </div>
+                    <div className="rounded-[1.25rem] border border-line bg-page p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                        Submitted
+                      </p>
+                      <p className="mt-2 font-semibold text-ink-strong">
+                        {new Date(selectedApplication.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-[1.25rem] border border-line bg-page p-5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                      Summary
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-copy">{selectedApplication.summary}</p>
+                  </div>
+
+                  <div className="mt-6 grid gap-4 md:grid-cols-2">
+                    <div className="rounded-[1.25rem] border border-line bg-page p-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                        Score breakdown
+                      </p>
+                      <div className="mt-4 space-y-3">
+                        {Object.entries(selectedApplication.categoryScores || {}).map(([key, value]) => (
+                          <div key={key} className="flex items-center justify-between gap-4">
+                            <span className="text-sm text-copy">{categoryLabels[key] || key}</span>
+                            <span className="font-semibold text-ink-strong">{value}/20</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="rounded-[1.25rem] border border-line bg-page p-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                        Review notes
+                      </p>
+                      <div className="mt-4 space-y-4">
+                        <div>
+                          <p className="text-sm font-semibold text-ink-strong">Strengths</p>
+                          <ul className="mt-2 space-y-1 text-sm leading-6 text-copy">
+                            {(selectedApplication.strengths || []).map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-ink-strong">Concerns</p>
+                          <ul className="mt-2 space-y-1 text-sm leading-6 text-copy">
+                            {(selectedApplication.concerns || []).map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid gap-4">
+                    {Object.entries(selectedApplication.answers || {}).map(([key, value]) => (
+                      <div key={key} className="rounded-[1.25rem] border border-line bg-page p-5">
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                          {answerLabels[key] || key}
+                        </p>
+                        <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-copy">{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-copy">Select an applicant to view their assessment details.</p>
+              )}
             </div>
           </div>
         </div>

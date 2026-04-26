@@ -438,11 +438,19 @@ function toCareerApplicationResponse(application) {
     name: application.name,
     email: application.email,
     role: application.role,
+    answers: {
+      aiTools: application.answerAiTools,
+      api: application.answerApi,
+      modernWorkflows: application.answerModernWorkflows
+    },
     score: application.score,
     passed: application.passed,
     passingScore: application.passingScore,
     recommendation: application.recommendation,
     aiGeneratedRisk: application.aiGeneratedRisk,
+    categoryScores: application.categoryScores,
+    strengths: application.strengths,
+    concerns: application.concerns,
     summary: application.summary,
     createdAt: application.createdAt,
     latestToken: latestToken

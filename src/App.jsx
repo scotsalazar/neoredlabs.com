@@ -4,6 +4,7 @@ import About from './pages/About.jsx';
 import ApplicantNextStep from './pages/ApplicantNextStep.jsx';
 import BusinessAdmin from './pages/BusinessAdmin.jsx';
 import CareerAdmin from './pages/CareerAdmin.jsx';
+import CareerAdminLogin from './pages/CareerAdminLogin.jsx';
 import Careers from './pages/Careers.jsx';
 import Contact from './pages/Contact';
 import Home from './pages/Home.jsx';
@@ -23,7 +24,9 @@ const App = () => (
     <Route path="/business/:slug" element={<LatestPost />} />
     <Route path="/release-notes" element={<ReleaseNotes />} />
     <Route path="/admin/business" element={<BusinessAdmin />} />
-    <Route path="/admin/careers" element={<CareerAdmin />} />
+    <Route path="/admin/careers" element={<CareerAdminLogin />} />
+    <Route path="/admin/login" element={<CareerAdminLogin />} />
+    <Route path="/admin/desk" element={<CareerAdmin />} />
     <Route path="/services" element={<Services />} />
     <Route path="/pricing" element={<Pricing />} />
     <Route path="/about" element={<About />} />

@@ -324,7 +324,7 @@ const JobOfferResponse = () => {
                         <legend className="text-sm font-semibold text-ink-strong">
                           Do you have a working personal laptop/computer?
                         </legend>
-                        <div className="flex flex-wrap gap-x-8 gap-y-3">
+                        <div className="mt-1 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-12">
                           {[
                             ['yes', 'Yes'],
                             ['no', 'No']
@@ -371,7 +371,7 @@ const JobOfferResponse = () => {
                           type="button"
                           whileTap={{ scale: 0.98 }}
                           onClick={() => openConfirmation('declined')}
-                          className="rounded-2xl border border-red-500/30 bg-red-500/5 px-5 py-4 text-sm font-semibold text-red-600 transition hover:-translate-y-0.5 hover:border-red-500/50 hover:bg-red-500/10 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+                          className="rounded-2xl border border-line bg-panel px-5 py-4 text-sm font-semibold text-ink transition hover:-translate-y-0.5 hover:border-primary/40 hover:bg-page active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
                           disabled={submitting}
                         >
                           Decline

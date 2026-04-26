@@ -74,8 +74,8 @@ const CareerAdmin = () => {
         fetchApplicantTokens(token),
         fetchCareerApplications(token, { passed: undefined })
       ]);
-      const nextApplications = applicationPayload.applications || [];
-      setTokens(tokenPayload.tokens || []);
+      const nextApplications = applicationPayload?.applications || [];
+      setTokens(tokenPayload?.tokens || []);
       setApplications(nextApplications);
       setSelectedApplicationId((currentId) => {
         if (currentId && nextApplications.some((application) => application.id === currentId)) {
@@ -128,6 +128,9 @@ const CareerAdmin = () => {
 
     try {
       const payload = await createApplicantToken(form, adminToken);
+      if (!payload?.inviteUrl) {
+        throw new Error('Assessment invite API returned no secure link. Please refresh and try again.');
+      }
       setGeneratedLink(payload.inviteUrl || '');
       setMessage('Assessment invite link created. Send this link manually to the applicant.');
       setForm(initialInviteForm);
@@ -149,6 +152,9 @@ const CareerAdmin = () => {
 
     try {
       const payload = await createJobOfferFollowUp(selectedApplication.id, adminToken);
+      if (!payload?.offerUrl) {
+        throw new Error('Follow-up API returned no secured response link. Please refresh and try again.');
+      }
       setFollowUpLink(payload.offerUrl || '');
       setMessage('Follow-up marked sent. Copy the secured job offer response link into your email.');
       await loadDesk(adminToken);

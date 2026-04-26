@@ -22,7 +22,7 @@ async function handleResponse(response) {
   }
 
   if (response.ok) {
-    return payload;
+    return payload || {};
   }
 
   throw buildError(payload?.error || `Request failed with status ${response.status}`, payload);

@@ -128,6 +128,37 @@ describe('CareerAdmin page', () => {
     expect(await screen.findByDisplayValue('https://careers.neoredlabs.com/careers?token=secure-token')).toBeInTheDocument();
   });
 
+  it('keeps the generated invite visible when a post-create refresh returns an empty payload', async () => {
+    fetchApplicantTokens
+      .mockResolvedValueOnce({ tokens: [] })
+      .mockResolvedValueOnce(null);
+    fetchCareerApplications
+      .mockResolvedValueOnce({ applications: [] })
+      .mockResolvedValueOnce(null);
+    createApplicantToken.mockResolvedValue({
+      inviteUrl: 'https://careers.neoredlabs.com/careers?token=secure-token',
+      token: {
+        id: 12,
+        name: 'Alex Johnson',
+        email: 'alex@example.com',
+        status: 'created'
+      }
+    });
+
+    renderPage();
+
+    fireEvent.change(await screen.findByLabelText(/applicant name/i), {
+      target: { value: 'Alex Johnson' }
+    });
+    fireEvent.change(screen.getByLabelText(/applicant email/i), {
+      target: { value: 'alex@example.com' }
+    });
+    fireEvent.click(screen.getByRole('button', { name: /create secure link/i }));
+
+    expect(await screen.findByDisplayValue('https://careers.neoredlabs.com/careers?token=secure-token')).toBeInTheDocument();
+    expect(screen.queryByText(/Cannot read properties/i)).not.toBeInTheDocument();
+  });
+
   it('marks follow-up sent and displays the secured offer response link', async () => {
     fetchApplicantTokens.mockResolvedValue({ tokens: [] });
     fetchCareerApplications.mockResolvedValue({

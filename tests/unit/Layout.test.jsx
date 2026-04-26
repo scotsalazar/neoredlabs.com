@@ -1,18 +1,24 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import Layout from '../../src/components/Layout.jsx';
+import { ThemeProvider } from '../../src/components/ThemeProvider.jsx';
 
 describe('Layout component', () => {
-  it('injects SEO meta tags into the head', () => {
+  it('injects SEO meta tags into the head', async () => {
     const title = 'Test Page Title';
     const description = 'A test description for SEO tags.';
     const image = '/test-image.png';
     render(
-      <Layout title={title} description={description} image={image}>
-        <div>Content</div>
-      </Layout>
+      <ThemeProvider>
+        <BrowserRouter>
+          <Layout title={title} description={description} image={image}>
+            <div>Content</div>
+          </Layout>
+        </BrowserRouter>
+      </ThemeProvider>
     );
     // Document title
-    expect(document.title).toBe(title);
+    await waitFor(() => expect(document.title).toBe(title));
     // Open Graph tags
     const ogTitle = document.querySelector('meta[property="og:title"]');
     const ogDescription = document.querySelector('meta[property="og:description"]');

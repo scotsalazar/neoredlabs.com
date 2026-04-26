@@ -64,6 +64,26 @@ model CareerApplication {
   summary               String
   createdAt             DateTime @default(now())
 
+  applicantTokens ApplicantToken[]
+
   @@index([role, passed, score])
   @@index([createdAt])
+}
+
+model ApplicantToken {
+  id                  Int               @id @default(autoincrement())
+  careerApplicationId Int
+  tokenHash           String            @unique
+  expiresAt           DateTime
+  usedAt              DateTime?
+  revokedAt           DateTime?
+  sentAt              DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  careerApplication CareerApplication @relation(fields: [careerApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([careerApplicationId, usedAt, revokedAt])
+  @@index([expiresAt])
+  @@map("applicant_tokens")
 }

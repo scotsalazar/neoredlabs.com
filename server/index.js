@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('node:path');
 const fs = require('node:fs');
+const crypto = require('node:crypto');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
 const defaultBusinessPosts = require('./data/default-business-posts');
@@ -16,6 +17,17 @@ const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN?.trim() || '';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY?.trim() || '';
 const OPENAI_ASSESSMENT_MODEL = process.env.OPENAI_ASSESSMENT_MODEL?.trim() || 'gpt-5.4-nano';
 const CAREER_ASSESSMENT_PASSING_SCORE = 70;
+const APPLICANT_TOKEN_HASH_SECRET =
+  process.env.APPLICANT_TOKEN_HASH_SECRET?.trim() ||
+  ADMIN_TOKEN ||
+  'development-applicant-token-secret-change-me';
+const APPLICANT_TOKEN_TTL_DAYS = Math.max(
+  1,
+  Math.round(Number(process.env.APPLICANT_TOKEN_TTL_DAYS || 7)) || 7
+);
+const CAREERS_BASE_URL = (process.env.CAREERS_BASE_URL?.trim() || 'https://careers.neoredlabs.com')
+  .replace(/\/+$/, '');
+const NEXT_STEP_EMAIL_WEBHOOK_URL = process.env.NEXT_STEP_EMAIL_WEBHOOK_URL?.trim() || '';
 
 const DEFAULT_SLOTS = [
   { slot: '09:00', capacity: 5 },
@@ -29,6 +41,7 @@ const DEFAULT_SLOTS = [
 const SLOT_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TOKEN_REGEX = /^[A-Za-z0-9_-]{32,}$/;
 const CAREER_ASSESSMENT_SCHEMA = {
   type: 'object',
   additionalProperties: false,
@@ -300,10 +313,14 @@ function parseOptionalDate(value) {
 
 function isAdminAuthorized(req) {
   if (!ADMIN_TOKEN) {
-    return true;
+    return false;
   }
 
-  return req.get('x-admin-token') === ADMIN_TOKEN;
+  const providedToken = req.get('x-admin-token') || '';
+  const expected = Buffer.from(ADMIN_TOKEN);
+  const provided = Buffer.from(providedToken);
+
+  return provided.length === expected.length && crypto.timingSafeEqual(provided, expected);
 }
 
 function requireAdmin(req, res, next) {
@@ -312,6 +329,101 @@ function requireAdmin(req, res, next) {
   }
 
   return next();
+}
+
+function getPrismaClient(req) {
+  return req?.app?.locals?.prisma || prisma;
+}
+
+function generateApplicantToken() {
+  return crypto.randomBytes(32).toString('base64url');
+}
+
+function hashApplicantToken(token, secret = APPLICANT_TOKEN_HASH_SECRET) {
+  if (typeof token !== 'string' || !TOKEN_REGEX.test(token)) {
+    return null;
+  }
+
+  return crypto
+    .createHmac('sha256', secret)
+    .update(token)
+    .digest('hex');
+}
+
+function buildNextStepUrl(token) {
+  return `${CAREERS_BASE_URL}/next-step?token=${encodeURIComponent(token)}`;
+}
+
+function getApplicantTokenExpiry(now = new Date()) {
+  return new Date(now.getTime() + APPLICANT_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
+}
+
+function getApplicantTokenStatus(token) {
+  if (!token) return 'none';
+  if (token.usedAt) return 'used';
+  if (token.revokedAt) return 'revoked';
+  if (new Date(token.expiresAt).getTime() <= Date.now()) return 'expired';
+  if (token.sentAt) return 'sent';
+  return 'created';
+}
+
+function isApplicantTokenUsable(token, now = new Date()) {
+  return Boolean(
+    token &&
+    !token.usedAt &&
+    !token.revokedAt &&
+    new Date(token.expiresAt).getTime() > now.getTime()
+  );
+}
+
+function toCareerApplicationResponse(application) {
+  const latestToken = Array.isArray(application.applicantTokens)
+    ? application.applicantTokens[0]
+    : null;
+
+  return {
+    id: application.id,
+    name: application.name,
+    email: application.email,
+    role: application.role,
+    score: application.score,
+    passed: application.passed,
+    passingScore: application.passingScore,
+    recommendation: application.recommendation,
+    aiGeneratedRisk: application.aiGeneratedRisk,
+    summary: application.summary,
+    createdAt: application.createdAt,
+    latestToken: latestToken
+      ? {
+          id: latestToken.id,
+          status: getApplicantTokenStatus(latestToken),
+          expiresAt: latestToken.expiresAt,
+          usedAt: latestToken.usedAt,
+          revokedAt: latestToken.revokedAt,
+          sentAt: latestToken.sentAt
+        }
+      : null
+  };
+}
+
+function toApplicantPrefill(application) {
+  return {
+    name: application.name,
+    email: application.email,
+    role: application.role
+  };
+}
+
+async function findUsableApplicantToken(prismaClient, rawToken) {
+  const tokenHash = hashApplicantToken(rawToken);
+  if (!tokenHash) return null;
+
+  const token = await prismaClient.applicantToken.findUnique({
+    where: { tokenHash },
+    include: { careerApplication: true }
+  });
+
+  return isApplicantTokenUsable(token) ? token : null;
 }
 
 function validateBusinessPostPayload(body, { partial = false } = {}) {
@@ -507,6 +619,138 @@ app.get('/api/admin/business-posts', requireAdmin, async (_req, res) => {
   }
 });
 
+app.get('/api/admin/career-applications', requireAdmin, async (req, res) => {
+  const prismaClient = getPrismaClient(req);
+  const passedFilter = req.query.passed;
+  const where = {};
+
+  if (passedFilter === 'true') {
+    where.passed = true;
+  } else if (passedFilter === 'false') {
+    where.passed = false;
+  }
+
+  try {
+    const applications = await prismaClient.careerApplication.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }],
+      include: {
+        applicantTokens: {
+          orderBy: [{ createdAt: 'desc' }],
+          take: 1
+        }
+      }
+    });
+
+    return res.json({
+      applications: applications.map(toCareerApplicationResponse)
+    });
+  } catch (error) {
+    console.error('Failed to load career applications', error);
+    return res.status(500).json({ error: 'Unable to load career applications.' });
+  }
+});
+
+app.post('/api/admin/career-applications/:id/next-step-email', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: 'Invalid career application id.' });
+  }
+
+  if (!NEXT_STEP_EMAIL_WEBHOOK_URL) {
+    return res.status(500).json({ error: 'Next-step email webhook is not configured.' });
+  }
+
+  const prismaClient = getPrismaClient(req);
+
+  try {
+    const application = await prismaClient.careerApplication.findUnique({
+      where: { id }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Career application not found.' });
+    }
+
+    if (!application.passed) {
+      return res.status(400).json({ error: 'Only successful step-1 applicants can receive a next-step link.' });
+    }
+
+    if (!application.email || !EMAIL_REGEX.test(application.email)) {
+      return res.status(400).json({ error: 'Applicant must have a valid email before sending a next-step link.' });
+    }
+
+    const rawToken = generateApplicantToken();
+    const tokenHash = hashApplicantToken(rawToken);
+    const expiresAt = getApplicantTokenExpiry();
+    const nextStepUrl = buildNextStepUrl(rawToken);
+
+    const createdToken = await prismaClient.$transaction(async (tx) => {
+      await tx.applicantToken.updateMany({
+        where: {
+          careerApplicationId: application.id,
+          usedAt: null,
+          revokedAt: null
+        },
+        data: {
+          revokedAt: new Date()
+        }
+      });
+
+      return tx.applicantToken.create({
+        data: {
+          careerApplicationId: application.id,
+          tokenHash,
+          expiresAt
+        }
+      });
+    });
+
+    const webhookResponse = await fetch(NEXT_STEP_EMAIL_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        type: 'career_next_step',
+        applicationId: application.id,
+        name: application.name,
+        email: application.email,
+        role: application.role,
+        expiresAt: expiresAt.toISOString(),
+        nextStepUrl
+      })
+    });
+
+    if (!webhookResponse.ok) {
+      await prismaClient.applicantToken.update({
+        where: { id: createdToken.id },
+        data: { revokedAt: new Date() }
+      });
+      return res.status(502).json({ error: 'Unable to send next-step email right now.' });
+    }
+
+    const sentToken = await prismaClient.applicantToken.update({
+      where: { id: createdToken.id },
+      data: { sentAt: new Date() }
+    });
+
+    return res.status(201).json({
+      success: true,
+      token: {
+        id: sentToken.id,
+        status: getApplicantTokenStatus(sentToken),
+        expiresAt: sentToken.expiresAt,
+        sentAt: sentToken.sentAt
+      }
+    });
+  } catch (error) {
+    console.error('Failed to send career next-step email', error);
+    return res.status(500).json({ error: 'Unable to send next-step email.' });
+  }
+});
+
 app.post('/api/admin/business-posts', requireAdmin, async (req, res) => {
   const { errors, data } = validateBusinessPostPayload(req.body);
 
@@ -536,6 +780,7 @@ app.post('/api/admin/business-posts', requireAdmin, async (req, res) => {
 
 app.post('/api/career-assessment', async (req, res) => {
   const { name, role, answers } = req.body || {};
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
 
   if (!OPENAI_API_KEY) {
     return res.status(500).json({ error: 'OpenAI API key is not configured.' });
@@ -543,6 +788,10 @@ app.post('/api/career-assessment', async (req, res) => {
 
   if (typeof name !== 'string' || name.trim().length === 0) {
     return res.status(400).json({ error: 'Name is required.' });
+  }
+
+  if (!email || !EMAIL_REGEX.test(email)) {
+    return res.status(400).json({ error: 'A valid email address is required.' });
   }
 
   if (role !== 'Prompt Engineer') {
@@ -569,9 +818,7 @@ app.post('/api/career-assessment', async (req, res) => {
     const application = await prisma.careerApplication.create({
       data: {
         name: name.trim(),
-        email: typeof req.body.email === 'string' && req.body.email.trim()
-          ? req.body.email.trim().toLowerCase()
-          : null,
+        email,
         role,
         answerAiTools: normalizedAnswers.q1,
         answerApi: normalizedAnswers.q2,
@@ -599,6 +846,86 @@ app.post('/api/career-assessment', async (req, res) => {
     return res.status(502).json({
       error: 'Unable to score the assessment right now.'
     });
+  }
+});
+
+app.post('/api/applicant-tokens/validate', async (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const prismaClient = getPrismaClient(req);
+
+  try {
+    const applicantToken = await findUsableApplicantToken(prismaClient, token);
+
+    if (!applicantToken) {
+      return res.json({ valid: false });
+    }
+
+    return res.json({
+      valid: true,
+      applicant: toApplicantPrefill(applicantToken.careerApplication),
+      expiresAt: applicantToken.expiresAt
+    });
+  } catch (error) {
+    console.error('Failed to validate applicant token', error);
+    return res.status(500).json({ error: 'Unable to validate next-step link.' });
+  }
+});
+
+app.post('/api/applicant-tokens/submit', async (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const confirmed = req.body?.confirmed === true;
+  const tokenHash = hashApplicantToken(token);
+  const prismaClient = getPrismaClient(req);
+
+  if (!confirmed) {
+    return res.status(400).json({ error: 'Confirmation is required.' });
+  }
+
+  if (!tokenHash) {
+    return res.status(400).json({ error: 'This link is invalid or has expired.' });
+  }
+
+  try {
+    const now = new Date();
+    const applicantToken = await prismaClient.$transaction(async (tx) => {
+      const updated = await tx.applicantToken.updateMany({
+        where: {
+          tokenHash,
+          usedAt: null,
+          revokedAt: null,
+          expiresAt: {
+            gt: now
+          }
+        },
+        data: {
+          usedAt: now
+        }
+      });
+
+      if (updated.count !== 1) {
+        const error = new Error('Applicant token is not usable.');
+        error.code = 'TOKEN_NOT_USABLE';
+        throw error;
+      }
+
+      return tx.applicantToken.findUnique({
+        where: { tokenHash },
+        include: { careerApplication: true }
+      });
+    });
+
+    return res.json({
+      success: true,
+      applicant: toApplicantPrefill(applicantToken.careerApplication),
+      usedAt: applicantToken.usedAt
+    });
+  } catch (error) {
+    if (error.code === 'TOKEN_NOT_USABLE') {
+      return res.status(400).json({ error: 'This link is invalid or has expired.' });
+    }
+
+    console.error('Failed to submit applicant continuation', error);
+    return res.status(500).json({ error: 'Unable to submit next-step confirmation.' });
   }
 });
 
@@ -806,4 +1133,10 @@ if (require.main === module) {
   });
 }
 
-module.exports = app;
+module.exports = Object.assign(app, {
+  generateApplicantToken,
+  hashApplicantToken,
+  buildNextStepUrl,
+  isApplicantTokenUsable,
+  getApplicantTokenStatus
+});

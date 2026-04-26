@@ -1,7 +1,9 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import About from './pages/About.jsx';
+import ApplicantNextStep from './pages/ApplicantNextStep.jsx';
 import BusinessAdmin from './pages/BusinessAdmin.jsx';
+import CareerAdmin from './pages/CareerAdmin.jsx';
 import Careers from './pages/Careers.jsx';
 import Contact from './pages/Contact';
 import Home from './pages/Home.jsx';
@@ -21,10 +23,12 @@ const App = () => (
     <Route path="/business/:slug" element={<LatestPost />} />
     <Route path="/release-notes" element={<ReleaseNotes />} />
     <Route path="/admin/business" element={<BusinessAdmin />} />
+    <Route path="/admin/careers" element={<CareerAdmin />} />
     <Route path="/services" element={<Services />} />
     <Route path="/pricing" element={<Pricing />} />
     <Route path="/about" element={<About />} />
     <Route path="/careers" element={<Careers />} />
+    <Route path="/next-step" element={<ApplicantNextStep />} />
     <Route path="/contact" element={<Contact />} />
     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
     <Route path="/terms-of-service" element={<TermsOfService />} />

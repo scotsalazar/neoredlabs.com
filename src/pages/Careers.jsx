@@ -69,6 +69,7 @@ const promptEngineerQuestions = [
 const steps = ['Intro', 'Profile', 'Role', 'Questions', 'Thanks'];
 const introVideoSrc = '/assets/videos/career-application-intro.mp4';
 const roleSelectionVideoSrc = '/assets/videos/career-application-role-select.mp4';
+const questionsVideoSrc = '/assets/videos/career-application-questions.mp4';
 
 const initialFormState = {
   name: '',
@@ -101,6 +102,7 @@ const Careers = () => {
   const [videoComplete, setVideoComplete] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoReady, setVideoReady] = useState(false);
+  const [questionsIntroComplete, setQuestionsIntroComplete] = useState(false);
   const overlayRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -108,6 +110,7 @@ const Careers = () => {
     () => roleCards.find((role) => role.title === formState.role),
     [formState.role]
   );
+  const showingQuestionsIntro = wizardStep === 3 && !questionsIntroComplete;
 
   const resetFlow = () => {
     setWizardStep(0);
@@ -121,6 +124,7 @@ const Careers = () => {
     setVideoComplete(false);
     setVideoProgress(0);
     setVideoReady(false);
+    setQuestionsIntroComplete(false);
   };
 
   useEffect(() => {
@@ -203,8 +207,10 @@ const Careers = () => {
       newErrors.name = 'Enter your name to start your profile.';
     }
 
-    if (formState.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
-      newErrors.email = 'Enter a valid email address or leave it blank.';
+    if (!formState.email.trim()) {
+      newErrors.email = 'Enter your email so we can send next steps.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
+      newErrors.email = 'Enter a valid email address.';
     }
 
     setErrors(newErrors);
@@ -243,7 +249,10 @@ const Careers = () => {
   };
 
   const handleRoleNext = () => {
-    if (validateRoleStep()) goToStep(3);
+    if (validateRoleStep()) {
+      setQuestionsIntroComplete(false);
+      goToStep(3);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -397,43 +406,83 @@ const Careers = () => {
             aria-modal="true"
             aria-labelledby="career-flow-title"
           >
-            <div className="relative min-h-screen overflow-hidden px-4 py-5 sm:px-6 lg:px-10">
+            <div
+              className={`relative min-h-screen overflow-hidden ${
+                showingQuestionsIntro ? 'px-0 py-0' : 'px-4 py-5 sm:px-6 lg:px-10'
+              }`}
+            >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(60,183,171,0.24),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08)_0,transparent_28%,rgba(255,255,255,0.04)_100%)]" />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#050b12] via-[#050b12]/85 to-transparent" />
 
-              <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-secondary/80">
-                    Career Application
-                  </p>
-                  <p className="mt-1 text-sm text-light/55">
-                    Step {wizardStep + 1} of {steps.length}: {steps[wizardStep]}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-lg text-light/80 transition hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
-                  aria-label="Close career application"
-                  onClick={closeFlow}
-                >
-                  x
-                </button>
-              </header>
-
-              <div className="relative z-10 mx-auto mt-6 grid max-w-6xl grid-cols-5 gap-2">
-                {steps.map((step, index) => (
-                  <div key={step} className="h-1 rounded-full bg-white/10">
-                    <motion.div
-                      className="h-full rounded-full bg-secondary"
-                      initial={false}
-                      animate={{ width: index <= wizardStep ? '100%' : '0%' }}
-                      transition={{ duration: 0.3 }}
+              <AnimatePresence>
+                {showingQuestionsIntro && (
+                  <motion.div
+                    key="questions-video-interlude"
+                    className="absolute inset-0 z-30 overflow-hidden bg-[#050b12]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.45, ease: 'easeOut' }}
+                  >
+                    <video
+                      className="absolute inset-0 h-full w-full scale-[1.65] object-cover"
+                      src={questionsVideoSrc}
+                      muted
+                      playsInline
+                      autoPlay
+                      preload="auto"
+                      aria-label="Prompt Engineer role preview"
+                      onEnded={() => setQuestionsIntroComplete(true)}
+                      onError={() => setQuestionsIntroComplete(true)}
                     />
-                  </div>
-                ))}
-              </div>
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0,rgba(5,11,18,0.08)_48%,rgba(5,11,18,0.38)_100%)]" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              <main className="relative z-10 mx-auto flex min-h-[calc(100svh-132px)] max-w-6xl items-center py-8">
+              {!showingQuestionsIntro && (
+                <>
+                  <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-4">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-secondary/80">
+                        Career Application
+                      </p>
+                      <p className="mt-1 text-sm text-light/55">
+                        Step {wizardStep + 1} of {steps.length}: {steps[wizardStep]}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-lg text-light/80 transition hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
+                      aria-label="Close career application"
+                      onClick={closeFlow}
+                    >
+                      x
+                    </button>
+                  </header>
+
+                  <div className="relative z-10 mx-auto mt-6 grid max-w-6xl grid-cols-5 gap-2">
+                    {steps.map((step, index) => (
+                      <div key={step} className="h-1 rounded-full bg-white/10">
+                        <motion.div
+                          className="h-full rounded-full bg-secondary"
+                          initial={false}
+                          animate={{ width: index <= wizardStep ? '100%' : '0%' }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <main
+                className={`relative z-10 mx-auto flex items-center ${
+                  showingQuestionsIntro
+                    ? 'min-h-screen w-full max-w-none p-0'
+                    : 'min-h-[calc(100svh-132px)] max-w-6xl py-8'
+                }`}
+              >
                 <AnimatePresence mode="wait">
                   {wizardStep === 0 && (
                     <motion.section
@@ -569,7 +618,7 @@ const Careers = () => {
                         What should we call you?
                       </h2>
                       <p className="mt-4 text-base leading-7 text-light/65">
-                        We will use your name for the next steps. Add your email if you want to hear back from us.
+                        We will use your name and email for the next steps if your first assessment is successful.
                       </p>
 
                       <div className="mt-9 grid gap-5">
@@ -587,7 +636,7 @@ const Careers = () => {
                         </label>
 
                         <label className="space-y-3">
-                          <span className="block text-sm font-semibold text-light">Email optional</span>
+                          <span className="block text-sm font-semibold text-light">Email</span>
                           <input
                             type="email"
                             name="email"
@@ -745,78 +794,100 @@ const Careers = () => {
                   {wizardStep === 3 && (
                     <motion.section
                       key="questions"
-                      className="mx-auto w-full max-w-4xl"
+                      className="mx-auto w-full max-w-5xl"
                       variants={stepVariants}
                       initial="enter"
                       animate="center"
                       exit="exit"
                       transition={{ duration: 0.34, ease: 'easeOut' }}
                     >
-                      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
-                        {selectedRole?.title || 'Prompt Engineer'} Checkpoint
-                      </p>
-                      <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
-                        Three quick signals.
-                      </h2>
-                      <p className="mt-4 text-base leading-7 text-light/65">
-                        Keep it plain and specific. We value clear thinking over perfect jargon. AI-generated answers may be detected.
-                      </p>
-
-                      <form className="mt-9 space-y-5" onSubmit={handleSubmit}>
-                        {promptEngineerQuestions.map((question, index) => {
-                          const key = `q${index + 1}`;
-
-                          return (
-                            <label
-                              key={key}
-                              className="block rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5"
-                            >
-                              <span className="block text-sm font-semibold leading-6 text-light">
-                                {question}
-                              </span>
-                              <textarea
-                                name={key}
-                                value={formState.answers[key]}
-                                onChange={updateAnswer(key)}
-                                rows={4}
-                                className="mt-4 w-full resize-none rounded-2xl border border-white/10 bg-[#07111b]/90 px-4 py-3 text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
-                                placeholder="Type your answer here"
-                              />
-                              {errors[key] && <p className="mt-2 text-sm text-secondary">{errors[key]}</p>}
-                            </label>
-                          );
-                        })}
-
-                        {formMessage && (
-                          <p className="rounded-2xl border border-secondary/25 bg-secondary/10 px-4 py-3 text-sm font-semibold text-secondary">
-                            {formMessage}
-                          </p>
-                        )}
-
-                        {submissionStage && (
-                          <p className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-light/75">
-                            {submissionStage}
-                          </p>
-                        )}
-
-                        <div className="flex flex-wrap items-center gap-3 pt-2">
-                          <button
-                            type="submit"
-                          className="btn-primary bg-secondary text-dark hover:brightness-100 disabled:cursor-wait disabled:opacity-70"
-                          disabled={submitting}
-                        >
-                            {submitting ? 'Assessing...' : 'Submit Application'}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
-                            onClick={() => goToStep(2)}
-                            disabled={submitting}
+                      <AnimatePresence mode="wait">
+                        {!questionsIntroComplete ? (
+                          <motion.div
+                            key="questions-intro"
+                            className="h-screen w-full bg-[#050b12]"
+                            initial={{ opacity: 0, scale: 1.015 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.025 }}
+                            transition={{ duration: 0.55, ease: 'easeOut' }}
+                          />
+                        ) : (
+                          <motion.div
+                            key="questions-form"
+                            className="mx-auto w-full max-w-4xl"
+                            initial={{ opacity: 0, y: 22 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -18 }}
+                            transition={{ duration: 0.34, ease: 'easeOut' }}
                           >
-                            Back
-                          </button>
-                        </div>
-                      </form>
+                            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                              {selectedRole?.title || 'Prompt Engineer'} Checkpoint
+                            </p>
+                            <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                              Three quick signals.
+                            </h2>
+                            <p className="mt-4 text-base leading-7 text-light/65">
+                              Keep it plain and specific. We value clear thinking over perfect jargon. AI-generated answers may be detected.
+                            </p>
+
+                            <form className="mt-9 space-y-5" onSubmit={handleSubmit}>
+                              {promptEngineerQuestions.map((question, index) => {
+                                const key = `q${index + 1}`;
+
+                                return (
+                                  <label
+                                    key={key}
+                                    className="block rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5"
+                                  >
+                                    <span className="block text-sm font-semibold leading-6 text-light">
+                                      {question}
+                                    </span>
+                                    <textarea
+                                      name={key}
+                                      value={formState.answers[key]}
+                                      onChange={updateAnswer(key)}
+                                      rows={4}
+                                      className="mt-4 w-full resize-none rounded-2xl border border-white/10 bg-[#07111b]/90 px-4 py-3 text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
+                                      placeholder="Type your answer here"
+                                    />
+                                    {errors[key] && <p className="mt-2 text-sm text-secondary">{errors[key]}</p>}
+                                  </label>
+                                );
+                              })}
+
+                              {formMessage && (
+                                <p className="rounded-2xl border border-secondary/25 bg-secondary/10 px-4 py-3 text-sm font-semibold text-secondary">
+                                  {formMessage}
+                                </p>
+                              )}
+
+                              {submissionStage && (
+                                <p className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-light/75">
+                                  {submissionStage}
+                                </p>
+                              )}
+
+                              <div className="flex flex-wrap items-center gap-3 pt-2">
+                                <button
+                                  type="submit"
+                                  className="btn-primary bg-secondary text-dark hover:brightness-100 disabled:cursor-wait disabled:opacity-70"
+                                  disabled={submitting}
+                                >
+                                  {submitting ? 'Assessing...' : 'Submit Application'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                                  onClick={() => goToStep(2)}
+                                  disabled={submitting}
+                                >
+                                  Back
+                                </button>
+                              </div>
+                            </form>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.section>
                   )}
 

@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
 const defaultBusinessPosts = require('./data/default-business-posts');
+const openPositions = require('./data/open-positions.json');
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -12,7 +13,6 @@ const app = express();
 const prisma = new PrismaClient();
 app.locals.prisma = prisma;
 
-const jobsFilePath = path.join(__dirname, 'data', 'open-positions.json');
 const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN?.trim() || '';
 const ADMIN_SESSION_COOKIE = 'neolabs_admin_session';
 const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
@@ -815,10 +815,7 @@ async function ensureDefaultBusinessPosts() {
 
 app.get('/api/jobs', async (_req, res) => {
   try {
-    const raw = await fs.promises.readFile(jobsFilePath, 'utf8');
-    const jobs = JSON.parse(raw);
-
-    const response = jobs.map((job) => ({
+    const response = openPositions.map((job) => ({
       id: job.id,
       title: job.title,
       team: job.team,

@@ -55,6 +55,18 @@ export async function sendCareerNextStepEmail(applicationId, token) {
   return handleResponse(response);
 }
 
+export async function createJobOfferFollowUp(applicationId, token) {
+  const response = await fetch(`${API_BASE}/admin/career-applications/${applicationId}/follow-up`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      ...adminHeaders(token)
+    }
+  });
+
+  return handleResponse(response);
+}
+
 export async function fetchApplicantTokens(token) {
   const response = await fetch(`${API_BASE}/admin/applicant-tokens`, {
     headers: {
@@ -81,6 +93,7 @@ export async function createApplicantToken(data, token) {
 
 export default {
   fetchCareerApplications,
+  createJobOfferFollowUp,
   sendCareerNextStepEmail,
   fetchApplicantTokens,
   createApplicantToken

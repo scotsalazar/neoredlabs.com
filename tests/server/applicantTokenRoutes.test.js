@@ -285,6 +285,161 @@ describe('assessment invite token routes', () => {
     }));
   });
 
+  it('creates a secured job offer follow-up link for passed applicants', async () => {
+    const application = {
+      id: 101,
+      name: 'Alex Johnson',
+      email: 'alex@example.com',
+      role: 'Prompt Engineer',
+      passed: true,
+      jobOfferDecision: null
+    };
+    const createdOfferToken = {
+      id: 81,
+      careerApplicationId: 101,
+      expiresAt: new Date(Date.now() + 60_000)
+    };
+    const tx = {
+      jobOfferToken: {
+        updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+        create: vi.fn().mockResolvedValue(createdOfferToken)
+      },
+      careerApplication: {
+        update: vi.fn().mockResolvedValue({})
+      }
+    };
+    app.locals.prisma = {
+      careerApplication: {
+        findUnique: vi.fn().mockResolvedValue(application)
+      },
+      $transaction: vi.fn((callback) => callback(tx))
+    };
+
+    const response = await request(app)
+      .post('/api/admin/career-applications/101/follow-up')
+      .set('x-admin-token', 'admin-test-token')
+      .expect(201);
+
+    expect(response.body.offerUrl).toContain('/offer-response?token=');
+    expect(tx.jobOfferToken.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        careerApplicationId: 101,
+        tokenHash: expect.any(String)
+      })
+    }));
+    expect(tx.careerApplication.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        applicationStatus: 'follow_up_sent',
+        followUpSentAt: expect.any(Date)
+      })
+    }));
+  });
+
+  it('validates a usable job offer response token', async () => {
+    const rawToken = app.generateApplicantToken();
+    app.locals.prisma = {
+      jobOfferToken: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: 91,
+          tokenHash: app.hashApplicantToken(rawToken),
+          expiresAt: new Date(Date.now() + 60_000),
+          usedAt: null,
+          revokedAt: null,
+          careerApplication: {
+            name: 'Alex Johnson',
+            email: 'alex@example.com',
+            role: 'Prompt Engineer',
+            applicationStatus: 'follow_up_sent'
+          }
+        })
+      }
+    };
+
+    const response = await request(app)
+      .post('/api/job-offer-tokens/validate')
+      .send({ token: rawToken })
+      .expect(200);
+
+    expect(response.body.valid).toBe(true);
+    expect(response.body.applicant).toEqual({
+      name: 'Alex Johnson',
+      email: 'alex@example.com',
+      role: 'Prompt Engineer',
+      status: 'follow_up_sent'
+    });
+  });
+
+  it('submits a job offer response and updates application status once', async () => {
+    const rawToken = app.generateApplicantToken();
+    const offerToken = {
+      id: 91,
+      careerApplicationId: 101,
+      tokenHash: app.hashApplicantToken(rawToken),
+      expiresAt: new Date(Date.now() + 60_000),
+      usedAt: null,
+      revokedAt: null,
+      careerApplication: {
+        id: 101,
+        name: 'Alex Johnson',
+        email: 'alex@example.com',
+        role: 'Prompt Engineer'
+      }
+    };
+    const tx = {
+      jobOfferToken: {
+        updateMany: vi.fn().mockResolvedValue({ count: 1 })
+      },
+      careerApplication: {
+        update: vi.fn().mockResolvedValue({})
+      }
+    };
+    app.locals.prisma = {
+      jobOfferToken: {
+        findUnique: vi.fn().mockResolvedValue(offerToken)
+      },
+      $transaction: vi.fn((callback) => callback(tx))
+    };
+
+    const response = await request(app)
+      .post('/api/job-offer-tokens/respond')
+      .send({
+        token: rawToken,
+        earliestStartDate: '2026-05-15',
+        mobileNumberGcash: '09171234567',
+        hasWorkingComputer: true,
+        decision: 'accepted'
+      })
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      success: true,
+      status: 'job_offer_accepted',
+      decision: 'accepted'
+    });
+    expect(tx.jobOfferToken.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({
+        tokenHash: app.hashApplicantToken(rawToken),
+        usedAt: null,
+        revokedAt: null
+      }),
+      data: expect.objectContaining({
+        usedAt: expect.any(Date)
+      })
+    }));
+    expect(tx.careerApplication.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: 101 },
+      data: expect.objectContaining({
+        applicationStatus: 'job_offer_accepted',
+        earliestStartDate: expect.any(Date),
+        gcashAccountNumber: '09171234567',
+        mobileNumber: '09171234567',
+        hasWorkingComputer: true,
+        jobOfferDecision: 'accepted',
+        jobOfferRespondedAt: expect.any(Date)
+      })
+    }));
+  });
+
   it('requires admin authorization for the dev seed route', async () => {
     await request(app)
       .post('/api/dev/career-assessment/seed-pass')

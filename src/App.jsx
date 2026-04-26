@@ -8,6 +8,7 @@ import CareerAdminLogin from './pages/CareerAdminLogin.jsx';
 import Careers from './pages/Careers.jsx';
 import Contact from './pages/Contact';
 import Home from './pages/Home.jsx';
+import JobOfferResponse from './pages/JobOfferResponse.jsx';
 import LatestPost from './pages/LatestPost.jsx';
 import Pricing from './pages/Pricing.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
@@ -32,6 +33,7 @@ const App = () => (
     <Route path="/about" element={<About />} />
     <Route path="/careers" element={<Careers />} />
     <Route path="/next-step" element={<ApplicantNextStep />} />
+    <Route path="/offer-response" element={<JobOfferResponse />} />
     <Route path="/contact" element={<Contact />} />
     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
     <Route path="/terms-of-service" element={<TermsOfService />} />

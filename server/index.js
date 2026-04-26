@@ -42,6 +42,14 @@ const SLOT_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TOKEN_REGEX = /^[A-Za-z0-9_-]{32,}$/;
+const PHONE_REGEX = /^[+0-9 ()-]{7,24}$/;
+const GCASH_REGEX = /^[0-9 +()-]{7,32}$/;
+const APPLICATION_STATUSES = {
+  ASSESSMENT_COMPLETED: 'assessment_completed',
+  FOLLOW_UP_SENT: 'follow_up_sent',
+  JOB_OFFER_ACCEPTED: 'job_offer_accepted',
+  JOB_OFFER_DECLINED: 'job_offer_declined'
+};
 const CAREER_ASSESSMENT_SCHEMA = {
   type: 'object',
   additionalProperties: false,
@@ -394,8 +402,16 @@ function buildAssessmentInviteUrl(token) {
   return `${CAREERS_BASE_URL}/careers?token=${encodeURIComponent(token)}`;
 }
 
+function buildJobOfferUrl(token) {
+  return `${CAREERS_BASE_URL}/offer-response?token=${encodeURIComponent(token)}`;
+}
+
 function getApplicantTokenExpiry(now = new Date()) {
   return new Date(now.getTime() + APPLICANT_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
+}
+
+function getJobOfferTokenExpiry(now = new Date()) {
+  return getApplicantTokenExpiry(now);
 }
 
 function getApplicantTokenStatus(token) {
@@ -432,6 +448,9 @@ function toCareerApplicationResponse(application) {
   const latestToken = Array.isArray(application.applicantTokens)
     ? application.applicantTokens[0]
     : null;
+  const latestOfferToken = Array.isArray(application.jobOfferTokens)
+    ? application.jobOfferTokens[0]
+    : null;
 
   return {
     id: application.id,
@@ -452,6 +471,14 @@ function toCareerApplicationResponse(application) {
     strengths: application.strengths,
     concerns: application.concerns,
     summary: application.summary,
+    applicationStatus: application.applicationStatus,
+    followUpSentAt: application.followUpSentAt,
+    earliestStartDate: application.earliestStartDate,
+    gcashAccountNumber: application.gcashAccountNumber,
+    mobileNumber: application.mobileNumber,
+    hasWorkingComputer: application.hasWorkingComputer,
+    jobOfferDecision: application.jobOfferDecision,
+    jobOfferRespondedAt: application.jobOfferRespondedAt,
     createdAt: application.createdAt,
     latestToken: latestToken
       ? {
@@ -461,6 +488,14 @@ function toCareerApplicationResponse(application) {
           usedAt: latestToken.usedAt,
           revokedAt: latestToken.revokedAt,
           sentAt: latestToken.sentAt
+        }
+      : null,
+    latestOfferToken: latestOfferToken
+      ? {
+          id: latestOfferToken.id,
+          expiresAt: latestOfferToken.expiresAt,
+          usedAt: latestOfferToken.usedAt,
+          revokedAt: latestOfferToken.revokedAt
         }
       : null
   };
@@ -519,6 +554,36 @@ async function findResumableApplicantToken(prismaClient, rawResumeToken) {
   });
 
   return isApplicantTokenResumable(token) ? token : null;
+}
+
+function isJobOfferTokenUsable(token, now = new Date()) {
+  return Boolean(
+    token &&
+    !token.usedAt &&
+    !token.revokedAt &&
+    new Date(token.expiresAt).getTime() > now.getTime()
+  );
+}
+
+async function findUsableJobOfferToken(prismaClient, rawToken) {
+  const tokenHash = hashApplicantToken(rawToken);
+  if (!tokenHash) return null;
+
+  const token = await prismaClient.jobOfferToken.findUnique({
+    where: { tokenHash },
+    include: { careerApplication: true }
+  });
+
+  return isJobOfferTokenUsable(token) ? token : null;
+}
+
+function toJobOfferPrefill(application) {
+  return {
+    name: application.name,
+    email: application.email,
+    role: application.role,
+    status: application.applicationStatus
+  };
 }
 
 function validateBusinessPostPayload(body, { partial = false } = {}) {
@@ -733,6 +798,10 @@ app.get('/api/admin/career-applications', requireAdmin, async (req, res) => {
         applicantTokens: {
           orderBy: [{ createdAt: 'desc' }],
           take: 1
+        },
+        jobOfferTokens: {
+          orderBy: [{ createdAt: 'desc' }],
+          take: 1
         }
       }
     });
@@ -920,6 +989,81 @@ app.post('/api/admin/career-applications/:id/next-step-email', requireAdmin, asy
   } catch (error) {
     console.error('Failed to send career next-step email', error);
     return res.status(500).json({ error: 'Unable to send next-step email.' });
+  }
+});
+
+app.post('/api/admin/career-applications/:id/follow-up', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: 'Invalid career application id.' });
+  }
+
+  const prismaClient = getPrismaClient(req);
+
+  try {
+    const application = await prismaClient.careerApplication.findUnique({
+      where: { id }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Career application not found.' });
+    }
+
+    if (!application.passed) {
+      return res.status(400).json({ error: 'Only passed applicants can receive a job offer follow-up link.' });
+    }
+
+    if (application.jobOfferDecision) {
+      return res.status(400).json({ error: 'This applicant has already responded to the job offer.' });
+    }
+
+    const rawToken = generateApplicantToken();
+    const tokenHash = hashApplicantToken(rawToken);
+    const expiresAt = getJobOfferTokenExpiry();
+
+    const createdToken = await prismaClient.$transaction(async (tx) => {
+      await tx.jobOfferToken.updateMany({
+        where: {
+          careerApplicationId: application.id,
+          usedAt: null,
+          revokedAt: null
+        },
+        data: {
+          revokedAt: new Date()
+        }
+      });
+
+      const nextToken = await tx.jobOfferToken.create({
+        data: {
+          careerApplicationId: application.id,
+          tokenHash,
+          expiresAt
+        }
+      });
+
+      await tx.careerApplication.update({
+        where: { id: application.id },
+        data: {
+          applicationStatus: APPLICATION_STATUSES.FOLLOW_UP_SENT,
+          followUpSentAt: new Date()
+        }
+      });
+
+      return nextToken;
+    });
+
+    return res.status(201).json({
+      success: true,
+      offerUrl: buildJobOfferUrl(rawToken),
+      token: {
+        id: createdToken.id,
+        expiresAt: createdToken.expiresAt
+      },
+      applicationStatus: APPLICATION_STATUSES.FOLLOW_UP_SENT
+    });
+  } catch (error) {
+    console.error('Failed to create job offer follow-up link', error);
+    return res.status(500).json({ error: 'Unable to create follow-up link.' });
   }
 });
 
@@ -1248,6 +1392,125 @@ app.post('/api/applicant-tokens/submit', async (req, res) => {
   return res.status(410).json({
     error: 'Assessment invites must be submitted through the Careers assessment.'
   });
+});
+
+app.post('/api/job-offer-tokens/validate', async (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const prismaClient = getPrismaClient(req);
+
+  try {
+    const offerToken = await findUsableJobOfferToken(prismaClient, token);
+
+    if (!offerToken) {
+      return res.json({ valid: false });
+    }
+
+    return res.json({
+      valid: true,
+      applicant: toJobOfferPrefill(offerToken.careerApplication),
+      expiresAt: offerToken.expiresAt
+    });
+  } catch (error) {
+    console.error('Failed to validate job offer token', error);
+    return res.status(500).json({ error: 'Unable to validate job offer link.' });
+  }
+});
+
+app.post('/api/job-offer-tokens/respond', async (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const tokenHash = hashApplicantToken(token);
+  const decision = typeof req.body?.decision === 'string' ? req.body.decision.trim().toLowerCase() : '';
+  const earliestStartDate = parseDateOnly(req.body?.earliestStartDate);
+  const mobileNumberGcash = typeof req.body?.mobileNumberGcash === 'string'
+    ? req.body.mobileNumberGcash.trim()
+    : '';
+  const hasWorkingComputer = req.body?.hasWorkingComputer === true
+    ? true
+    : req.body?.hasWorkingComputer === false
+      ? false
+      : null;
+  const prismaClient = getPrismaClient(req);
+
+  if (!tokenHash) {
+    return res.status(400).json({ error: 'This job offer link is invalid or has expired.' });
+  }
+
+  if (!['accepted', 'declined'].includes(decision)) {
+    return res.status(400).json({ error: 'Choose whether to accept or decline the job offer.' });
+  }
+
+  if (!earliestStartDate) {
+    return res.status(400).json({ error: 'Earliest start date is required.' });
+  }
+
+  if (!mobileNumberGcash || !GCASH_REGEX.test(mobileNumberGcash) || !PHONE_REGEX.test(mobileNumberGcash)) {
+    return res.status(400).json({ error: 'A valid Mobile number / GCash is required.' });
+  }
+
+  if (hasWorkingComputer === null) {
+    return res.status(400).json({ error: 'Choose whether you have a working personal laptop/computer.' });
+  }
+
+  try {
+    const offerToken = await findUsableJobOfferToken(prismaClient, token);
+
+    if (!offerToken) {
+      return res.status(400).json({ error: 'This job offer link is invalid or has expired.' });
+    }
+
+    const nextStatus = decision === 'accepted'
+      ? APPLICATION_STATUSES.JOB_OFFER_ACCEPTED
+      : APPLICATION_STATUSES.JOB_OFFER_DECLINED;
+
+    await prismaClient.$transaction(async (tx) => {
+      const now = new Date();
+      const used = await tx.jobOfferToken.updateMany({
+        where: {
+          tokenHash,
+          usedAt: null,
+          revokedAt: null,
+          expiresAt: {
+            gt: now
+          }
+        },
+        data: {
+          usedAt: now
+        }
+      });
+
+      if (used.count !== 1) {
+        const error = new Error('Job offer token is not usable.');
+        error.code = 'TOKEN_NOT_USABLE';
+        throw error;
+      }
+
+      await tx.careerApplication.update({
+        where: { id: offerToken.careerApplicationId },
+        data: {
+          applicationStatus: nextStatus,
+          earliestStartDate,
+          gcashAccountNumber: mobileNumberGcash,
+          mobileNumber: mobileNumberGcash,
+          hasWorkingComputer,
+          jobOfferDecision: decision,
+          jobOfferRespondedAt: now
+        }
+      });
+    });
+
+    return res.json({
+      success: true,
+      status: nextStatus,
+      decision
+    });
+  } catch (error) {
+    if (error.code === 'TOKEN_NOT_USABLE') {
+      return res.status(400).json({ error: 'This job offer link is invalid or has expired.' });
+    }
+
+    console.error('Failed to submit job offer response', error);
+    return res.status(500).json({ error: 'Unable to submit job offer response.' });
+  }
 });
 
 app.put('/api/admin/business-posts/:id', requireAdmin, async (req, res) => {

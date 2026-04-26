@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import {
+  createJobOfferFollowUp,
   createApplicantToken,
   fetchCareerApplications,
   fetchApplicantTokens
@@ -37,6 +38,13 @@ const categoryLabels = {
   modernTechExperience: 'Modern tech'
 };
 
+const applicationStatusLabels = {
+  assessment_completed: 'Assessment Completed - Admin to review and follow-up on Email',
+  follow_up_sent: 'Follow-up sent',
+  job_offer_accepted: 'Job Offer accepted',
+  job_offer_declined: 'Job Offer declined'
+};
+
 const CareerAdmin = () => {
   const navigate = useNavigate();
   const [tokens, setTokens] = useState([]);
@@ -49,6 +57,8 @@ const CareerAdmin = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
+  const [followUpLink, setFollowUpLink] = useState('');
+  const [sendingFollowUp, setSendingFollowUp] = useState(false);
 
   const selectedApplication = useMemo(
     () => applications.find((application) => application.id === selectedApplicationId) || applications[0] || null,
@@ -126,6 +136,26 @@ const CareerAdmin = () => {
       setError(err.message || 'Unable to create assessment invite link.');
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleFollowUpSent = async () => {
+    if (!selectedApplication) return;
+
+    setSendingFollowUp(true);
+    setError('');
+    setMessage('');
+    setFollowUpLink('');
+
+    try {
+      const payload = await createJobOfferFollowUp(selectedApplication.id, adminToken);
+      setFollowUpLink(payload.offerUrl || '');
+      setMessage('Follow-up marked sent. Copy the secured job offer response link into your email.');
+      await loadDesk(adminToken);
+    } catch (err) {
+      setError(err.message || 'Unable to create follow-up link.');
+    } finally {
+      setSendingFollowUp(false);
     }
   };
 
@@ -253,7 +283,7 @@ const CareerAdmin = () => {
                           )}
                         </div>
                         <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-copy">
-                          {statusLabels[token.status] || token.status} / expires {new Date(token.expiresAt).toLocaleDateString()}
+                          {token.status === 'created' ? 'Open - Candidate to take Exam' : statusLabels[token.status] || token.status} / expires {new Date(token.expiresAt).toLocaleDateString()}
                         </p>
                       </div>
                       {token.careerApplicationId && (
@@ -310,6 +340,9 @@ const CareerAdmin = () => {
                     <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-copy">
                       Score {application.score}/{application.passingScore} / {application.role}
                     </p>
+                    <p className="mt-2 text-xs font-medium text-copy">
+                      {applicationStatusLabels[application.applicationStatus] || application.applicationStatus}
+                    </p>
                   </button>
                 ))}
 
@@ -329,6 +362,9 @@ const CareerAdmin = () => {
                         {selectedApplication.name}
                       </h2>
                       <p className="mt-2 text-sm text-copy">{selectedApplication.email}</p>
+                      <p className="mt-4 inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                        {applicationStatusLabels[selectedApplication.applicationStatus] || selectedApplication.applicationStatus}
+                      </p>
                     </div>
                     <div className="rounded-[1.25rem] border border-line bg-page px-5 py-4 text-right">
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-copy">
@@ -344,6 +380,41 @@ const CareerAdmin = () => {
                       </p>
                     </div>
                   </div>
+
+                  {selectedApplication.passed && !selectedApplication.jobOfferDecision && (
+                    <div className="mt-6 rounded-[1.25rem] border border-line bg-page p-5">
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                          <p className="text-sm font-semibold text-ink-strong">Email follow-up</p>
+                          <p className="mt-2 text-sm leading-6 text-copy">
+                            Send your email manually with the job offer attached, then include the secured response link generated here.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-primary self-start"
+                          onClick={handleFollowUpSent}
+                          disabled={sendingFollowUp}
+                        >
+                          {sendingFollowUp ? 'Creating...' : 'Follow-up sent'}
+                        </button>
+                      </div>
+
+                      {followUpLink && (
+                        <div className="mt-4">
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                            Secured job offer response link
+                          </p>
+                          <input
+                            className="mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 text-sm text-ink"
+                            value={followUpLink}
+                            readOnly
+                            onFocus={(event) => event.target.select()}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="mt-6 grid gap-4 md:grid-cols-3">
                     <div className="rounded-[1.25rem] border border-line bg-page p-4">
@@ -367,6 +438,36 @@ const CareerAdmin = () => {
                       </p>
                     </div>
                   </div>
+
+                  {selectedApplication.jobOfferDecision && (
+                    <div className="mt-6 rounded-[1.25rem] border border-line bg-page p-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                        Job offer response
+                      </p>
+                      <div className="mt-4 grid gap-4 md:grid-cols-2">
+                        <p className="text-sm text-copy">
+                          Decision: <span className="font-semibold text-ink-strong">{selectedApplication.jobOfferDecision}</span>
+                        </p>
+                        <p className="text-sm text-copy">
+                          Earliest start: <span className="font-semibold text-ink-strong">
+                            {selectedApplication.earliestStartDate ? new Date(selectedApplication.earliestStartDate).toLocaleDateString() : 'Not provided'}
+                          </span>
+                        </p>
+                        <p className="text-sm text-copy">
+                          Mobile / GCash: <span className="font-semibold text-ink-strong">{selectedApplication.mobileNumber}</span>
+                        </p>
+                        <p className="text-sm text-copy">
+                          Working computer: <span className="font-semibold text-ink-strong">
+                            {selectedApplication.hasWorkingComputer === true
+                              ? 'Yes'
+                              : selectedApplication.hasWorkingComputer === false
+                                ? 'No'
+                                : 'Not provided'}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mt-6 rounded-[1.25rem] border border-line bg-page p-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">

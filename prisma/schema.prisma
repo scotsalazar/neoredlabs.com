@@ -62,10 +62,20 @@ model CareerApplication {
   strengths             Json
   concerns              Json
   summary               String
+  applicationStatus     String   @default("assessment_completed")
+  followUpSentAt        DateTime?
+  earliestStartDate     DateTime?
+  gcashAccountNumber    String?
+  mobileNumber          String?
+  hasWorkingComputer    Boolean?
+  jobOfferDecision      String?
+  jobOfferRespondedAt   DateTime?
   createdAt             DateTime @default(now())
 
   applicantTokens ApplicantToken[]
+  jobOfferTokens  JobOfferToken[]
 
+  @@index([applicationStatus])
   @@index([role, passed, score])
   @@index([createdAt])
 }
@@ -92,4 +102,21 @@ model ApplicantToken {
   @@index([resumeTokenHash])
   @@index([expiresAt])
   @@map("applicant_tokens")
+}
+
+model JobOfferToken {
+  id                  Int      @id @default(autoincrement())
+  careerApplicationId Int
+  tokenHash           String   @unique
+  expiresAt           DateTime
+  usedAt              DateTime?
+  revokedAt           DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  careerApplication CareerApplication @relation(fields: [careerApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([careerApplicationId, usedAt, revokedAt])
+  @@index([expiresAt])
+  @@map("job_offer_tokens")
 }

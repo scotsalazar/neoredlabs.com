@@ -1074,6 +1074,18 @@ const Careers = () => {
                             <p className="mt-5 text-base leading-7 text-light/70">
                               If accepted, you will be trained to work with modern AI tools, understand app architecture, refine prompts and interfaces, and support real business clients from discovery through follow-up. This track is hands-on: you will learn what to build, what to avoid, how to polish work, and how to take ownership without losing quality.
                             </p>
+                            <div className="mt-8 grid gap-4">
+                              {promptEngineerIntroHighlights.map((item) => (
+                                <div
+                                  key={item.title}
+                                  className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-5"
+                                >
+                                  <p className="text-sm font-semibold text-light">{item.title}</p>
+                                  <p className="mt-2 text-sm leading-6 text-light/65">{item.copy}</p>
+                                </div>
+                              ))}
+                            </div>
+
                             <div className="mt-8 flex flex-wrap gap-3">
                               <button
                                 type="button"
@@ -1089,18 +1101,6 @@ const Careers = () => {
                               >
                                 Choose another role
                               </button>
-                            </div>
-
-                            <div className="mt-8 grid gap-4">
-                              {promptEngineerIntroHighlights.map((item) => (
-                                <div
-                                  key={item.title}
-                                  className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-5"
-                                >
-                                  <p className="text-sm font-semibold text-light">{item.title}</p>
-                                  <p className="mt-2 text-sm leading-6 text-light/65">{item.copy}</p>
-                                </div>
-                              ))}
                             </div>
                           </div>
                         </motion.div>

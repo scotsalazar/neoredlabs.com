@@ -52,8 +52,11 @@ describe('JobOfferResponse page', () => {
     fireEvent.change(screen.getByLabelText(/mobile number \/ gcash/i), {
       target: { value: '09171234567' }
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Yes' }));
-    fireEvent.click(screen.getByRole('button', { name: /submit response/i }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Yes' }));
+    expect(screen.queryByRole('button', { name: /review and submit/i })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /accept job offer/i }));
+    expect(await screen.findByText(/Accept this job offer/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /confirm accept/i }));
 
     await waitFor(() => {
       expect(submitJobOfferResponse).toHaveBeenCalledWith(expect.objectContaining({
@@ -65,6 +68,45 @@ describe('JobOfferResponse page', () => {
       }));
     });
     expect(await screen.findByText(/Job offer accepted/i)).toBeInTheDocument();
+  });
+
+  it('uses decline as a direct proceed action with confirmation', async () => {
+    validateJobOfferToken.mockResolvedValue({
+      valid: true,
+      applicant: {
+        name: 'Alex Johnson',
+        email: 'alex@example.com',
+        role: 'Prompt Engineer',
+        status: 'follow_up_sent'
+      }
+    });
+    submitJobOfferResponse.mockResolvedValue({
+      success: true,
+      decision: 'declined',
+      status: 'job_offer_declined'
+    });
+
+    renderPage();
+
+    expect(await screen.findByText('Alex Johnson')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/earliest start date/i), {
+      target: { value: '2026-05-15' }
+    });
+    fireEvent.change(screen.getByLabelText(/mobile number \/ gcash/i), {
+      target: { value: '09171234567' }
+    });
+    fireEvent.click(screen.getByRole('radio', { name: 'No' }));
+    fireEvent.click(screen.getByRole('button', { name: /decline/i }));
+    expect(await screen.findByText(/Decline this job offer/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /confirm decline/i }));
+
+    await waitFor(() => {
+      expect(submitJobOfferResponse).toHaveBeenCalledWith(expect.objectContaining({
+        hasWorkingComputer: false,
+        decision: 'declined'
+      }));
+    });
+    expect(await screen.findByText(/Job offer declined/i)).toBeInTheDocument();
   });
 
   it('shows an invalid link state', async () => {

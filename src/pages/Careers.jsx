@@ -629,7 +629,8 @@ const Careers = () => {
       email: normalizedSubmission.email,
       role: normalizedSubmission.role,
       resumeToken: normalizedSubmission.resumeToken,
-      answers: normalizedSubmission.answers
+      answers: normalizedSubmission.answers,
+      ownerAnswers: normalizedSubmission.ownerAnswers
     };
 
     try {

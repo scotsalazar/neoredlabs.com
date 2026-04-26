@@ -42,7 +42,8 @@ function normalizeAdminTokenInput(value) {
   'APPLICANT_TOKEN_HASH_SECRET',
   'APPLICANT_TOKEN_TTL_DAYS',
   'CAREERS_BASE_URL',
-  'NEXT_STEP_EMAIL_WEBHOOK_URL'
+  'NEXT_STEP_EMAIL_WEBHOOK_URL',
+  'APPLICATION_RECEIVED_WEBHOOK_URL'
 ].forEach((key) => {
   if (process.env[key] !== undefined) {
     process.env[key] = normalizeEnvValue(process.env[key]);
@@ -70,6 +71,7 @@ const APPLICANT_TOKEN_TTL_DAYS = Math.max(
 const CAREERS_BASE_URL = (process.env.CAREERS_BASE_URL?.trim() || 'https://careers.neoredlabs.com')
   .replace(/\/+$/, '');
 const NEXT_STEP_EMAIL_WEBHOOK_URL = process.env.NEXT_STEP_EMAIL_WEBHOOK_URL?.trim() || '';
+const APPLICATION_RECEIVED_WEBHOOK_URL = process.env.APPLICATION_RECEIVED_WEBHOOK_URL?.trim() || '';
 const ADMIN_SESSION_SECRET =
   process.env.ADMIN_SESSION_SECRET?.trim() ||
   APPLICANT_TOKEN_HASH_SECRET ||
@@ -241,6 +243,65 @@ function buildDevPassingAssessment() {
     concerns: ['QA fixture only; do not treat as a real applicant assessment.'],
     summary: 'Dev-only seeded passing assessment used to verify the pass flow without impersonating an applicant.'
   };
+}
+
+async function sendApplicationReceivedWebhook({ application, assessment, answers, ownerAnswers }) {
+  if (!APPLICATION_RECEIVED_WEBHOOK_URL) {
+    return { skipped: true };
+  }
+
+  try {
+    const response = await fetch(APPLICATION_RECEIVED_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        type: 'career_application_received',
+        event: 'application_received',
+        submittedAt: new Date().toISOString(),
+        applicant: {
+          name: application.name,
+          email: application.email,
+          role: application.role
+        },
+        application: {
+          id: application.id,
+          status: application.applicationStatus,
+          createdAt: application.createdAt
+        },
+        answers,
+        ownerAnswers,
+        assessment: {
+          score: assessment.score,
+          passed: assessment.passed,
+          passingScore: assessment.passingScore,
+          recommendation: assessment.recommendation,
+          aiGeneratedRisk: assessment.aiGeneratedRisk,
+          categoryScores: assessment.categoryScores,
+          strengths: assessment.strengths,
+          concerns: assessment.concerns,
+          summary: assessment.summary
+        },
+        replyEmailContext: {
+          subject: 'Application received - NeoLabs Prompt Engineer',
+          message:
+            'Your Prompt Engineer profile has been received. It will undergo human review, and we will contact you via email for further details if selected.'
+        }
+      })
+    });
+
+    if (!response.ok) {
+      console.warn('Application received webhook returned a non-OK response.');
+      return { success: false, status: response.status };
+    }
+
+    return { success: true, status: response.status };
+  } catch (error) {
+    console.warn('Application received webhook failed.', error);
+    return { success: false };
+  }
 }
 
 async function scoreCareerAssessment({ name, role, answers }) {
@@ -1281,6 +1342,17 @@ app.post('/api/career-assessment', async (req, res) => {
     q2: typeof answers?.q2 === 'string' ? answers.q2.trim() : '',
     q3: typeof answers?.q3 === 'string' ? answers.q3.trim() : ''
   };
+  const normalizedOwnerAnswers = {
+    projectOwnership: typeof req.body?.ownerAnswers?.projectOwnership === 'string'
+      ? req.body.ownerAnswers.projectOwnership.trim()
+      : '',
+    offsiteSalesFocus: typeof req.body?.ownerAnswers?.offsiteSalesFocus === 'string'
+      ? req.body.ownerAnswers.offsiteSalesFocus.trim()
+      : '',
+    crossFunctionalGrowth: typeof req.body?.ownerAnswers?.crossFunctionalGrowth === 'string'
+      ? req.body.ownerAnswers.crossFunctionalGrowth.trim()
+      : ''
+  };
 
   if (!normalizedAnswers.q1 || !normalizedAnswers.q2 || !normalizedAnswers.q3) {
     return res.status(400).json({ error: 'All assessment answers are required.' });
@@ -1356,6 +1428,15 @@ app.post('/api/career-assessment', async (req, res) => {
       });
 
       return createdApplication;
+    });
+
+    sendApplicationReceivedWebhook({
+      application,
+      assessment,
+      answers: normalizedAnswers,
+      ownerAnswers: normalizedOwnerAnswers
+    }).catch((webhookError) => {
+      console.warn('Unable to queue application received webhook.', webhookError);
     });
 
     return res.json({

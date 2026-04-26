@@ -73,7 +73,22 @@ const promptEngineerQuestions = [
   'Have you worked on mobile applications, chatbots, automations, or AI workflows before?'
 ];
 
-const steps = ['Intro', 'Role', 'Questions', 'Thanks'];
+const ownerQuestions = [
+  {
+    key: 'projectOwnership',
+    question: 'Are you comfortable taking ownership of multiple application projects, including planning, coordination, development, and follow-through to launch?'
+  },
+  {
+    key: 'offsiteSalesFocus',
+    question: 'Can you commit to working off-site at least once per week to focus on outreach, research, and identifying potential SME clients and application opportunities? Additional compensation may apply after a project is successfully launched and paid.'
+  },
+  {
+    key: 'crossFunctionalGrowth',
+    question: 'Are you willing to grow into adjacent responsibilities such as marketing, sales, client discovery, and delivery support while continuing to build as a Prompt Engineer?'
+  }
+];
+
+const steps = ['Intro', 'Role', 'AI Questions', 'Owner Questions', 'Thanks'];
 const introVideoSrc = '/assets/videos/career-application-intro.mp4';
 const assessmentSessionStorageKey = 'neolabs_career_assessment_session';
 
@@ -85,6 +100,11 @@ const initialFormState = {
     q1: '',
     q2: '',
     q3: ''
+  },
+  ownerAnswers: {
+    projectOwnership: '',
+    offsiteSalesFocus: '',
+    crossFunctionalGrowth: ''
   }
 };
 
@@ -128,6 +148,21 @@ const Careers = () => {
     ...initialFormState,
     name: inviteApplicant?.name || '',
     email: inviteApplicant?.email || ''
+  });
+
+  const mergeStoredFormState = (storedFormState = {}, applicant = inviteApplicant) => ({
+    ...initialFormState,
+    ...storedFormState,
+    name: applicant?.name || '',
+    email: applicant?.email || '',
+    answers: {
+      ...initialFormState.answers,
+      ...(storedFormState.answers || {})
+    },
+    ownerAnswers: {
+      ...initialFormState.ownerAnswers,
+      ...(storedFormState.ownerAnswers || {})
+    }
   });
 
   const readStoredAssessmentSession = () => {
@@ -208,13 +243,8 @@ const Careers = () => {
               const nextApplicant = payload.applicant || storedSession.applicant;
               setResumeToken(storedSession.resumeToken);
               setInviteApplicant(nextApplicant);
-              setFormState({
-                ...initialFormState,
-                ...(storedSession.formState || {}),
-                name: nextApplicant?.name || '',
-                email: nextApplicant?.email || ''
-              });
-              setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 2));
+              setFormState(mergeStoredFormState(storedSession.formState, nextApplicant));
+              setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 3));
               setShowApplicationFlow(true);
               setInviteMessage(`Assessment resumed for ${nextApplicant?.name || 'this applicant'}.`);
               return;
@@ -316,13 +346,8 @@ const Careers = () => {
       const storedSession = readStoredAssessmentSession();
 
       if (storedSession?.resumeToken === resumeToken) {
-        setFormState({
-          ...initialFormState,
-          ...(storedSession.formState || {}),
-          name: inviteApplicant.name || '',
-          email: inviteApplicant.email || ''
-        });
-        setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 2));
+        setFormState(mergeStoredFormState(storedSession.formState, inviteApplicant));
+        setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 3));
       }
 
       setShowApplicationFlow(true);
@@ -447,6 +472,18 @@ const Careers = () => {
     setErrors((prev) => ({ ...prev, [key]: '' }));
   };
 
+  const updateOwnerAnswer = (key) => (event) => {
+    const value = event.target.value;
+    setFormState((prev) => ({
+      ...prev,
+      ownerAnswers: {
+        ...prev.ownerAnswers,
+        [key]: value
+      }
+    }));
+    setErrors((prev) => ({ ...prev, [key]: '' }));
+  };
+
   const selectRole = (role) => {
     if (role.disabled) return;
 
@@ -498,9 +535,30 @@ const Careers = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateOwnerQuestionsStep = () => {
+    const newErrors = {};
+
+    ownerQuestions.forEach(({ key }) => {
+      if (!formState.ownerAnswers[key]?.trim()) {
+        newErrors[key] = 'This response is required.';
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleRoleNext = () => {
     if (validateRoleStep()) {
       goToStep(2);
+    }
+  };
+
+  const handleQuestionsNext = (event) => {
+    event.preventDefault();
+
+    if (validateQuestionsStep()) {
+      goToStep(3);
     }
   };
 
@@ -510,8 +568,9 @@ const Careers = () => {
     const profileIsValid = validateProfileStep();
     const roleIsValid = validateRoleStep();
     const questionsAreValid = validateQuestionsStep();
+    const ownerQuestionsAreValid = validateOwnerQuestionsStep();
 
-    if (!profileIsValid || !roleIsValid || !questionsAreValid) return;
+    if (!profileIsValid || !roleIsValid || !questionsAreValid || !ownerQuestionsAreValid) return;
     if (!resumeToken) {
       setFormMessage('This assessment session is invalid or has expired.');
       return;
@@ -533,7 +592,19 @@ const Careers = () => {
         q1: formState.answers.q1.trim(),
         q2: formState.answers.q2.trim(),
         q3: formState.answers.q3.trim()
+      },
+      ownerAnswers: {
+        projectOwnership: formState.ownerAnswers.projectOwnership.trim(),
+        offsiteSalesFocus: formState.ownerAnswers.offsiteSalesFocus.trim(),
+        crossFunctionalGrowth: formState.ownerAnswers.crossFunctionalGrowth.trim()
       }
+    };
+    const assessmentSubmission = {
+      name: normalizedSubmission.name,
+      email: normalizedSubmission.email,
+      role: normalizedSubmission.role,
+      resumeToken: normalizedSubmission.resumeToken,
+      answers: normalizedSubmission.answers
     };
 
     try {
@@ -543,7 +614,7 @@ const Careers = () => {
           'Content-Type': 'application/json',
           Accept: 'application/json'
         },
-        body: JSON.stringify(normalizedSubmission)
+        body: JSON.stringify(assessmentSubmission)
       });
       const assessmentData = await assessmentResponse.json().catch(() => ({}));
 
@@ -562,6 +633,9 @@ const Careers = () => {
       formData.append('answers[q1]', normalizedSubmission.answers.q1);
       formData.append('answers[q2]', normalizedSubmission.answers.q2);
       formData.append('answers[q3]', normalizedSubmission.answers.q3);
+      formData.append('ownerQuestions[projectOwnership]', normalizedSubmission.ownerAnswers.projectOwnership);
+      formData.append('ownerQuestions[offsiteSalesFocus]', normalizedSubmission.ownerAnswers.offsiteSalesFocus);
+      formData.append('ownerQuestions[crossFunctionalGrowth]', normalizedSubmission.ownerAnswers.crossFunctionalGrowth);
       formData.append('assessment[score]', String(assessment.score));
       formData.append('assessment[applicationId]', String(assessment.applicationId || ''));
       formData.append('assessment[passed]', String(assessment.passed));
@@ -588,7 +662,7 @@ const Careers = () => {
       setBannerMessage('Application received. We will be in touch soon.');
       clearAssessmentSession();
       setResumeToken('');
-      goToStep(3);
+      goToStep(4);
     } catch (error) {
       setFormMessage(
         error.message || 'There was a problem sending your application. Please try again in a moment.'
@@ -980,7 +1054,7 @@ const Careers = () => {
                               Keep it concise and human. Show how you think, not just what you know. AI-generated answers may be flagged. AI will score your responses — 70/100 qualifies for the next step.
                             </p>
 
-                            <form className="mt-9 space-y-5" onSubmit={handleSubmit}>
+                            <form className="mt-9 space-y-5" onSubmit={handleQuestionsNext}>
                               {promptEngineerQuestions.map((question, index) => {
                                 const key = `q${index + 1}`;
 
@@ -1020,10 +1094,9 @@ const Careers = () => {
                               <div className="flex flex-wrap items-center gap-3 pt-2">
                                 <button
                                   type="submit"
-                                  className="btn-primary bg-secondary text-dark hover:brightness-100 disabled:cursor-wait disabled:opacity-70"
-                                  disabled={submitting}
+                                  className="btn-primary bg-secondary text-dark hover:brightness-100"
                                 >
-                                  {submitting ? 'Assessing...' : 'Submit Application'}
+                                  Continue
                                 </button>
                                 <button
                                   type="button"
@@ -1040,6 +1113,88 @@ const Careers = () => {
                   )}
 
                   {wizardStep === 3 && (
+                    <motion.section
+                      key="owner-questions"
+                      className="mx-auto w-full max-w-5xl"
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.34, ease: 'easeOut' }}
+                    >
+                      <motion.div
+                        className="mx-auto w-full max-w-4xl"
+                        initial={{ opacity: 0, y: 22 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -18 }}
+                        transition={{ duration: 0.34, ease: 'easeOut' }}
+                      >
+                        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                          Owner Review
+                        </p>
+                        <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                          Final alignment questions
+                        </h2>
+                        <p className="mt-4 text-base leading-7 text-light/65">
+                          These responses are reviewed by the owner and are not scored by AI. Please answer honestly so we can understand your working style, flexibility, and growth interest.
+                        </p>
+
+                        <form className="mt-9 space-y-5" onSubmit={handleSubmit}>
+                          {ownerQuestions.map(({ key, question }) => (
+                            <label
+                              key={key}
+                              className="block rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5"
+                            >
+                              <span className="block text-sm font-semibold leading-6 text-light">
+                                {question}
+                              </span>
+                              <textarea
+                                name={key}
+                                value={formState.ownerAnswers[key]}
+                                onChange={updateOwnerAnswer(key)}
+                                rows={4}
+                                className="mt-4 w-full resize-none rounded-2xl border border-white/10 bg-[#07111b]/90 px-4 py-3 text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
+                                placeholder="Type your response here"
+                              />
+                              {errors[key] && <p className="mt-2 text-sm text-secondary">{errors[key]}</p>}
+                            </label>
+                          ))}
+
+                          {formMessage && (
+                            <p className="rounded-2xl border border-secondary/25 bg-secondary/10 px-4 py-3 text-sm font-semibold text-secondary">
+                              {formMessage}
+                            </p>
+                          )}
+
+                          {submissionStage && (
+                            <p className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-light/75">
+                              {submissionStage}
+                            </p>
+                          )}
+
+                          <div className="flex flex-wrap items-center gap-3 pt-2">
+                            <button
+                              type="submit"
+                              className="btn-primary bg-secondary text-dark hover:brightness-100 disabled:cursor-wait disabled:opacity-70"
+                              disabled={submitting}
+                            >
+                              {submitting ? 'Assessing...' : 'Submit Application'}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                              onClick={() => goToStep(2)}
+                              disabled={submitting}
+                            >
+                              Back
+                            </button>
+                          </div>
+                        </form>
+                      </motion.div>
+                    </motion.section>
+                  )}
+
+                  {wizardStep === 4 && (
                     <motion.section
                       key="thanks"
                       className="mx-auto w-full max-w-3xl text-center"

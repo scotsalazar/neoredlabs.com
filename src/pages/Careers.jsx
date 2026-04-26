@@ -90,7 +90,23 @@ const ownerQuestions = [
 
 const steps = ['Intro', 'Role', 'AI Questions', 'Owner Questions', 'Thanks'];
 const introVideoSrc = '/assets/videos/career-application-intro.mp4';
+const roleSelectionVideoSrc = '/assets/videos/career-application-role-select.mp4';
 const assessmentSessionStorageKey = 'neolabs_career_assessment_session';
+
+const promptEngineerIntroHighlights = [
+  {
+    title: 'Modern tool access',
+    copy: 'Accepted applicants train with current AI, automation, and app-building tools used in active studio work.'
+  },
+  {
+    title: 'Architecture and delivery',
+    copy: 'You will learn how to structure apps, plan features, evaluate tradeoffs, and polish rough builds into usable products.'
+  },
+  {
+    title: 'Client-facing ownership',
+    copy: 'The role can include hands-on project ownership: business discovery, follow-ups, delivery coordination, and launch support.'
+  }
+];
 
 const initialFormState = {
   name: '',
@@ -136,6 +152,8 @@ const Careers = () => {
   const [videoComplete, setVideoComplete] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoReady, setVideoReady] = useState(false);
+  const [roleIntroVideoComplete, setRoleIntroVideoComplete] = useState(false);
+  const [roleIntroVideoReady, setRoleIntroVideoReady] = useState(false);
   const overlayRef = useRef(null);
   const videoRef = useRef(null);
   const videoProgressFrameRef = useRef(0);
@@ -210,6 +228,8 @@ const Careers = () => {
     setVideoComplete(false);
     setVideoProgress(0);
     setVideoReady(false);
+    setRoleIntroVideoComplete(false);
+    setRoleIntroVideoReady(false);
   };
 
   useEffect(() => {
@@ -489,6 +509,8 @@ const Careers = () => {
 
     setFormState((prev) => ({ ...prev, role: role.title }));
     setErrors((prev) => ({ ...prev, role: '' }));
+    setRoleIntroVideoComplete(false);
+    setRoleIntroVideoReady(false);
   };
 
   const validateProfileStep = () => {
@@ -552,6 +574,13 @@ const Careers = () => {
     if (validateRoleStep()) {
       goToStep(2);
     }
+  };
+
+  const resetRoleSelection = () => {
+    setFormState((prev) => ({ ...prev, role: '' }));
+    setRoleIntroVideoComplete(false);
+    setRoleIntroVideoReady(false);
+    setErrors((prev) => ({ ...prev, role: '' }));
   };
 
   const handleQuestionsNext = (event) => {
@@ -926,102 +955,198 @@ const Careers = () => {
                       <div className="absolute inset-0 bg-[linear-gradient(90deg,#050b12_0%,rgba(5,11,18,0.86)_38%,rgba(5,11,18,0.58)_100%)]" />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#050b12] via-transparent to-[#050b12]/30" />
 
-                      <div className="relative max-w-3xl">
-                        <div className="max-w-3xl">
-                          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
-                            Choose Your Path
-                          </p>
-                          <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
-                            {formState.name.trim() || 'Candidate'}, select your role.
-                          </h2>
-                          <p className="mt-4 text-base leading-7 text-light/65">
-                            Choose the role that best matches how you want to contribute. More interview paths will open soon.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="relative mt-9 grid gap-5 lg:grid-cols-3">
-                        {roleCards.map((role, index) => {
-                          const isSelected = formState.role === role.title;
-
-                          return (
-                            <motion.button
-                              key={role.title}
-                              type="button"
-                              className={`group min-h-[320px] rounded-[1.75rem] border p-6 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/50 ${
-                                isSelected
-                                  ? 'border-secondary bg-secondary/15 shadow-[0_24px_70px_rgba(60,183,171,0.16)]'
-                                  : 'border-white/10 bg-white/[0.06]'
-                              } ${role.disabled ? 'cursor-not-allowed opacity-55' : 'hover:border-secondary/60 hover:bg-white/[0.09]'}`}
-                              onClick={() => selectRole(role)}
-                              whileHover={role.disabled ? undefined : { y: -8, scale: 1.015 }}
-                              whileTap={role.disabled ? undefined : { scale: 0.99 }}
-                              transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-                              aria-pressed={isSelected}
-                              disabled={role.disabled}
-                            >
-                              <div className="flex items-start justify-between gap-4">
-                                <span className="text-6xl font-black leading-none text-white/10">
-                                  0{index + 1}
-                                </span>
-                                <span
-                                  className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
-                                    role.disabled
-                                      ? 'bg-white/10 text-light/55'
-                                      : 'bg-secondary text-dark'
-                                  }`}
-                                >
-                                  {role.status}
-                                </span>
-                              </div>
-                              <h3 className="mt-10 font-heading text-3xl font-bold text-light">
-                                {role.title}
-                              </h3>
-                              <p className="mt-4 text-sm leading-6 text-light/65">
-                                {role.summary}
+                      {!formState.role && (
+                        <>
+                          <div className="relative max-w-3xl">
+                            <div className="max-w-3xl">
+                              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                                Choose Your Path
                               </p>
-                              <div className="mt-8 flex flex-wrap gap-2">
-                                {role.traits.map((trait) => (
-                                  <span
-                                    key={trait}
-                                    className="rounded-full border border-white/10 px-3 py-1 text-xs text-light/65"
-                                  >
-                                    {trait}
+                              <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                                {formState.name.trim() || 'Candidate'}, select your role.
+                              </h2>
+                              <p className="mt-4 text-base leading-7 text-light/65">
+                                Choose the role that best matches how you want to contribute. More interview paths will open soon.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="relative mt-9 grid gap-5 lg:grid-cols-3">
+                            {roleCards.map((role, index) => (
+                              <motion.button
+                                key={role.title}
+                                type="button"
+                                className={`group min-h-[320px] rounded-[1.75rem] border p-6 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/50 ${
+                                  role.disabled
+                                    ? 'cursor-not-allowed border-white/10 bg-white/[0.06] opacity-55'
+                                    : 'border-white/10 bg-white/[0.06] hover:border-secondary/60 hover:bg-white/[0.09]'
+                                }`}
+                                onClick={() => selectRole(role)}
+                                whileHover={role.disabled ? undefined : { y: -8, scale: 1.015 }}
+                                whileTap={role.disabled ? undefined : { scale: 0.99 }}
+                                transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                                disabled={role.disabled}
+                              >
+                                <div className="flex items-start justify-between gap-4">
+                                  <span className="text-6xl font-black leading-none text-white/10">
+                                    0{index + 1}
                                   </span>
-                                ))}
+                                  <span
+                                    className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                                      role.disabled
+                                        ? 'bg-white/10 text-light/55'
+                                        : 'bg-secondary text-dark'
+                                    }`}
+                                  >
+                                    {role.status}
+                                  </span>
+                                </div>
+                                <h3 className="mt-10 font-heading text-3xl font-bold text-light">
+                                  {role.title}
+                                </h3>
+                                <p className="mt-4 text-sm leading-6 text-light/65">
+                                  {role.summary}
+                                </p>
+                                <div className="mt-8 flex flex-wrap gap-2">
+                                  {role.traits.map((trait) => (
+                                    <span
+                                      key={trait}
+                                      className="rounded-full border border-white/10 px-3 py-1 text-xs text-light/65"
+                                    >
+                                      {trait}
+                                    </span>
+                                  ))}
+                                </div>
+                              </motion.button>
+                            ))}
+                          </div>
+
+                          {errors.role && <p className="mt-5 text-sm text-secondary">{errors.role}</p>}
+
+                          <div className="relative mt-7 flex flex-wrap items-center gap-3">
+                            <button
+                              type="button"
+                              className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                              onClick={() => goToStep(0)}
+                            >
+                              Back
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {formState.role && !roleIntroVideoComplete && (
+                        <motion.div
+                          key="role-video"
+                          className="relative grid gap-8 lg:grid-cols-[1.1fr_0.9fr]"
+                          initial={{ opacity: 0, y: 18 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.34, ease: 'easeOut' }}
+                        >
+                          <div className="relative min-h-[420px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.06]">
+                            <video
+                              className={`absolute inset-0 h-full w-full object-cover transition duration-700 ${
+                                roleIntroVideoReady ? 'opacity-100' : 'opacity-0'
+                              }`}
+                              src={roleSelectionVideoSrc}
+                              muted
+                              playsInline
+                              autoPlay
+                              preload="auto"
+                              onCanPlay={() => setRoleIntroVideoReady(true)}
+                              onEnded={() => setRoleIntroVideoComplete(true)}
+                              onError={() => setRoleIntroVideoComplete(true)}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050b12] via-[#050b12]/25 to-transparent" />
+                            <div className="absolute bottom-5 left-5 right-5">
+                              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-secondary">
+                                {formState.role}
+                              </p>
+                              <h2 className="mt-3 font-heading text-4xl font-bold leading-tight text-light sm:text-5xl">
+                                Role briefing is loading.
+                              </h2>
+                            </div>
+                          </div>
+
+                          <div className="relative flex flex-col justify-center">
+                            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                              Selected Path
+                            </p>
+                            <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                              {formState.role}
+                            </h2>
+                            <p className="mt-5 text-base leading-7 text-light/70">
+                              Watch this quick role preview first. After the video, you will see what the Prompt Engineer track is designed to teach and how it connects to real client projects.
+                            </p>
+                            <div className="mt-8 flex flex-wrap gap-3">
+                              <button
+                                type="button"
+                                className="btn-primary bg-secondary text-dark hover:brightness-100"
+                                onClick={() => setRoleIntroVideoComplete(true)}
+                              >
+                                Skip to role intro
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                                onClick={resetRoleSelection}
+                              >
+                                Choose another role
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {formState.role && roleIntroVideoComplete && (
+                        <motion.div
+                          key="role-intro"
+                          className="relative grid gap-8 lg:grid-cols-[0.88fr_1.12fr]"
+                          initial={{ opacity: 0, y: 18 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.34, ease: 'easeOut' }}
+                        >
+                          <div>
+                            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                              Role Introduction
+                            </p>
+                            <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                              Build useful AI apps with real delivery discipline.
+                            </h2>
+                            <p className="mt-5 text-base leading-7 text-light/70">
+                              If accepted, you will be trained to work with modern AI tools, understand app architecture, refine prompts and interfaces, and support real business clients from discovery through follow-up. This track is hands-on: you will learn what to build, what to avoid, how to polish work, and how to take ownership without losing quality.
+                            </p>
+                            <div className="mt-8 flex flex-wrap gap-3">
+                              <button
+                                type="button"
+                                className="btn-primary bg-secondary text-dark hover:brightness-100"
+                                onClick={handleRoleNext}
+                              >
+                                Proceed to questions
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                                onClick={resetRoleSelection}
+                              >
+                                Choose another role
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-4">
+                            {promptEngineerIntroHighlights.map((item) => (
+                              <div
+                                key={item.title}
+                                className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-5"
+                              >
+                                <p className="text-sm font-semibold text-light">{item.title}</p>
+                                <p className="mt-2 text-sm leading-6 text-light/65">{item.copy}</p>
                               </div>
-                              {isSelected && (
-                                <motion.p
-                                  className="mt-8 text-sm font-semibold text-secondary"
-                                  initial={{ opacity: 0, y: 8 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                >
-                                  Selected
-                                </motion.p>
-                              )}
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-
-                      {errors.role && <p className="mt-5 text-sm text-secondary">{errors.role}</p>}
-
-                      <div className="relative mt-7 flex flex-wrap items-center gap-3">
-                        <button
-                          type="button"
-                          className="btn-primary min-w-[190px] bg-secondary text-dark hover:brightness-100"
-                          onClick={handleRoleNext}
-                        >
-                          Continue to questions
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
-                          onClick={() => goToStep(0)}
-                        >
-                          Back
-                        </button>
-                      </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
 
                     </motion.section>
                   )}

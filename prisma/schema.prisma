@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -43,4 +43,27 @@ model BusinessPost {
   updatedAt   DateTime @updatedAt
 
   @@index([isPublished, publishedAt])
+}
+
+model CareerApplication {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  email                 String?
+  role                  String
+  answerAiTools         String
+  answerApi             String
+  answerModernWorkflows String
+  score                 Int
+  passed                Boolean
+  passingScore          Int      @default(70)
+  recommendation        String
+  aiGeneratedRisk       String
+  categoryScores        Json
+  strengths             Json
+  concerns              Json
+  summary               String
+  createdAt             DateTime @default(now())
+
+  @@index([role, passed, score])
+  @@index([createdAt])
 }

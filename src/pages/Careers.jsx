@@ -1,184 +1,183 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Layout from '../components/Layout.jsx';
 import GradientSection from '../components/GradientSection.jsx';
 
-/**
- * Simplified careers page that focuses on the most important
- * responsibilities for each role.  It introduces the company
- * succinctly, uses a badge style header to signal that hiring is
- * active and offers clear calls‑to‑action for applicants.
- */
 const jobOpenings = [
   {
-    slug: 'software-engineer',
-    title: 'Software Engineer',
+    slug: 'prompt-engineer',
+    title: 'Prompt Engineer',
     bullets: [
-      'Build and scale modern applications',
-      'Utilise critical thinking and problem‑solving skills',
-      'Deploy features fast with end‑to‑end ownership',
-      'Bonus: Familiarity with LLMs & AI model training'
+      'Design practical Claude and OpenAI workflows',
+      'Test prompts against real business use cases',
+      'Connect AI outputs with apps, automations, and teams',
+      'Help turn messy operations into clear AI-assisted systems'
     ]
   },
   {
-    slug: 'marketing-specialist',
-    title: 'Marketing Specialist',
+    slug: 'business-analyst',
+    title: 'Business Analyst',
     bullets: [
-      'Develop modern, data‑driven marketing campaigns',
-      'Collaborate with sales team for strategy alignment',
-      'Build the company’s digital presence and brand',
-      'Explore and co-develop AI-powered marketing tools to enhance campaign efficiency and engagement'
+      'Map client workflows and bottlenecks',
+      'Translate business needs into clear product scope',
+      'Support AI solution design with practical research',
+      'Opening in a future hiring round'
     ]
   },
   {
-    slug: 'sales-executive',
-    title: 'Sales Executive',
+    slug: 'operations',
+    title: 'Operations',
     bullets: [
-      'Handle leads and close deals effectively',
-      'Manage and grow client relationships',
-      'Commission‑based rewards for successful contracts',
-      'Identify and pursue sales opportunities for software applications and AI-driven products'
+      'Keep projects, clients, and internal systems moving',
+      'Coordinate delivery details across small fast teams',
+      'Improve repeatable processes as the studio grows',
+      'Opening in a future hiring round'
     ]
   }
 ];
 
-const roleQuestions = {
-  'Software Engineer': [
-    'Describe the most complex feature or system you built recently. What modern tools, frameworks, and architectures did you use, and why did you choose them over alternatives?',
-    'Walk me through a time you were stuck on a technical issue for hours or days. How did you break down the problem, and what exact steps did you take to solve it?',
-    'Share a project where you had to take full ownership from start to finish. What obstacles did you face, and how did you push through them?',
-    'Explain how you design a system or feature to make it scalable, maintainable, and easy for other developers to work on.'
-  ],
-  'Sales Executive': [
-    'Describe the most complex sales cycle you managed end-to-end. How did you tailor your approach for each stakeholder, and what tools supported your process?',
-    'Share an example of turning a skeptical prospect into a champion. What objections did you hear, and how did you address them?',
-    'Explain how you build and maintain a healthy pipeline. What metrics do you track weekly, and how do you prioritize deals?',
-    'Tell us about collaborating with marketing or product to win a deal. What did you learn, and how did you apply it to future opportunities?'
-  ],
-  'Marketing Specialist': [
-    'Describe a multi-channel campaign you led. How did you pick the channels, and how did you adapt messaging for each audience?',
-    'Walk us through your audience research process. What data sources do you rely on, and how do you translate findings into campaign decisions?',
-    'Share an example of how you improved conversion or engagement mid-campaign. What experiments did you run and what did you learn?',
-    'How do you report performance to stakeholders? Which metrics matter most to you and why?'
-  ]
-};
-
-const philippinesLocations = [
-  'Manila',
-  'Quezon City',
-  'Makati',
-  'Pasig',
-  'Pasay',
-  'Taguig',
-  'Mandaluyong',
-  'Marikina',
-  'San Juan',
-  'Caloocan',
-  'Malabon',
-  'Navotas',
-  'Valenzuela',
-  'Parañaque',
-  'Las Piñas',
-  'Muntinlupa',
-  'Antipolo',
-  'Angeles City',
-  'San Fernando',
-  'San Jose del Monte',
-  'Malolos',
-  'Meycauayan',
-  'Baguio',
-  'Santa Rosa',
-  'Calamba',
-  'Biñan',
-  'Cabuyao',
-  'San Pedro',
-  'Batangas City',
-  'Lipa',
-  'Lucena',
-  'Tagaytay',
-  'Legazpi',
-  'Naga',
-  'Sorsogon City',
-  'Olongapo',
-  'Tarlac City',
-  'Cabanatuan',
-  'Dagupan',
-  'Laoag',
-  'Urdaneta',
-  'Cebu City',
-  'Iloilo City',
-  'Bacolod',
-  'Cagayan de Oro',
-  'Davao City',
-  'General Santos',
-  'Zamboanga City'
+const roleCards = [
+  {
+    title: 'Prompt Engineer',
+    status: 'Open now',
+    disabled: false,
+    summary: 'Shape AI workflows, prompts, and practical automations for real client operations.',
+    traits: ['LLM testing', 'API curiosity', 'Product sense']
+  },
+  {
+    title: 'Business Analyst',
+    status: 'Coming soon',
+    disabled: true,
+    summary: 'Translate workflows, requirements, and client context into sharp delivery maps.',
+    traits: ['Discovery', 'Process mapping', 'Client logic']
+  },
+  {
+    title: 'Operations',
+    status: 'Coming soon',
+    disabled: true,
+    summary: 'Keep delivery clean, coordinated, and reliable as NeoLabs scales its systems.',
+    traits: ['Coordination', 'Quality checks', 'Delivery rhythm']
+  }
 ];
 
+const promptEngineerQuestions = [
+  'What experience do you have with Claude, OpenAI, or other AI tools?',
+  'In your own words, what is an API?',
+  'Have you worked on mobile applications, chatbots, automations, or AI workflows before?'
+];
+
+const steps = ['Intro', 'Profile', 'Role', 'Questions', 'Thanks'];
+const introVideoSrc = '/assets/videos/career-application-intro.mp4';
+const roleSelectionVideoSrc = '/assets/videos/career-application-role-select.mp4';
+
+const initialFormState = {
+  name: '',
+  email: '',
+  role: '',
+  answers: {
+    q1: '',
+    q2: '',
+    q3: ''
+  }
+};
+
+const stepVariants = {
+  enter: { opacity: 0, y: 24, scale: 0.98 },
+  center: { opacity: 1, y: 0, scale: 1 },
+  exit: { opacity: 0, y: -18, scale: 0.99 }
+};
+
 const Careers = () => {
-  const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const [formState, setFormState] = useState({
-    name: '',
-    email: '',
-    location: '',
-    age: '',
-    gender: '',
-    role: '',
-    answers: {
-      q1: '',
-      q2: '',
-      q3: '',
-      q4: ''
-    },
-    cvFile: null
-  });
+  const [showApplicationFlow, setShowApplicationFlow] = useState(false);
+  const [wizardStep, setWizardStep] = useState(0);
+  const [formState, setFormState] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [formMessage, setFormMessage] = useState('');
+  const [submissionStage, setSubmissionStage] = useState('');
+  const [assessmentResult, setAssessmentResult] = useState(null);
   const [bannerMessage, setBannerMessage] = useState('');
+  const [videoAvailable, setVideoAvailable] = useState(true);
+  const [videoComplete, setVideoComplete] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [videoReady, setVideoReady] = useState(false);
   const overlayRef = useRef(null);
+  const videoRef = useRef(null);
 
-  const currentQuestions = useMemo(() => {
-    if (!formState.role) return [];
-    return roleQuestions[formState.role] ?? [];
-  }, [formState.role]);
+  const selectedRole = useMemo(
+    () => roleCards.find((role) => role.title === formState.role),
+    [formState.role]
+  );
 
-  const resetForm = () => {
-    setFormState({
-      name: '',
-      email: '',
-      location: '',
-      age: '',
-      gender: '',
-      role: '',
-      answers: { q1: '', q2: '', q3: '', q4: '' },
-      cvFile: null
-    });
+  const resetFlow = () => {
+    setWizardStep(0);
+    setFormState(initialFormState);
     setErrors({});
     setFormMessage('');
+    setSubmissionStage('');
+    setAssessmentResult(null);
+    setSubmitting(false);
+    setVideoAvailable(true);
+    setVideoComplete(false);
+    setVideoProgress(0);
+    setVideoReady(false);
   };
 
-  const handleInputChange = (field) => (event) => {
+  useEffect(() => {
+    if (!showApplicationFlow || wizardStep !== 0) return;
+
+    setVideoAvailable(true);
+    setVideoReady(false);
+    setVideoProgress(0);
+  }, [showApplicationFlow, wizardStep]);
+
+  const closeFlow = () => {
+    setShowApplicationFlow(false);
+    resetFlow();
+  };
+
+  const openFlow = () => {
+    resetFlow();
+    setShowApplicationFlow(true);
+  };
+
+  const goToStep = (nextStep) => {
+    setErrors({});
+    setFormMessage('');
+    setSubmissionStage('');
+    setWizardStep(nextStep);
+    overlayRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const replayIntroVideo = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.currentTime = 0;
+    setVideoComplete(false);
+    setVideoProgress(0);
+    setVideoReady(false);
+    video.play().catch(() => {
+      setVideoReady(true);
+    });
+  };
+
+  const updateVideoProgress = (event) => {
+    const video = event.currentTarget;
+    const duration = video.duration || 0;
+
+    if (!duration) return;
+
+    setVideoProgress(Math.min(100, (video.currentTime / duration) * 100));
+  };
+
+  const updateField = (field) => (event) => {
     const value = event.target.value;
-
-    if (field === 'role') {
-      setFormState((prev) => ({
-        ...prev,
-        role: value,
-        answers: { q1: '', q2: '', q3: '', q4: '' }
-      }));
-      overlayRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    if (field === 'age') {
-      const numericValue = value.replace(/\D/g, '').slice(0, 2);
-      setFormState((prev) => ({ ...prev, age: numericValue }));
-      return;
-    }
-
     setFormState((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
-  const handleAnswerChange = (key) => (event) => {
+  const updateAnswer = (key) => (event) => {
     const value = event.target.value;
     setFormState((prev) => ({
       ...prev,
@@ -187,79 +186,130 @@ const Careers = () => {
         [key]: value
       }
     }));
+    setErrors((prev) => ({ ...prev, [key]: '' }));
   };
 
-  const validateForm = () => {
+  const selectRole = (role) => {
+    if (role.disabled) return;
+
+    setFormState((prev) => ({ ...prev, role: role.title }));
+    setErrors((prev) => ({ ...prev, role: '' }));
+  };
+
+  const validateProfileStep = () => {
     const newErrors = {};
 
-    if (!formState.name.trim()) newErrors.name = 'Full name is required.';
-    if (!formState.email.trim()) newErrors.email = 'Email is required.';
+    if (!formState.name.trim()) {
+      newErrors.name = 'Enter your name to start your profile.';
+    }
+
     if (formState.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
-      newErrors.email = 'Enter a valid email address.';
+      newErrors.email = 'Enter a valid email address or leave it blank.';
     }
-    if (!formState.location.trim()) {
-      newErrors.location = 'Location is required.';
-    } else if (
-      !philippinesLocations.some(
-        (item) => item.toLowerCase() === formState.location.trim().toLowerCase()
-      )
-    ) {
-      newErrors.location = 'Please pick a location from the list.';
-    }
-
-    const ageValue = formState.age.trim();
-    if (!ageValue) {
-      newErrors.age = 'Age is required.';
-    } else if (!/^\d{1,2}$/.test(ageValue)) {
-      newErrors.age = 'Age must be one or two digits.';
-    } else if (parseInt(ageValue, 10) === 0) {
-      newErrors.age = 'Age must be greater than zero.';
-    }
-
-    if (!formState.gender.trim()) newErrors.gender = 'Gender selection is required.';
-
-    if (!formState.role) newErrors.role = 'Select a role to continue.';
-
-    currentQuestions.forEach((_, index) => {
-      const key = `q${index + 1}`;
-      if (!formState.answers[key]?.trim()) {
-        newErrors[key] = 'This question is required.';
-      }
-    });
-
-    if (!formState.cvFile) newErrors.cvFile = 'Please upload your CV.';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateRoleStep = () => {
+    const newErrors = {};
+
+    if (!formState.role) {
+      newErrors.role = 'Choose the Prompt Engineer role to continue.';
+    } else if (formState.role !== 'Prompt Engineer') {
+      newErrors.role = 'Prompt Engineer is the role accepting applications right now.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateQuestionsStep = () => {
+    const newErrors = {};
+
+    promptEngineerQuestions.forEach((_, index) => {
+      const key = `q${index + 1}`;
+      if (!formState.answers[key]?.trim()) {
+        newErrors[key] = 'This answer is required.';
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleProfileNext = () => {
+    if (validateProfileStep()) goToStep(2);
+  };
+
+  const handleRoleNext = () => {
+    if (validateRoleStep()) goToStep(3);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!validateForm()) return;
+    const profileIsValid = validateProfileStep();
+    const roleIsValid = validateRoleStep();
+    const questionsAreValid = validateQuestionsStep();
+
+    if (!profileIsValid || !roleIsValid || !questionsAreValid) return;
 
     setSubmitting(true);
     setFormMessage('');
+    setSubmissionStage('Scoring your answers...');
 
     const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook/cv-upload';
     const formData = new FormData();
 
-    formData.append('name', formState.name.trim());
-    formData.append('email', formState.email.trim());
-    formData.append('location', formState.location.trim());
-    formData.append('age', formState.age.trim());
-    formData.append('gender', formState.gender.trim());
-    formData.append('role', formState.role);
-    formData.append('answers[q1]', formState.answers.q1);
-    formData.append('answers[q2]', formState.answers.q2);
-    formData.append('answers[q3]', formState.answers.q3);
-    formData.append('answers[q4]', formState.answers.q4);
-
-    if (formState.cvFile) {
-      formData.append('cv', formState.cvFile);
-    }
+    const normalizedSubmission = {
+      name: formState.name.trim(),
+      email: formState.email.trim(),
+      role: formState.role,
+      answers: {
+        q1: formState.answers.q1.trim(),
+        q2: formState.answers.q2.trim(),
+        q3: formState.answers.q3.trim()
+      }
+    };
 
     try {
+      const assessmentResponse = await fetch('/api/career-assessment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(normalizedSubmission)
+      });
+      const assessmentData = await assessmentResponse.json().catch(() => ({}));
+
+      if (!assessmentResponse.ok || !assessmentData.assessment) {
+        throw new Error(assessmentData.error || 'Unable to score the assessment right now.');
+      }
+
+      const assessment = assessmentData.assessment;
+      setAssessmentResult(assessment);
+      setSubmissionStage('Sending your application...');
+
+      formData.append('flowVersion', 'career-prestep-v1');
+      formData.append('name', normalizedSubmission.name);
+      formData.append('email', normalizedSubmission.email);
+      formData.append('role', normalizedSubmission.role);
+      formData.append('answers[q1]', normalizedSubmission.answers.q1);
+      formData.append('answers[q2]', normalizedSubmission.answers.q2);
+      formData.append('answers[q3]', normalizedSubmission.answers.q3);
+      formData.append('assessment[score]', String(assessment.score));
+      formData.append('assessment[applicationId]', String(assessment.applicationId || ''));
+      formData.append('assessment[passed]', String(assessment.passed));
+      formData.append('assessment[passingScore]', String(assessment.passingScore));
+      formData.append('assessment[recommendation]', assessment.recommendation);
+      formData.append('assessment[aiGeneratedRisk]', assessment.aiGeneratedRisk);
+      formData.append('assessment[summary]', assessment.summary);
+      formData.append('assessment[categoryScores]', JSON.stringify(assessment.categoryScores));
+      formData.append('assessment[strengths]', JSON.stringify(assessment.strengths));
+      formData.append('assessment[concerns]', JSON.stringify(assessment.concerns));
+
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
@@ -272,15 +322,15 @@ const Careers = () => {
         throw new Error('Unable to submit right now.');
       }
 
-      setBannerMessage('Application sent successfully! We will be in touch soon.');
-      setShowApplicationForm(false);
-      resetForm();
+      setBannerMessage('Application received. We will be in touch soon.');
+      goToStep(4);
     } catch (error) {
       setFormMessage(
-        'There was a problem sending your application. Please try again or use the Contact page.'
+        error.message || 'There was a problem sending your application. Please try again in a moment.'
       );
     } finally {
       setSubmitting(false);
+      setSubmissionStage('');
     }
   };
 
@@ -291,17 +341,17 @@ const Careers = () => {
     >
       <GradientSection className="py-20">
         <div className="section-container text-center">
-          <span className="mb-6 inline-block rounded-full bg-secondary px-5 py-2 text-xs font-medium text-dark uppercase tracking-wider">
+          <span className="mb-6 inline-block rounded-full bg-secondary px-5 py-2 text-xs font-medium uppercase tracking-wider text-dark">
             Now Hiring
           </span>
-          <h1 className="text-4xl md:text-5xl font-heading font-bold text-light">
+          <h1 className="font-heading text-4xl font-bold text-light md:text-5xl">
             Join a modern AI startup shaping the next generation of intelligent apps.
           </h1>
           <p className="mt-4 text-base text-light/80">
-            Share a few details to begin a short, AI-powered conversation tailored to your role.
+            Start with a short guided application for the Prompt Engineer role.
           </p>
           {bannerMessage && (
-            <div className="mt-6 rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm font-semibold text-light">
+            <div className="mx-auto mt-6 max-w-xl rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm font-semibold text-light">
               {bannerMessage}
             </div>
           )}
@@ -309,238 +359,538 @@ const Careers = () => {
             {jobOpenings.map((job) => (
               <article
                 key={job.title}
-                id={job.slug || job.title.toLowerCase().replace(/\s+/g, '-')}
+                id={job.slug}
                 className="flex flex-col rounded-xl bg-white/5 p-8 shadow-lg"
               >
-                <h2 className="text-2xl font-heading font-semibold text-light">
+                <h2 className="font-heading text-2xl font-semibold text-light">
                   {job.title}
                 </h2>
                 <h3 className="mt-4 text-sm font-semibold uppercase tracking-wide text-primary">
-                  Key Responsibilities
+                  Focus
                 </h3>
                 <ul className="mt-3 list-disc space-y-2 pl-5 text-left text-base text-light/80">
-                  {job.bullets.map((item, index) => (
-                    <li key={index}>{item}</li>
+                  {job.bullets.map((item) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
               </article>
             ))}
           </div>
           <div className="mt-14 flex flex-col items-center justify-center gap-4 md:flex-row">
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => setShowApplicationForm(true)}
-            >
+            <button type="button" className="btn-primary" onClick={openFlow}>
               Apply Now
             </button>
           </div>
         </div>
       </GradientSection>
 
-      {showApplicationForm && (
-        <div
-          className="fixed inset-0 z-50 flex min-h-screen items-start justify-center overflow-y-auto bg-black/70 px-4 py-10 backdrop-blur"
-          ref={overlayRef}
-        >
-          <div className="w-full max-w-3xl rounded-3xl border border-white/10 bg-dark/95 shadow-2xl">
-            <form
-              className="flex flex-col gap-6 p-8 text-left"
-              onSubmit={handleSubmit}
-              role="dialog"
-              aria-modal="true"
-            >
-              <header className="flex items-start justify-between gap-4 border-b border-white/5 pb-4">
-                <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-[0.25em] text-primary">Career Application pre-step</p>
-                  <h2 className="text-2xl font-heading font-semibold text-light">Tell us about you</h2>
-                  <p className="text-sm text-light/70">
-                    Your responses will help us assess your fit and ensure we connect you with the best role for your experience.
+      <AnimatePresence>
+        {showApplicationFlow && (
+          <motion.div
+            className="fixed inset-0 z-50 overflow-y-auto bg-[#050b12] text-light"
+            ref={overlayRef}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.28 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="career-flow-title"
+          >
+            <div className="relative min-h-screen overflow-hidden px-4 py-5 sm:px-6 lg:px-10">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(60,183,171,0.24),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08)_0,transparent_28%,rgba(255,255,255,0.04)_100%)]" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#050b12] via-[#050b12]/85 to-transparent" />
+
+              <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-secondary/80">
+                    Career Application
+                  </p>
+                  <p className="mt-1 text-sm text-light/55">
+                    Step {wizardStep + 1} of {steps.length}: {steps[wizardStep]}
                   </p>
                 </div>
                 <button
                   type="button"
-                  className="rounded-full bg-white/5 p-2 text-light/80 transition hover:bg-white/10 hover:text-secondary"
-                  aria-label="Close application form"
-                  onClick={() => {
-                    setShowApplicationForm(false);
-                    resetForm();
-                  }}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-lg text-light/80 transition hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
+                  aria-label="Close career application"
+                  onClick={closeFlow}
                 >
-                  ✕
+                  x
                 </button>
               </header>
 
-              <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-sm text-light/80">
-                    <span className="block font-semibold text-light">Full Name</span>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formState.name}
-                      onChange={handleInputChange('name')}
-                      placeholder="Alex Johnson"
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
+              <div className="relative z-10 mx-auto mt-6 grid max-w-6xl grid-cols-5 gap-2">
+                {steps.map((step, index) => (
+                  <div key={step} className="h-1 rounded-full bg-white/10">
+                    <motion.div
+                      className="h-full rounded-full bg-secondary"
+                      initial={false}
+                      animate={{ width: index <= wizardStep ? '100%' : '0%' }}
+                      transition={{ duration: 0.3 }}
                     />
-                    {errors.name && <p className="text-xs text-secondary">{errors.name}</p>}
-                  </label>
-                  <label className="space-y-2 text-sm text-light/80">
-                    <span className="block font-semibold text-light">Email</span>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formState.email}
-                      onChange={handleInputChange('email')}
-                      placeholder="alex@company.com"
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
-                    />
-                    {errors.email && <p className="text-xs text-secondary">{errors.email}</p>}
-                  </label>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-sm text-light/80">
-                    <span className="block font-semibold text-light">Location</span>
-                    <input
-                      type="text"
-                      name="location"
-                      value={formState.location}
-                      onChange={handleInputChange('location')}
-                      list="philippines-locations"
-                      placeholder="Start typing a city..."
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
-                    />
-                    <datalist id="philippines-locations">
-                      {philippinesLocations.map((location) => (
-                        <option key={location} value={location} />
-                      ))}
-                    </datalist>
-                    <span className="block text-xs text-light/60">Autocomplete supports cities across the Philippines.</span>
-                    {errors.location && <p className="text-xs text-secondary">{errors.location}</p>}
-                  </label>
-
-                  <label className="space-y-2 text-sm text-light/80">
-                    <span className="block font-semibold text-light">Age</span>
-                    <input
-                      type="text"
-                      name="age"
-                      value={formState.age}
-                      onChange={handleInputChange('age')}
-                      inputMode="numeric"
-                      pattern="\d{1,2}"
-                      maxLength={2}
-                      placeholder="e.g., 24"
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
-                    />
-                    <span className="block text-xs text-light/60">Numbers only, up to two digits.</span>
-                    {errors.age && <p className="text-xs text-secondary">{errors.age}</p>}
-                  </label>
-                </div>
-
-                <label className="space-y-2 text-sm text-light/80">
-                  <span className="block font-semibold text-light">Gender</span>
-                  <select
-                    name="gender"
-                    value={formState.gender}
-                    onChange={handleInputChange('gender')}
-                    className="w-full rounded-lg border border-white/10 bg-dark/80 px-4 py-3 text-light focus:border-secondary focus:outline-none"
-                    style={{ colorScheme: 'dark' }}
-                  >
-                    <option value="" disabled hidden>
-                      Select gender
-                    </option>
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Prefer not to say</option>
-                  </select>
-                  {errors.gender && <p className="text-xs text-secondary">{errors.gender}</p>}
-                </label>
-
-                <label className="space-y-2 text-sm text-light/80">
-                  <span className="block font-semibold text-light">Role</span>
-                  <select
-                    name="role"
-                    value={formState.role}
-                    onChange={handleInputChange('role')}
-                    className="w-full rounded-lg border border-white/10 bg-dark/80 px-4 py-3 text-light focus:border-secondary focus:outline-none"
-                    style={{ colorScheme: 'dark' }}
-                  >
-                    <option value="" disabled hidden>
-                      Select a role
-                    </option>
-                    <option>Software Engineer</option>
-                    <option>Sales Executive</option>
-                    <option>Marketing Specialist</option>
-                  </select>
-                  {errors.role && <p className="text-xs text-secondary">{errors.role}</p>}
-                </label>
-
-                {currentQuestions.length > 0 && (
-                  <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-primary">Role-based questions</h3>
-                    {currentQuestions.map((question, index) => {
-                      const key = `q${index + 1}`;
-                      return (
-                        <label key={key} className="space-y-2 text-sm text-light/80">
-                          <span className="block font-semibold text-light">{question}</span>
-                          <textarea
-                            name={key}
-                            value={formState.answers[key]}
-                            onChange={handleAnswerChange(key)}
-                            rows={3}
-                            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-light placeholder:text-light/40 focus:border-secondary focus:outline-none"
-                            placeholder="Your answer"
-                          />
-                          {errors[key] && <p className="text-xs text-secondary">{errors[key]}</p>}
-                        </label>
-                      );
-                    })}
                   </div>
-                )}
-
-                <label className="space-y-2 text-sm text-light/80">
-                  <span className="block font-semibold text-light">Upload CV</span>
-                  <input
-                    type="file"
-                    name="cv"
-                    accept=".pdf,.doc,.docx"
-                    onChange={(event) => {
-                      const file = event.target.files?.[0];
-                      setFormState((prev) => ({ ...prev, cvFile: file ?? null }));
-                    }}
-                    className="w-full cursor-pointer rounded-lg border border-dashed border-white/20 bg-white/5 px-4 py-3 text-light file:mr-4 file:rounded file:border-0 file:bg-secondary file:px-4 file:py-2 file:font-semibold file:text-dark hover:border-secondary"
-                  />
-                  <span className="block text-xs text-light/60">PDF or Word documents are welcome.</span>
-                  {errors.cvFile && <p className="text-xs text-secondary">{errors.cvFile}</p>}
-                </label>
+                ))}
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 border-t border-white/5 pt-4">
-                <div className="flex flex-wrap gap-3">
-                  <button type="submit" className="btn-primary" disabled={submitting}>
-                    {submitting ? 'Sending...' : 'Send application'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-primary bg-white/10 text-light hover:bg-white/20"
-                    onClick={() => {
-                      setShowApplicationForm(false);
-                      resetForm();
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-                <span className="text-xs text-light/60">We will connect this flow to the AI backend soon.</span>
-                {formMessage && (
-                  <p className="text-sm font-semibold text-primary">{formMessage}</p>
-                )}
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+              <main className="relative z-10 mx-auto flex min-h-[calc(100svh-132px)] max-w-6xl items-center py-8">
+                <AnimatePresence mode="wait">
+                  {wizardStep === 0 && (
+                    <motion.section
+                      key="intro"
+                      className="grid w-full items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]"
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.38, ease: 'easeOut' }}
+                    >
+                      <div className="relative min-h-[420px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-[0_28px_90px_rgba(0,0,0,0.38)]">
+                        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(60,183,171,0.22),rgba(5,11,18,0.12)),radial-gradient(circle_at_28%_18%,rgba(255,255,255,0.18),transparent_22%),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:auto,auto,72px_72px,72px_72px]" />
+                        {videoAvailable && (
+                          <video
+                            ref={videoRef}
+                            className={`absolute inset-0 h-full w-full object-cover transition duration-700 ${
+                              videoReady ? 'opacity-100' : 'opacity-0'
+                            }`}
+                            src={introVideoSrc}
+                            muted
+                            playsInline
+                            autoPlay
+                            preload="metadata"
+                            onCanPlay={() => setVideoReady(true)}
+                            onEnded={() => {
+                              setVideoComplete(true);
+                              setVideoProgress(100);
+                            }}
+                            onTimeUpdate={updateVideoProgress}
+                            onError={() => {
+                              setVideoAvailable(false);
+                              setVideoReady(false);
+                            }}
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#050b12] via-[#050b12]/24 to-transparent" />
+                        <div className="absolute left-6 right-6 top-6 flex items-center justify-between gap-3">
+                          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
+                            <motion.div
+                              className="h-full rounded-full bg-secondary"
+                              initial={false}
+                              animate={{ width: `${videoProgress}%` }}
+                              transition={{ duration: 0.18 }}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            className="rounded-full border border-white/15 bg-black/25 px-3 py-1 text-xs font-semibold text-light/80 backdrop-blur transition hover:border-secondary/50 hover:text-secondary"
+                            onClick={videoComplete ? replayIntroVideo : () => goToStep(1)}
+                          >
+                            {videoComplete ? 'Replay' : 'Skip intro'}
+                          </button>
+                        </div>
+                        <motion.div
+                          className="absolute bottom-6 left-6 right-6"
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.16, duration: 0.42 }}
+                        >
+                          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-secondary">
+                            Neo Redlabs Studio
+                          </p>
+                          <h2
+                            id="career-flow-title"
+                            className="mt-3 max-w-xl font-display text-5xl font-semibold leading-none text-light sm:text-6xl"
+                          >
+                            Welcome to the assessment room
+                          </h2>
+                        </motion.div>
+                      </div>
+
+                      <div className="max-w-xl">
+                        <motion.p
+                          className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary"
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.08 }}
+                        >
+                          Application Process
+                        </motion.p>
+                        <motion.h3
+                          className="mt-4 font-heading text-4xl font-bold leading-tight text-light sm:text-5xl"
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.16 }}
+                        >
+                          Complete your profile and begin interview.
+                        </motion.h3>
+                        <motion.p
+                          className="mt-5 text-lg leading-8 text-light/70"
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.24 }}
+                        >
+                          Screening process to assess structured thinking and clarity of explanation.
+                        </motion.p>
+                        <motion.div
+                          className="mt-8 flex flex-wrap gap-3"
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.32 }}
+                        >
+                          <button
+                            type="button"
+                            className="btn-primary bg-secondary text-dark hover:brightness-100"
+                            onClick={() => goToStep(1)}
+                          >
+                            Begin Interview
+                          </button>
+                          <span className="inline-flex items-center rounded-full border border-white/10 px-4 py-3 text-sm text-light/60">
+                            You can start whenever you are ready
+                          </span>
+                        </motion.div>
+                      </div>
+                    </motion.section>
+                  )}
+
+                  {wizardStep === 1 && (
+                    <motion.section
+                      key="profile"
+                      className="mx-auto w-full max-w-3xl"
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.34, ease: 'easeOut' }}
+                    >
+                      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                        Create Your Profile
+                      </p>
+                      <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                        What should we call you?
+                      </h2>
+                      <p className="mt-4 text-base leading-7 text-light/65">
+                        We will use your name for the next steps. Add your email if you want to hear back from us.
+                      </p>
+
+                      <div className="mt-9 grid gap-5">
+                        <label className="space-y-3">
+                          <span className="block text-sm font-semibold text-light">Name</span>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formState.name}
+                            onChange={updateField('name')}
+                            placeholder="Alex Johnson"
+                            className="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-5 py-4 text-lg text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
+                          />
+                          {errors.name && <p className="text-sm text-secondary">{errors.name}</p>}
+                        </label>
+
+                        <label className="space-y-3">
+                          <span className="block text-sm font-semibold text-light">Email optional</span>
+                          <input
+                            type="email"
+                            name="email"
+                            value={formState.email}
+                            onChange={updateField('email')}
+                            placeholder="alex@company.com"
+                            className="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-5 py-4 text-lg text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
+                          />
+                          {errors.email && <p className="text-sm text-secondary">{errors.email}</p>}
+                        </label>
+                      </div>
+
+                      <div className="mt-9 flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          className="btn-primary bg-secondary text-dark hover:brightness-100"
+                          onClick={handleProfileNext}
+                        >
+                          Continue
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                          onClick={() => goToStep(0)}
+                        >
+                          Back
+                        </button>
+                      </div>
+                    </motion.section>
+                  )}
+
+                  {wizardStep === 2 && (
+                    <motion.section
+                      key="role"
+                      className="relative w-full overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.26)] sm:p-7"
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.34, ease: 'easeOut' }}
+                    >
+                      <video
+                        className="absolute inset-0 h-full w-full object-cover opacity-35"
+                        src={roleSelectionVideoSrc}
+                        muted
+                        playsInline
+                        autoPlay
+                        loop
+                        preload="metadata"
+                        aria-hidden="true"
+                      />
+                      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050b12_0%,rgba(5,11,18,0.86)_38%,rgba(5,11,18,0.58)_100%)]" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#050b12] via-transparent to-[#050b12]/30" />
+
+                      <div className="relative max-w-3xl">
+                        <div className="max-w-3xl">
+                          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                            Choose Your Path
+                          </p>
+                          <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                            {formState.name.trim() || 'Candidate'}, select your role.
+                          </h2>
+                          <p className="mt-4 text-base leading-7 text-light/65">
+                            Choose the role that best matches how you want to contribute. More interview paths will open soon.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="relative mt-9 grid gap-5 lg:grid-cols-3">
+                        {roleCards.map((role, index) => {
+                          const isSelected = formState.role === role.title;
+
+                          return (
+                            <motion.button
+                              key={role.title}
+                              type="button"
+                              className={`group min-h-[320px] rounded-[1.75rem] border p-6 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/50 ${
+                                isSelected
+                                  ? 'border-secondary bg-secondary/15 shadow-[0_24px_70px_rgba(60,183,171,0.16)]'
+                                  : 'border-white/10 bg-white/[0.06]'
+                              } ${role.disabled ? 'cursor-not-allowed opacity-55' : 'hover:border-secondary/60 hover:bg-white/[0.09]'}`}
+                              onClick={() => selectRole(role)}
+                              whileHover={role.disabled ? undefined : { y: -8, scale: 1.015 }}
+                              whileTap={role.disabled ? undefined : { scale: 0.99 }}
+                              transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                              aria-pressed={isSelected}
+                              disabled={role.disabled}
+                            >
+                              <div className="flex items-start justify-between gap-4">
+                                <span className="text-6xl font-black leading-none text-white/10">
+                                  0{index + 1}
+                                </span>
+                                <span
+                                  className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                                    role.disabled
+                                      ? 'bg-white/10 text-light/55'
+                                      : 'bg-secondary text-dark'
+                                  }`}
+                                >
+                                  {role.status}
+                                </span>
+                              </div>
+                              <h3 className="mt-10 font-heading text-3xl font-bold text-light">
+                                {role.title}
+                              </h3>
+                              <p className="mt-4 text-sm leading-6 text-light/65">
+                                {role.summary}
+                              </p>
+                              <div className="mt-8 flex flex-wrap gap-2">
+                                {role.traits.map((trait) => (
+                                  <span
+                                    key={trait}
+                                    className="rounded-full border border-white/10 px-3 py-1 text-xs text-light/65"
+                                  >
+                                    {trait}
+                                  </span>
+                                ))}
+                              </div>
+                              {isSelected && (
+                                <motion.p
+                                  className="mt-8 text-sm font-semibold text-secondary"
+                                  initial={{ opacity: 0, y: 8 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                >
+                                  Selected
+                                </motion.p>
+                              )}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+
+                      {errors.role && <p className="mt-5 text-sm text-secondary">{errors.role}</p>}
+
+                      <div className="relative mt-7 flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          className="btn-primary min-w-[190px] bg-secondary text-dark hover:brightness-100"
+                          onClick={handleRoleNext}
+                        >
+                          Continue to questions
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                          onClick={() => goToStep(1)}
+                        >
+                          Back
+                        </button>
+                      </div>
+
+                    </motion.section>
+                  )}
+
+                  {wizardStep === 3 && (
+                    <motion.section
+                      key="questions"
+                      className="mx-auto w-full max-w-4xl"
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.34, ease: 'easeOut' }}
+                    >
+                      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                        {selectedRole?.title || 'Prompt Engineer'} Checkpoint
+                      </p>
+                      <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
+                        Three quick signals.
+                      </h2>
+                      <p className="mt-4 text-base leading-7 text-light/65">
+                        Keep it plain and specific. We value clear thinking over perfect jargon. AI-generated answers may be detected.
+                      </p>
+
+                      <form className="mt-9 space-y-5" onSubmit={handleSubmit}>
+                        {promptEngineerQuestions.map((question, index) => {
+                          const key = `q${index + 1}`;
+
+                          return (
+                            <label
+                              key={key}
+                              className="block rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5"
+                            >
+                              <span className="block text-sm font-semibold leading-6 text-light">
+                                {question}
+                              </span>
+                              <textarea
+                                name={key}
+                                value={formState.answers[key]}
+                                onChange={updateAnswer(key)}
+                                rows={4}
+                                className="mt-4 w-full resize-none rounded-2xl border border-white/10 bg-[#07111b]/90 px-4 py-3 text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
+                                placeholder="Type your answer here"
+                              />
+                              {errors[key] && <p className="mt-2 text-sm text-secondary">{errors[key]}</p>}
+                            </label>
+                          );
+                        })}
+
+                        {formMessage && (
+                          <p className="rounded-2xl border border-secondary/25 bg-secondary/10 px-4 py-3 text-sm font-semibold text-secondary">
+                            {formMessage}
+                          </p>
+                        )}
+
+                        {submissionStage && (
+                          <p className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-light/75">
+                            {submissionStage}
+                          </p>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-3 pt-2">
+                          <button
+                            type="submit"
+                          className="btn-primary bg-secondary text-dark hover:brightness-100 disabled:cursor-wait disabled:opacity-70"
+                          disabled={submitting}
+                        >
+                            {submitting ? 'Assessing...' : 'Submit Application'}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                            onClick={() => goToStep(2)}
+                            disabled={submitting}
+                          >
+                            Back
+                          </button>
+                        </div>
+                      </form>
+                    </motion.section>
+                  )}
+
+                  {wizardStep === 4 && (
+                    <motion.section
+                      key="thanks"
+                      className="mx-auto w-full max-w-3xl text-center"
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.36, ease: 'easeOut' }}
+                    >
+                      <motion.div
+                        className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-secondary/35 bg-secondary/15 text-4xl font-bold text-secondary"
+                        initial={{ scale: 0.7, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+                      >
+                        OK
+                      </motion.div>
+                      <p className="mt-8 text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
+                        Application Received
+                      </p>
+                      <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-6xl">
+                        Thanks, {formState.name.trim() || 'candidate'}.
+                      </h2>
+                      <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-light/70">
+                        We received your Prompt Engineer profile. The next step is a human review, then we will reach out if there is a match.
+                      </p>
+                      {assessmentResult && (
+                        <div className="mx-auto mt-8 max-w-xl rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5 text-left">
+                          <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary">
+                                AI assessment score
+                              </p>
+                              <p className="mt-2 text-sm text-light/60">
+                                Passing score: {assessmentResult.passingScore}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-heading text-5xl font-bold text-light">
+                                {assessmentResult.score}
+                              </p>
+                              <p className={`text-sm font-semibold ${
+                                assessmentResult.passed ? 'text-secondary' : 'text-light/60'
+                              }`}>
+                                {assessmentResult.passed ? 'Passed' : 'Below benchmark'}
+                              </p>
+                            </div>
+                          </div>
+                          <p className="mt-4 text-sm leading-6 text-light/70">
+                            {assessmentResult.summary}
+                          </p>
+                        </div>
+                      )}
+                      <div className="mt-9 flex justify-center">
+                        <button
+                          type="button"
+                          className="btn-primary bg-secondary text-dark hover:brightness-100"
+                          onClick={closeFlow}
+                        >
+                          Return to Careers
+                        </button>
+                      </div>
+                    </motion.section>
+                  )}
+                </AnimatePresence>
+              </main>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Layout>
   );
 };

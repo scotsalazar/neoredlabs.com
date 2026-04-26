@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "prisma migrate deploy && node server/index.js",
     "server": "node server/index.js",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate"

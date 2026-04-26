@@ -13,6 +13,9 @@ app.locals.prisma = prisma;
 
 const jobsFilePath = path.join(__dirname, 'data', 'open-positions.json');
 const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN?.trim() || '';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY?.trim() || '';
+const OPENAI_ASSESSMENT_MODEL = process.env.OPENAI_ASSESSMENT_MODEL?.trim() || 'gpt-5.4-nano';
+const CAREER_ASSESSMENT_PASSING_SCORE = 70;
 
 const DEFAULT_SLOTS = [
   { slot: '09:00', capacity: 5 },
@@ -26,18 +29,213 @@ const DEFAULT_SLOTS = [
 const SLOT_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIGRATIONS = [
-  {
-    table: 'SlotAvailability',
-    filePath: path.resolve(__dirname, '../prisma/migrations/20231109000000_init/migration.sql')
+const CAREER_ASSESSMENT_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    score: {
+      type: 'integer',
+      minimum: 1,
+      maximum: 100
+    },
+    categoryScores: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        authenticity: { type: 'integer', minimum: 0, maximum: 20 },
+        detail: { type: 'integer', minimum: 0, maximum: 20 },
+        structure: { type: 'integer', minimum: 0, maximum: 20 },
+        processThinking: { type: 'integer', minimum: 0, maximum: 20 },
+        modernTechExperience: { type: 'integer', minimum: 0, maximum: 20 }
+      },
+      required: [
+        'authenticity',
+        'detail',
+        'structure',
+        'processThinking',
+        'modernTechExperience'
+      ]
+    },
+    aiGeneratedRisk: {
+      type: 'string',
+      enum: ['low', 'medium', 'high']
+    },
+    recommendation: {
+      type: 'string',
+      enum: ['pass', 'manual_review', 'decline']
+    },
+    summary: {
+      type: 'string'
+    },
+    strengths: {
+      type: 'array',
+      items: { type: 'string' }
+    },
+    concerns: {
+      type: 'array',
+      items: { type: 'string' }
+    }
   },
-  {
-    table: 'BusinessPost',
-    filePath: path.resolve(__dirname, '../prisma/migrations/20260404000100_business_posts/migration.sql')
-  }
-];
-
+  required: [
+    'score',
+    'categoryScores',
+    'aiGeneratedRisk',
+    'recommendation',
+    'summary',
+    'strengths',
+    'concerns'
+  ]
+};
 app.use(express.json());
+
+function clampInteger(value, min, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return min;
+  return Math.max(min, Math.min(max, Math.round(number)));
+}
+
+function getResponseOutputText(responseData) {
+  if (typeof responseData?.output_text === 'string') {
+    return responseData.output_text;
+  }
+
+  const outputItems = Array.isArray(responseData?.output) ? responseData.output : [];
+
+  for (const item of outputItems) {
+    const contentItems = Array.isArray(item?.content) ? item.content : [];
+    for (const content of contentItems) {
+      if (typeof content?.text === 'string') {
+        return content.text;
+      }
+    }
+  }
+
+  return '';
+}
+
+function normalizeCareerAssessment(rawAssessment) {
+  const categoryScores = {
+    authenticity: clampInteger(rawAssessment?.categoryScores?.authenticity, 0, 20),
+    detail: clampInteger(rawAssessment?.categoryScores?.detail, 0, 20),
+    structure: clampInteger(rawAssessment?.categoryScores?.structure, 0, 20),
+    processThinking: clampInteger(rawAssessment?.categoryScores?.processThinking, 0, 20),
+    modernTechExperience: clampInteger(rawAssessment?.categoryScores?.modernTechExperience, 0, 20)
+  };
+  const computedScore = Object.values(categoryScores).reduce((sum, value) => sum + value, 0);
+  const score = clampInteger(computedScore || rawAssessment?.score, 1, 100);
+  const passed = score >= CAREER_ASSESSMENT_PASSING_SCORE;
+
+  return {
+    score,
+    passed,
+    passingScore: CAREER_ASSESSMENT_PASSING_SCORE,
+    categoryScores,
+    aiGeneratedRisk: ['low', 'medium', 'high'].includes(rawAssessment?.aiGeneratedRisk)
+      ? rawAssessment.aiGeneratedRisk
+      : 'medium',
+    recommendation: passed
+      ? 'pass'
+      : rawAssessment?.recommendation === 'decline'
+        ? 'decline'
+        : 'manual_review',
+    summary: typeof rawAssessment?.summary === 'string'
+      ? rawAssessment.summary.slice(0, 320)
+      : 'Assessment completed.',
+    strengths: Array.isArray(rawAssessment?.strengths) && rawAssessment.strengths.length > 0
+      ? rawAssessment.strengths.slice(0, 3).map((item) => String(item).slice(0, 180))
+      : ['Submitted answers were reviewed.'],
+    concerns: Array.isArray(rawAssessment?.concerns) && rawAssessment.concerns.length > 0
+      ? rawAssessment.concerns.slice(0, 3).map((item) => String(item).slice(0, 180))
+      : ['No detailed concern was provided.']
+  };
+}
+
+async function scoreCareerAssessment({ name, role, answers }) {
+  const payload = {
+    model: OPENAI_ASSESSMENT_MODEL,
+    input: [
+      {
+        role: 'system',
+        content: [
+          {
+            type: 'input_text',
+            text: [
+              'You are assessing a junior Prompt Engineer application for Neo Redlabs Studio.',
+              'Return only the structured JSON requested by the schema.',
+              'Score from 1 to 100. A score of 70 or higher passes.',
+              'Use these five 20-point categories: authenticity, detail, structure, processThinking, modernTechExperience.',
+              'Authenticity means the answer sounds specific, personal, and non-generic. You may estimate AI-generated risk from style and specificity, but do not claim certainty.',
+              'Reward clear process thinking, concrete examples, actual experience with modern tools, and practical understanding of APIs, AI tools, mobile apps, chatbots, automations, or workflows.',
+              'Penalize vague claims, generic AI-sounding answers, missing process, no real examples, or no evidence of modern tech experience.',
+              'The final score should equal the sum of the five category scores.'
+            ].join(' ')
+          }
+        ]
+      },
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'input_text',
+            text: JSON.stringify({
+              candidateName: name,
+              role,
+              questions: [
+                {
+                  criterion: 'AI tool experience',
+                  question: 'What experience do you have with Claude, OpenAI, or other AI tools?',
+                  answer: answers.q1
+                },
+                {
+                  criterion: 'API understanding',
+                  question: 'In your own words, what is an API?',
+                  answer: answers.q2
+                },
+                {
+                  criterion: 'Modern app/workflow experience',
+                  question: 'Have you worked on mobile applications, chatbots, automations, or AI workflows before?',
+                  answer: answers.q3
+                }
+              ]
+            })
+          }
+        ]
+      }
+    ],
+    text: {
+      format: {
+        type: 'json_schema',
+        name: 'career_assessment_score',
+        strict: true,
+        schema: CAREER_ASSESSMENT_SCHEMA
+      }
+    },
+    max_output_tokens: 900
+  };
+
+  const response = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const responseData = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = responseData?.error?.message || 'OpenAI assessment request failed.';
+    throw new Error(message);
+  }
+
+  const outputText = getResponseOutputText(responseData);
+  if (!outputText) {
+    throw new Error('OpenAI assessment returned no structured output.');
+  }
+
+  return normalizeCareerAssessment(JSON.parse(outputText));
+}
 
 function parseDateOnly(dateStr) {
   if (typeof dateStr !== 'string' || !DATE_REGEX.test(dateStr)) {
@@ -167,45 +365,6 @@ function validateBusinessPostPayload(body, { partial = false } = {}) {
     errors,
     data
   };
-}
-
-function parseSqlStatements(sql) {
-  return sql
-    .split(';')
-    .map((statement) =>
-      statement
-        .split('\n')
-        .filter((line) => !line.trim().startsWith('--'))
-        .join('\n')
-        .trim()
-    )
-    .filter(Boolean);
-}
-
-async function tableExists(tableName) {
-  const result = await prisma.$queryRawUnsafe(
-    `SELECT name FROM sqlite_master WHERE type = 'table' AND name = '${tableName}' LIMIT 1;`
-  );
-
-  return Array.isArray(result) && result.length > 0;
-}
-
-async function applyMigrationFile(filePath) {
-  const sql = await fs.promises.readFile(filePath, 'utf8');
-  const statements = parseSqlStatements(sql);
-
-  for (const statement of statements) {
-    await prisma.$executeRawUnsafe(statement);
-  }
-}
-
-async function ensureDatabaseSchema() {
-  for (const migration of MIGRATIONS) {
-    const exists = await tableExists(migration.table);
-    if (!exists) {
-      await applyMigrationFile(migration.filePath);
-    }
-  }
 }
 
 async function ensureSlotsForDate(slotDate) {
@@ -372,6 +531,74 @@ app.post('/api/admin/business-posts', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Failed to create business post', error);
     return res.status(500).json({ error: 'Unable to create business post' });
+  }
+});
+
+app.post('/api/career-assessment', async (req, res) => {
+  const { name, role, answers } = req.body || {};
+
+  if (!OPENAI_API_KEY) {
+    return res.status(500).json({ error: 'OpenAI API key is not configured.' });
+  }
+
+  if (typeof name !== 'string' || name.trim().length === 0) {
+    return res.status(400).json({ error: 'Name is required.' });
+  }
+
+  if (role !== 'Prompt Engineer') {
+    return res.status(400).json({ error: 'Prompt Engineer is the role accepting applications right now.' });
+  }
+
+  const normalizedAnswers = {
+    q1: typeof answers?.q1 === 'string' ? answers.q1.trim() : '',
+    q2: typeof answers?.q2 === 'string' ? answers.q2.trim() : '',
+    q3: typeof answers?.q3 === 'string' ? answers.q3.trim() : ''
+  };
+
+  if (!normalizedAnswers.q1 || !normalizedAnswers.q2 || !normalizedAnswers.q3) {
+    return res.status(400).json({ error: 'All assessment answers are required.' });
+  }
+
+  try {
+    const assessment = await scoreCareerAssessment({
+      name: name.trim(),
+      role,
+      answers: normalizedAnswers
+    });
+
+    const application = await prisma.careerApplication.create({
+      data: {
+        name: name.trim(),
+        email: typeof req.body.email === 'string' && req.body.email.trim()
+          ? req.body.email.trim().toLowerCase()
+          : null,
+        role,
+        answerAiTools: normalizedAnswers.q1,
+        answerApi: normalizedAnswers.q2,
+        answerModernWorkflows: normalizedAnswers.q3,
+        score: assessment.score,
+        passed: assessment.passed,
+        passingScore: assessment.passingScore,
+        recommendation: assessment.recommendation,
+        aiGeneratedRisk: assessment.aiGeneratedRisk,
+        categoryScores: assessment.categoryScores,
+        strengths: assessment.strengths,
+        concerns: assessment.concerns,
+        summary: assessment.summary
+      }
+    });
+
+    return res.json({
+      assessment: {
+        ...assessment,
+        applicationId: application.id
+      }
+    });
+  } catch (error) {
+    console.error('Failed to score career assessment', error);
+    return res.status(502).json({
+      error: 'Unable to score the assessment right now.'
+    });
   }
 });
 
@@ -551,7 +778,6 @@ const port = process.env.PORT || 4000;
 async function start() {
   try {
     await prisma.$connect();
-    await ensureDatabaseSchema();
     await ensureDefaultBusinessPosts();
     app.locals.prisma = prisma;
     app.listen(port, () => {

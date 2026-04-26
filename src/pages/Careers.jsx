@@ -152,7 +152,6 @@ const Careers = () => {
   const [videoComplete, setVideoComplete] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoReady, setVideoReady] = useState(false);
-  const [roleIntroVideoComplete, setRoleIntroVideoComplete] = useState(false);
   const [roleIntroVideoReady, setRoleIntroVideoReady] = useState(false);
   const overlayRef = useRef(null);
   const videoRef = useRef(null);
@@ -228,7 +227,6 @@ const Careers = () => {
     setVideoComplete(false);
     setVideoProgress(0);
     setVideoReady(false);
-    setRoleIntroVideoComplete(false);
     setRoleIntroVideoReady(false);
   };
 
@@ -509,7 +507,6 @@ const Careers = () => {
 
     setFormState((prev) => ({ ...prev, role: role.title }));
     setErrors((prev) => ({ ...prev, role: '' }));
-    setRoleIntroVideoComplete(false);
     setRoleIntroVideoReady(false);
   };
 
@@ -578,7 +575,6 @@ const Careers = () => {
 
   const resetRoleSelection = () => {
     setFormState((prev) => ({ ...prev, role: '' }));
-    setRoleIntroVideoComplete(false);
     setRoleIntroVideoReady(false);
     setErrors((prev) => ({ ...prev, role: '' }));
   };
@@ -1035,15 +1031,15 @@ const Careers = () => {
                         </>
                       )}
 
-                      {formState.role && !roleIntroVideoComplete && (
+                      {formState.role && (
                         <motion.div
-                          key="role-video"
-                          className="relative grid gap-8 lg:grid-cols-[1.1fr_0.9fr]"
+                          key="role-intro"
+                          className="relative grid gap-8 xl:grid-cols-[0.98fr_1.02fr]"
                           initial={{ opacity: 0, y: 18 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.34, ease: 'easeOut' }}
                         >
-                          <div className="relative min-h-[420px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.06]">
+                          <div className="relative min-h-[430px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.06]">
                             <video
                               className={`absolute inset-0 h-full w-full object-cover transition duration-700 ${
                                 roleIntroVideoReady ? 'opacity-100' : 'opacity-0'
@@ -1052,61 +1048,23 @@ const Careers = () => {
                               muted
                               playsInline
                               autoPlay
+                              loop
                               preload="auto"
                               onCanPlay={() => setRoleIntroVideoReady(true)}
-                              onEnded={() => setRoleIntroVideoComplete(true)}
-                              onError={() => setRoleIntroVideoComplete(true)}
+                              onError={() => setRoleIntroVideoReady(false)}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050b12] via-[#050b12]/25 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050b12] via-[#050b12]/30 to-transparent" />
                             <div className="absolute bottom-5 left-5 right-5">
                               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-secondary">
                                 {formState.role}
                               </p>
-                              <h2 className="mt-3 font-heading text-4xl font-bold leading-tight text-light sm:text-5xl">
-                                Role briefing is loading.
+                              <h2 className="mt-3 max-w-lg font-heading text-4xl font-bold leading-tight text-light sm:text-5xl">
+                                Role preview and briefing
                               </h2>
                             </div>
                           </div>
 
-                          <div className="relative flex flex-col justify-center">
-                            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
-                              Selected Path
-                            </p>
-                            <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
-                              {formState.role}
-                            </h2>
-                            <p className="mt-5 text-base leading-7 text-light/70">
-                              Watch this quick role preview first. After the video, you will see what the Prompt Engineer track is designed to teach and how it connects to real client projects.
-                            </p>
-                            <div className="mt-8 flex flex-wrap gap-3">
-                              <button
-                                type="button"
-                                className="btn-primary bg-secondary text-dark hover:brightness-100"
-                                onClick={() => setRoleIntroVideoComplete(true)}
-                              >
-                                Skip to role intro
-                              </button>
-                              <button
-                                type="button"
-                                className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
-                                onClick={resetRoleSelection}
-                              >
-                                Choose another role
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      {formState.role && roleIntroVideoComplete && (
-                        <motion.div
-                          key="role-intro"
-                          className="relative grid gap-8 lg:grid-cols-[0.88fr_1.12fr]"
-                          initial={{ opacity: 0, y: 18 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.34, ease: 'easeOut' }}
-                        >
-                          <div>
+                          <div className="flex flex-col justify-center">
                             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
                               Role Introduction
                             </p>
@@ -1132,18 +1090,18 @@ const Careers = () => {
                                 Choose another role
                               </button>
                             </div>
-                          </div>
 
-                          <div className="grid gap-4">
-                            {promptEngineerIntroHighlights.map((item) => (
-                              <div
-                                key={item.title}
-                                className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-5"
-                              >
-                                <p className="text-sm font-semibold text-light">{item.title}</p>
-                                <p className="mt-2 text-sm leading-6 text-light/65">{item.copy}</p>
-                              </div>
-                            ))}
+                            <div className="mt-8 grid gap-4">
+                              {promptEngineerIntroHighlights.map((item) => (
+                                <div
+                                  key={item.title}
+                                  className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-5"
+                                >
+                                  <p className="text-sm font-semibold text-light">{item.title}</p>
+                                  <p className="mt-2 text-sm leading-6 text-light/65">{item.copy}</p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </motion.div>
                       )}

@@ -38,14 +38,28 @@ export async function validateApplicantToken(token, { signal } = {}) {
   return handleResponse(response);
 }
 
-export async function submitApplicantContinuation(token, { signal } = {}) {
-  const response = await fetch(`${API_BASE}/applicant-tokens/submit`, {
+export async function claimApplicantToken(token, { signal } = {}) {
+  const response = await fetch(`${API_BASE}/applicant-tokens/claim`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json'
     },
-    body: JSON.stringify({ token, confirmed: true }),
+    body: JSON.stringify({ token }),
+    signal
+  });
+
+  return handleResponse(response);
+}
+
+export async function resumeApplicantToken(resumeToken, { signal } = {}) {
+  const response = await fetch(`${API_BASE}/applicant-tokens/resume`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify({ resumeToken }),
     signal
   });
 
@@ -54,5 +68,6 @@ export async function submitApplicantContinuation(token, { signal } = {}) {
 
 export default {
   validateApplicantToken,
-  submitApplicantContinuation
+  claimApplicantToken,
+  resumeApplicantToken
 };

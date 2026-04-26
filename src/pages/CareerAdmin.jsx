@@ -10,6 +10,7 @@ const statusLabels = {
   used: 'Used',
   expired: 'Expired',
   revoked: 'Revoked',
+  in_progress: 'In progress',
   created: 'Active',
   none: 'No link'
 };
@@ -185,7 +186,14 @@ const CareerAdmin = () => {
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
                         <h3 className="text-lg font-semibold text-ink-strong">{token.name}</h3>
-                        <p className="mt-1 text-sm text-copy">{token.email}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <p className="text-sm text-copy">{token.email}</p>
+                          {token.applicationPassed && (
+                            <span className="rounded-full bg-secondary/15 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-primary">
+                              Passed
+                            </span>
+                          )}
+                        </div>
                         <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-copy">
                           {statusLabels[token.status] || token.status} / expires {new Date(token.expiresAt).toLocaleDateString()}
                         </p>

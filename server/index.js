@@ -163,6 +163,30 @@ function normalizeCareerAssessment(rawAssessment) {
   };
 }
 
+function buildDevPassingAssessment() {
+  return {
+    score: 88,
+    passed: true,
+    passingScore: CAREER_ASSESSMENT_PASSING_SCORE,
+    recommendation: 'pass',
+    aiGeneratedRisk: 'low',
+    categoryScores: {
+      authenticity: 18,
+      detail: 17,
+      structure: 17,
+      processThinking: 18,
+      modernTechExperience: 18
+    },
+    strengths: [
+      'Dev-only fixture for verifying passed assessment flows.',
+      'Shows practical AI, API, and workflow signals.',
+      'Avoids submitting fabricated candidate answers.'
+    ],
+    concerns: ['QA fixture only; do not treat as a real applicant assessment.'],
+    summary: 'Dev-only seeded passing assessment used to verify the pass flow without impersonating an applicant.'
+  };
+}
+
 async function scoreCareerAssessment({ name, role, answers }) {
   const payload = {
     model: OPENAI_ASSESSMENT_MODEL,
@@ -331,6 +355,18 @@ function requireAdmin(req, res, next) {
   return next();
 }
 
+function requireDevTool(req, res, next) {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ error: 'Not found.' });
+  }
+
+  if (ADMIN_TOKEN && !isAdminAuthorized(req)) {
+    return res.status(401).json({ error: 'Admin authorization failed.' });
+  }
+
+  return next();
+}
+
 function getPrismaClient(req) {
   return req?.app?.locals?.prisma || prisma;
 }
@@ -367,6 +403,7 @@ function getApplicantTokenStatus(token) {
   if (token.usedAt) return 'used';
   if (token.revokedAt) return 'revoked';
   if (new Date(token.expiresAt).getTime() <= Date.now()) return 'expired';
+  if (token.claimedAt) return 'in_progress';
   if (token.sentAt) return 'sent';
   return 'created';
 }
@@ -374,6 +411,17 @@ function getApplicantTokenStatus(token) {
 function isApplicantTokenUsable(token, now = new Date()) {
   return Boolean(
     token &&
+    !token.usedAt &&
+    !token.revokedAt &&
+    !token.claimedAt &&
+    new Date(token.expiresAt).getTime() > now.getTime()
+  );
+}
+
+function isApplicantTokenResumable(token, now = new Date()) {
+  return Boolean(
+    token &&
+    token.claimedAt &&
     !token.usedAt &&
     !token.revokedAt &&
     new Date(token.expiresAt).getTime() > now.getTime()
@@ -435,9 +483,11 @@ function toApplicantTokenResponse(token) {
     expiresAt: token.expiresAt,
     usedAt: token.usedAt,
     revokedAt: token.revokedAt,
+    claimedAt: token.claimedAt,
     sentAt: token.sentAt,
     createdAt: token.createdAt,
-    careerApplicationId: token.careerApplicationId
+    careerApplicationId: token.careerApplicationId,
+    applicationPassed: token.careerApplication?.passed ?? null
   };
 }
 
@@ -450,6 +500,17 @@ async function findUsableApplicantToken(prismaClient, rawToken) {
   });
 
   return isApplicantTokenUsable(token) ? token : null;
+}
+
+async function findResumableApplicantToken(prismaClient, rawResumeToken) {
+  const resumeTokenHash = hashApplicantToken(rawResumeToken);
+  if (!resumeTokenHash) return null;
+
+  const token = await prismaClient.applicantToken.findUnique({
+    where: { resumeTokenHash }
+  });
+
+  return isApplicantTokenResumable(token) ? token : null;
 }
 
 function validateBusinessPostPayload(body, { partial = false } = {}) {
@@ -683,7 +744,14 @@ app.get('/api/admin/applicant-tokens', requireAdmin, async (req, res) => {
   try {
     const tokens = await prismaClient.applicantToken.findMany({
       orderBy: [{ createdAt: 'desc' }],
-      take: 50
+      take: 50,
+      include: {
+        careerApplication: {
+          select: {
+            passed: true
+          }
+        }
+      }
     });
 
     return res.json({ tokens: tokens.map(toApplicantTokenResponse) });
@@ -877,16 +945,16 @@ app.post('/api/admin/business-posts', requireAdmin, async (req, res) => {
 app.post('/api/career-assessment', async (req, res) => {
   const { name, role, answers } = req.body || {};
   const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-  const inviteToken = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
-  const tokenHash = hashApplicantToken(inviteToken);
+  const resumeToken = typeof req.body?.resumeToken === 'string' ? req.body.resumeToken.trim() : '';
+  const resumeTokenHash = hashApplicantToken(resumeToken);
   const prismaClient = getPrismaClient(req);
 
   if (!OPENAI_API_KEY) {
     return res.status(500).json({ error: 'OpenAI API key is not configured.' });
   }
 
-  if (!tokenHash) {
-    return res.status(400).json({ error: 'A valid assessment invite link is required.' });
+  if (!resumeTokenHash) {
+    return res.status(400).json({ error: 'A valid assessment session is required.' });
   }
 
   if (typeof name !== 'string' || name.trim().length === 0) {
@@ -912,10 +980,10 @@ app.post('/api/career-assessment', async (req, res) => {
   }
 
   try {
-    const applicantToken = await findUsableApplicantToken(prismaClient, inviteToken);
+    const applicantToken = await findResumableApplicantToken(prismaClient, resumeToken);
 
     if (!applicantToken) {
-      return res.status(400).json({ error: 'This assessment invite is invalid or has expired.' });
+      return res.status(400).json({ error: 'This assessment session is invalid or has expired.' });
     }
 
     if (applicantToken.applicantName.trim() !== name.trim() || applicantToken.applicantEmail !== email) {
@@ -932,7 +1000,10 @@ app.post('/api/career-assessment', async (req, res) => {
       const now = new Date();
       const claimed = await tx.applicantToken.updateMany({
         where: {
-          tokenHash,
+          resumeTokenHash,
+          claimedAt: {
+            not: null
+          },
           usedAt: null,
           revokedAt: null,
           expiresAt: {
@@ -971,7 +1042,7 @@ app.post('/api/career-assessment', async (req, res) => {
       });
 
       await tx.applicantToken.update({
-        where: { tokenHash },
+        where: { resumeTokenHash },
         data: {
           careerApplicationId: createdApplication.id
         }
@@ -988,13 +1059,78 @@ app.post('/api/career-assessment', async (req, res) => {
     });
   } catch (error) {
     if (error.code === 'TOKEN_NOT_USABLE') {
-      return res.status(400).json({ error: 'This assessment invite is invalid or has expired.' });
+      return res.status(400).json({ error: 'This assessment session is invalid or has expired.' });
     }
 
     console.error('Failed to score career assessment', error);
     return res.status(502).json({
       error: 'Unable to score the assessment right now.'
     });
+  }
+});
+
+app.post('/api/dev/career-assessment/seed-pass', requireDevTool, async (req, res) => {
+  const name = typeof req.body?.name === 'string' && req.body.name.trim()
+    ? req.body.name.trim()
+    : 'Dev Passed Applicant';
+  const email = typeof req.body?.email === 'string' && req.body.email.trim()
+    ? req.body.email.trim().toLowerCase()
+    : 'dev.passed@example.com';
+  const role = typeof req.body?.role === 'string' && req.body.role.trim()
+    ? req.body.role.trim()
+    : 'Prompt Engineer';
+  const prismaClient = getPrismaClient(req);
+
+  if (!EMAIL_REGEX.test(email)) {
+    return res.status(400).json({ error: 'A valid email address is required.' });
+  }
+
+  if (role !== 'Prompt Engineer') {
+    return res.status(400).json({ error: 'Prompt Engineer is the role accepting applications right now.' });
+  }
+
+  const answers = {
+    q1: 'DEV FIXTURE: Passing QA seed for AI tool experience.',
+    q2: 'DEV FIXTURE: Passing QA seed for API understanding.',
+    q3: 'DEV FIXTURE: Passing QA seed for mobile, chatbot, automation, or AI workflow experience.'
+  };
+  const assessment = buildDevPassingAssessment();
+
+  try {
+    const application = await prismaClient.careerApplication.create({
+      data: {
+        name,
+        email,
+        role,
+        answerAiTools: answers.q1,
+        answerApi: answers.q2,
+        answerModernWorkflows: answers.q3,
+        score: assessment.score,
+        passed: assessment.passed,
+        passingScore: assessment.passingScore,
+        recommendation: assessment.recommendation,
+        aiGeneratedRisk: assessment.aiGeneratedRisk,
+        categoryScores: assessment.categoryScores,
+        strengths: assessment.strengths,
+        concerns: assessment.concerns,
+        summary: assessment.summary
+      }
+    });
+
+    return res.status(201).json({
+      fixture: true,
+      application: toCareerApplicationResponse({
+        ...application,
+        applicantTokens: []
+      }),
+      assessment: {
+        ...assessment,
+        applicationId: application.id
+      }
+    });
+  } catch (error) {
+    console.error('Failed to seed dev passing career assessment', error);
+    return res.status(500).json({ error: 'Unable to seed passing career assessment.' });
   }
 });
 
@@ -1017,6 +1153,86 @@ app.post('/api/applicant-tokens/validate', async (req, res) => {
   } catch (error) {
     console.error('Failed to validate applicant token', error);
     return res.status(500).json({ error: 'Unable to validate next-step link.' });
+  }
+});
+
+app.post('/api/applicant-tokens/claim', async (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const tokenHash = hashApplicantToken(token);
+  const prismaClient = getPrismaClient(req);
+
+  if (!tokenHash) {
+    return res.status(400).json({ error: 'This assessment invite is invalid or has expired.' });
+  }
+
+  try {
+    const now = new Date();
+    const resumeToken = generateApplicantToken();
+    const resumeTokenHash = hashApplicantToken(resumeToken);
+
+    const applicantToken = await prismaClient.$transaction(async (tx) => {
+      const updated = await tx.applicantToken.updateMany({
+        where: {
+          tokenHash,
+          usedAt: null,
+          revokedAt: null,
+          claimedAt: null,
+          expiresAt: {
+            gt: now
+          }
+        },
+        data: {
+          claimedAt: now,
+          resumeTokenHash
+        }
+      });
+
+      if (updated.count !== 1) {
+        const error = new Error('Applicant token is not claimable.');
+        error.code = 'TOKEN_NOT_CLAIMABLE';
+        throw error;
+      }
+
+      return tx.applicantToken.findUnique({ where: { tokenHash } });
+    });
+
+    return res.json({
+      success: true,
+      resumeToken,
+      applicant: toApplicantTokenPrefill(applicantToken),
+      claimedAt: applicantToken.claimedAt,
+      expiresAt: applicantToken.expiresAt
+    });
+  } catch (error) {
+    if (error.code === 'TOKEN_NOT_CLAIMABLE') {
+      return res.status(400).json({ error: 'This assessment invite is invalid, expired, or already in progress.' });
+    }
+
+    console.error('Failed to claim applicant token', error);
+    return res.status(500).json({ error: 'Unable to start assessment.' });
+  }
+});
+
+app.post('/api/applicant-tokens/resume', async (req, res) => {
+  const resumeToken = typeof req.body?.resumeToken === 'string' ? req.body.resumeToken.trim() : '';
+  const prismaClient = getPrismaClient(req);
+
+  try {
+    const applicantToken = await findResumableApplicantToken(prismaClient, resumeToken);
+
+    if (!applicantToken) {
+      return res.json({ valid: false });
+    }
+
+    return res.json({
+      valid: true,
+      applicant: toApplicantTokenPrefill(applicantToken),
+      claimedAt: applicantToken.claimedAt,
+      expiresAt: applicantToken.expiresAt
+    });
+  } catch (error) {
+    console.error('Failed to resume applicant token', error);
+    return res.status(500).json({ error: 'Unable to resume assessment.' });
   }
 });
 

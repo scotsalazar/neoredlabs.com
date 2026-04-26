@@ -7,6 +7,7 @@ process.env.OPENAI_API_KEY = 'openai-test-key';
 
 const serverModule = await import('../../server/index.js');
 const app = serverModule.default || serverModule;
+const originalNodeEnv = process.env.NODE_ENV;
 
 function buildToken(rawToken, overrides = {}) {
   return {
@@ -15,7 +16,9 @@ function buildToken(rawToken, overrides = {}) {
     applicantName: 'Alex Johnson',
     applicantEmail: 'alex@example.com',
     tokenHash: app.hashApplicantToken(rawToken),
+    resumeTokenHash: null,
     expiresAt: new Date(Date.now() + 60_000),
+    claimedAt: null,
     usedAt: null,
     revokedAt: null,
     sentAt: null,
@@ -51,6 +54,7 @@ function mockOpenAiScore() {
 afterEach(() => {
   vi.restoreAllMocks();
   app.locals.prisma = {};
+  process.env.NODE_ENV = originalNodeEnv;
 });
 
 describe('assessment invite token routes', () => {
@@ -83,6 +87,95 @@ describe('assessment invite token routes', () => {
       applicantToken: {
         findUnique: vi.fn().mockResolvedValue(buildToken(rawToken, {
           expiresAt: new Date(Date.now() - 60_000)
+        }))
+      }
+    };
+
+    const response = await request(app)
+      .post('/api/applicant-tokens/validate')
+      .send({ token: rawToken })
+      .expect(200);
+
+    expect(response.body).toEqual({ valid: false });
+  });
+
+  it('claims an invite once and returns a separate resume token', async () => {
+    const rawToken = app.generateApplicantToken();
+    const tx = {
+      applicantToken: {
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+        findUnique: vi.fn().mockResolvedValue(buildToken(rawToken, {
+          claimedAt: new Date(),
+          resumeTokenHash: 'stored-resume-token-hash'
+        }))
+      }
+    };
+    app.locals.prisma = {
+      $transaction: vi.fn((callback) => callback(tx))
+    };
+
+    const response = await request(app)
+      .post('/api/applicant-tokens/claim')
+      .send({ token: rawToken })
+      .expect(200);
+
+    expect(response.body.success).toBe(true);
+    expect(response.body.resumeToken).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(response.body.applicant).toEqual({
+      name: 'Alex Johnson',
+      email: 'alex@example.com',
+      role: 'Prompt Engineer'
+    });
+    expect(JSON.stringify(response.body)).not.toContain(rawToken);
+    expect(tx.applicantToken.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({
+        tokenHash: app.hashApplicantToken(rawToken),
+        claimedAt: null,
+        usedAt: null,
+        revokedAt: null
+      }),
+      data: expect.objectContaining({
+        claimedAt: expect.any(Date),
+        resumeTokenHash: expect.any(String)
+      })
+    }));
+  });
+
+  it('resumes a claimed invite using only the resume token', async () => {
+    const rawToken = app.generateApplicantToken();
+    const resumeToken = app.generateApplicantToken();
+    app.locals.prisma = {
+      applicantToken: {
+        findUnique: vi.fn().mockResolvedValue(buildToken(rawToken, {
+          claimedAt: new Date(),
+          resumeTokenHash: app.hashApplicantToken(resumeToken)
+        }))
+      }
+    };
+
+    const response = await request(app)
+      .post('/api/applicant-tokens/resume')
+      .send({ resumeToken })
+      .expect(200);
+
+    expect(response.body.valid).toBe(true);
+    expect(response.body.applicant).toEqual({
+      name: 'Alex Johnson',
+      email: 'alex@example.com',
+      role: 'Prompt Engineer'
+    });
+    expect(app.locals.prisma.applicantToken.findUnique).toHaveBeenCalledWith({
+      where: { resumeTokenHash: app.hashApplicantToken(resumeToken) }
+    });
+  });
+
+  it('does not validate an invite after it has been claimed', async () => {
+    const rawToken = app.generateApplicantToken();
+    app.locals.prisma = {
+      applicantToken: {
+        findUnique: vi.fn().mockResolvedValue(buildToken(rawToken, {
+          claimedAt: new Date(),
+          resumeTokenHash: app.hashApplicantToken(app.generateApplicantToken())
         }))
       }
     };
@@ -132,8 +225,86 @@ describe('assessment invite token routes', () => {
       .expect(401);
   });
 
-  it('stores the assessment and consumes the invite exactly once', async () => {
+  it('seeds a dev-only passed assessment fixture', async () => {
+    const createdApplication = {
+      id: 202,
+      name: 'Fixture Applicant',
+      email: 'fixture@example.com',
+      role: 'Prompt Engineer',
+      score: 88,
+      passed: true,
+      passingScore: 70,
+      recommendation: 'pass',
+      aiGeneratedRisk: 'low',
+      categoryScores: {
+        authenticity: 18,
+        detail: 17,
+        structure: 17,
+        processThinking: 18,
+        modernTechExperience: 18
+      },
+      strengths: ['Dev-only fixture for verifying passed assessment flows.'],
+      concerns: ['QA fixture only; do not treat as a real applicant assessment.'],
+      summary: 'Dev-only seeded passing assessment used to verify the pass flow without impersonating an applicant.',
+      createdAt: new Date()
+    };
+    app.locals.prisma = {
+      careerApplication: {
+        create: vi.fn().mockResolvedValue(createdApplication)
+      }
+    };
+
+    const response = await request(app)
+      .post('/api/dev/career-assessment/seed-pass')
+      .set('x-admin-token', 'admin-test-token')
+      .send({ name: 'Fixture Applicant', email: 'fixture@example.com' })
+      .expect(201);
+
+    expect(response.body.fixture).toBe(true);
+    expect(response.body.assessment).toMatchObject({
+      applicationId: 202,
+      score: 88,
+      passed: true,
+      recommendation: 'pass'
+    });
+    expect(response.body.application).toMatchObject({
+      id: 202,
+      name: 'Fixture Applicant',
+      email: 'fixture@example.com',
+      passed: true,
+      score: 88
+    });
+    expect(app.locals.prisma.careerApplication.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        name: 'Fixture Applicant',
+        email: 'fixture@example.com',
+        passed: true,
+        score: 88,
+        answerAiTools: expect.stringContaining('DEV FIXTURE')
+      })
+    }));
+  });
+
+  it('requires admin authorization for the dev seed route', async () => {
+    await request(app)
+      .post('/api/dev/career-assessment/seed-pass')
+      .send({ name: 'Fixture Applicant', email: 'fixture@example.com' })
+      .expect(401);
+  });
+
+  it('disables the dev seed route in production', async () => {
+    process.env.NODE_ENV = 'production';
+
+    await request(app)
+      .post('/api/dev/career-assessment/seed-pass')
+      .set('x-admin-token', 'admin-test-token')
+      .send({ name: 'Fixture Applicant', email: 'fixture@example.com' })
+      .expect(404);
+  });
+
+  it('stores the assessment and consumes the claimed session exactly once', async () => {
     const rawToken = app.generateApplicantToken();
+    const resumeToken = app.generateApplicantToken();
     const createdApplication = {
       id: 101,
       name: 'Alex Johnson',
@@ -152,7 +323,10 @@ describe('assessment invite token routes', () => {
 
     app.locals.prisma = {
       applicantToken: {
-        findUnique: vi.fn().mockResolvedValue(buildToken(rawToken))
+        findUnique: vi.fn().mockResolvedValue(buildToken(rawToken, {
+          claimedAt: new Date(),
+          resumeTokenHash: app.hashApplicantToken(resumeToken)
+        }))
       },
       $transaction: vi.fn((callback) => callback(tx))
     };
@@ -161,7 +335,7 @@ describe('assessment invite token routes', () => {
     const response = await request(app)
       .post('/api/career-assessment')
       .send({
-        token: rawToken,
+        resumeToken,
         name: 'Alex Johnson',
         email: 'alex@example.com',
         role: 'Prompt Engineer',
@@ -176,7 +350,10 @@ describe('assessment invite token routes', () => {
     expect(response.body.assessment.applicationId).toBe(101);
     expect(tx.applicantToken.updateMany).toHaveBeenCalledWith(expect.objectContaining({
       where: expect.objectContaining({
-        tokenHash: app.hashApplicantToken(rawToken),
+        resumeTokenHash: app.hashApplicantToken(resumeToken),
+        claimedAt: {
+          not: null
+        },
         usedAt: null,
         revokedAt: null
       }),
@@ -191,16 +368,20 @@ describe('assessment invite token routes', () => {
 
   it('rejects assessment submissions when the invite profile does not match', async () => {
     const rawToken = app.generateApplicantToken();
+    const resumeToken = app.generateApplicantToken();
     app.locals.prisma = {
       applicantToken: {
-        findUnique: vi.fn().mockResolvedValue(buildToken(rawToken))
+        findUnique: vi.fn().mockResolvedValue(buildToken(rawToken, {
+          claimedAt: new Date(),
+          resumeTokenHash: app.hashApplicantToken(resumeToken)
+        }))
       }
     };
 
     const response = await request(app)
       .post('/api/career-assessment')
       .send({
-        token: rawToken,
+        resumeToken,
         name: 'Different Person',
         email: 'alex@example.com',
         role: 'Prompt Engineer',

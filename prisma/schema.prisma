@@ -76,7 +76,9 @@ model ApplicantToken {
   applicantName       String
   applicantEmail      String
   tokenHash           String            @unique
+  resumeTokenHash     String?           @unique
   expiresAt           DateTime
+  claimedAt           DateTime?
   usedAt              DateTime?
   revokedAt           DateTime?
   sentAt              DateTime?
@@ -87,6 +89,7 @@ model ApplicantToken {
 
   @@index([careerApplicationId, usedAt, revokedAt])
   @@index([applicantEmail])
+  @@index([resumeTokenHash])
   @@index([expiresAt])
   @@map("applicant_tokens")
 }

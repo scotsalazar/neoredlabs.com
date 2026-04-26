@@ -35,7 +35,8 @@ describe('CareerAdmin page', () => {
           email: 'alex@example.com',
           status: 'created',
           expiresAt: '2026-05-03T00:00:00.000Z',
-          careerApplicationId: null
+          careerApplicationId: 42,
+          applicationPassed: true
         }
       ]
     });
@@ -44,6 +45,7 @@ describe('CareerAdmin page', () => {
 
     expect(await screen.findByText('Alex Johnson')).toBeInTheDocument();
     expect(screen.getByText(/active/i)).toBeInTheDocument();
+    expect(screen.getByText('Passed')).toBeInTheDocument();
   });
 
   it('creates an assessment invite and displays the manual link', async () => {

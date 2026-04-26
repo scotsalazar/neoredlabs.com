@@ -3,7 +3,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import GradientSection from '../components/GradientSection.jsx';
-import { validateApplicantToken } from '../lib/api/applicantTokens.js';
+import {
+  claimApplicantToken,
+  resumeApplicantToken,
+  validateApplicantToken
+} from '../lib/api/applicantTokens.js';
 
 const jobOpenings = [
   {
@@ -68,10 +72,11 @@ const promptEngineerQuestions = [
   'Have you worked on mobile applications, chatbots, automations, or AI workflows before?'
 ];
 
-const steps = ['Intro', 'Profile', 'Role', 'Questions', 'Thanks'];
+const steps = ['Intro', 'Role', 'Questions', 'Thanks'];
 const introVideoSrc = '/assets/videos/career-application-intro.mp4';
 const roleSelectionVideoSrc = '/assets/videos/career-application-role-select.mp4';
 const questionsVideoSrc = '/assets/videos/career-application-questions.mp4';
+const assessmentSessionStorageKey = 'neolabs_career_assessment_session';
 
 const initialFormState = {
   name: '',
@@ -96,8 +101,10 @@ const Careers = () => {
   const [wizardStep, setWizardStep] = useState(0);
   const [formState, setFormState] = useState(initialFormState);
   const [inviteToken, setInviteToken] = useState('');
+  const [resumeToken, setResumeToken] = useState('');
   const [inviteApplicant, setInviteApplicant] = useState(null);
   const [inviteLoading, setInviteLoading] = useState(false);
+  const [claimingInvite, setClaimingInvite] = useState(false);
   const [inviteMessage, setInviteMessage] = useState('');
   const [inviteError, setInviteError] = useState('');
   const [errors, setErrors] = useState({});
@@ -118,13 +125,47 @@ const Careers = () => {
     () => roleCards.find((role) => role.title === formState.role),
     [formState.role]
   );
-  const showingQuestionsIntro = wizardStep === 3 && !questionsIntroComplete;
+  const showingQuestionsIntro = wizardStep === 2 && !questionsIntroComplete;
 
   const getInitialInviteFormState = () => ({
     ...initialFormState,
     name: inviteApplicant?.name || '',
     email: inviteApplicant?.email || ''
   });
+
+  const readStoredAssessmentSession = () => {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const raw = window.localStorage.getItem(assessmentSessionStorageKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const saveAssessmentSession = (overrides = {}) => {
+    if (typeof window === 'undefined') return;
+
+    const session = {
+      resumeToken,
+      applicant: inviteApplicant,
+      formState,
+      wizardStep,
+      questionsIntroComplete,
+      ...overrides
+    };
+
+    if (!session.resumeToken || !session.applicant) return;
+
+    window.localStorage.setItem(assessmentSessionStorageKey, JSON.stringify(session));
+  };
+
+  const clearAssessmentSession = () => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(assessmentSessionStorageKey);
+    }
+  };
 
   const resetFlow = () => {
     setWizardStep(0);
@@ -156,6 +197,45 @@ const Careers = () => {
 
     async function validateInvite() {
       if (!token) {
+        const storedSession = readStoredAssessmentSession();
+
+        if (storedSession?.resumeToken) {
+          setInviteLoading(true);
+          setInviteMessage('Resuming your saved assessment...');
+          setInviteError('');
+
+          try {
+            const payload = await resumeApplicantToken(storedSession.resumeToken, {
+              signal: controller.signal
+            });
+
+            if (payload?.valid) {
+              const nextApplicant = payload.applicant || storedSession.applicant;
+              setResumeToken(storedSession.resumeToken);
+              setInviteApplicant(nextApplicant);
+              setFormState({
+                ...initialFormState,
+                ...(storedSession.formState || {}),
+                name: nextApplicant?.name || '',
+                email: nextApplicant?.email || ''
+              });
+              setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 2));
+              setQuestionsIntroComplete(Boolean(storedSession.questionsIntroComplete));
+              setShowApplicationFlow(true);
+              setInviteMessage(`Assessment resumed for ${nextApplicant?.name || 'this applicant'}.`);
+              return;
+            }
+
+            clearAssessmentSession();
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              clearAssessmentSession();
+            }
+          } finally {
+            setInviteLoading(false);
+          }
+        }
+
         setInviteToken('');
         setInviteApplicant(null);
         setInviteMessage('');
@@ -179,13 +259,26 @@ const Careers = () => {
         }
 
         setInviteToken(token);
+        setResumeToken('');
         setInviteApplicant(payload.applicant);
-        setFormState((prev) => ({
-          ...prev,
+        setFormState({
+          ...initialFormState,
           name: payload.applicant?.name || '',
           email: payload.applicant?.email || ''
-        }));
-        setInviteMessage(`Assessment unlocked for ${payload.applicant?.name || 'this applicant'}.`);
+        });
+        setWizardStep(0);
+        setErrors({});
+        setFormMessage('');
+        setSubmissionStage('');
+        setAssessmentResult(null);
+        setSubmitting(false);
+        setVideoAvailable(true);
+        setVideoComplete(false);
+        setVideoProgress(0);
+        setVideoReady(false);
+        setQuestionsIntroComplete(false);
+        setShowApplicationFlow(true);
+        setInviteMessage(`Assessment opened for ${payload.applicant?.name || 'this applicant'}.`);
         setInviteError('');
 
         if (typeof window !== 'undefined') {
@@ -208,12 +301,43 @@ const Careers = () => {
     return () => controller.abort();
   }, [location.search]);
 
+  useEffect(() => {
+    if (!resumeToken || !inviteApplicant || !showApplicationFlow) return;
+
+    saveAssessmentSession();
+  }, [
+    resumeToken,
+    inviteApplicant,
+    showApplicationFlow,
+    formState,
+    wizardStep,
+    questionsIntroComplete
+  ]);
+
   const closeFlow = () => {
     setShowApplicationFlow(false);
     resetFlow();
   };
 
   const openFlow = () => {
+    if (resumeToken && inviteApplicant) {
+      const storedSession = readStoredAssessmentSession();
+
+      if (storedSession?.resumeToken === resumeToken) {
+        setFormState({
+          ...initialFormState,
+          ...(storedSession.formState || {}),
+          name: inviteApplicant.name || '',
+          email: inviteApplicant.email || ''
+        });
+        setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 2));
+        setQuestionsIntroComplete(Boolean(storedSession.questionsIntroComplete));
+      }
+
+      setShowApplicationFlow(true);
+      return;
+    }
+
     if (!inviteToken || !inviteApplicant) {
       setBannerMessage('Use your secure assessment invite link to access Apply Now.');
       return;
@@ -221,6 +345,54 @@ const Careers = () => {
 
     resetFlow();
     setShowApplicationFlow(true);
+  };
+
+  const beginInterview = async () => {
+    if (resumeToken) {
+      goToStep(1);
+      return;
+    }
+
+    if (!inviteToken || !inviteApplicant) {
+      setFormMessage('This assessment invite is invalid or has expired.');
+      return;
+    }
+
+    setClaimingInvite(true);
+    setFormMessage('');
+
+    try {
+      const payload = await claimApplicantToken(inviteToken);
+      const nextApplicant = payload.applicant || inviteApplicant;
+      const nextFormState = {
+        ...formState,
+        name: nextApplicant?.name || formState.name,
+        email: nextApplicant?.email || formState.email
+      };
+
+      setResumeToken(payload.resumeToken);
+      setInviteToken('');
+      setInviteApplicant(nextApplicant);
+      setFormState(nextFormState);
+      saveAssessmentSession({
+        resumeToken: payload.resumeToken,
+        applicant: nextApplicant,
+        formState: nextFormState,
+        wizardStep: 1,
+        questionsIntroComplete: false
+      });
+      setInviteMessage(`Assessment started for ${nextApplicant?.name || 'this applicant'}.`);
+
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, '', '/careers');
+      }
+
+      goToStep(1);
+    } catch (error) {
+      setFormMessage(error.message || 'Unable to start this assessment.');
+    } finally {
+      setClaimingInvite(false);
+    }
   };
 
   const goToStep = (nextStep) => {
@@ -322,14 +494,10 @@ const Careers = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleProfileNext = () => {
-    if (validateProfileStep()) goToStep(2);
-  };
-
   const handleRoleNext = () => {
     if (validateRoleStep()) {
       setQuestionsIntroComplete(false);
-      goToStep(3);
+      goToStep(2);
     }
   };
 
@@ -341,8 +509,8 @@ const Careers = () => {
     const questionsAreValid = validateQuestionsStep();
 
     if (!profileIsValid || !roleIsValid || !questionsAreValid) return;
-    if (!inviteToken) {
-      setFormMessage('This assessment invite is invalid or has expired.');
+    if (!resumeToken) {
+      setFormMessage('This assessment session is invalid or has expired.');
       return;
     }
 
@@ -357,7 +525,7 @@ const Careers = () => {
       name: formState.name.trim(),
       email: formState.email.trim(),
       role: formState.role,
-      token: inviteToken,
+      resumeToken,
       answers: {
         q1: formState.answers.q1.trim(),
         q2: formState.answers.q2.trim(),
@@ -415,7 +583,9 @@ const Careers = () => {
       }
 
       setBannerMessage('Application received. We will be in touch soon.');
-      goToStep(4);
+      clearAssessmentSession();
+      setResumeToken('');
+      goToStep(3);
     } catch (error) {
       setFormMessage(
         error.message || 'There was a problem sending your application. Please try again in a moment.'
@@ -524,7 +694,6 @@ const Careers = () => {
                     <video
                       className="absolute inset-0 h-full w-full scale-[1.65] object-cover"
                       src={questionsVideoSrc}
-                      muted
                       playsInline
                       autoPlay
                       preload="auto"
@@ -629,9 +798,10 @@ const Careers = () => {
                           <button
                             type="button"
                             className="rounded-full border border-white/15 bg-black/25 px-3 py-1 text-xs font-semibold text-light/80 backdrop-blur transition hover:border-secondary/50 hover:text-secondary"
-                            onClick={videoComplete ? replayIntroVideo : () => goToStep(1)}
+                            onClick={videoComplete ? replayIntroVideo : beginInterview}
+                            disabled={claimingInvite}
                           >
-                            {videoComplete ? 'Replay' : 'Skip intro'}
+                            {videoComplete ? 'Replay' : claimingInvite ? 'Starting...' : 'Skip intro'}
                           </button>
                         </div>
                         <motion.div
@@ -667,7 +837,7 @@ const Careers = () => {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.16 }}
                         >
-                          Complete your profile and begin interview.
+                          Review your invite and begin interview.
                         </motion.h3>
                         <motion.p
                           className="mt-5 text-lg leading-8 text-light/70"
@@ -686,88 +856,24 @@ const Careers = () => {
                           <button
                             type="button"
                             className="btn-primary bg-secondary text-dark hover:brightness-100"
-                            onClick={() => goToStep(1)}
+                            onClick={beginInterview}
+                            disabled={claimingInvite}
                           >
-                            Begin Interview
+                            {claimingInvite ? 'Starting...' : 'Begin Interview'}
                           </button>
-                          <span className="inline-flex items-center rounded-full border border-white/10 px-4 py-3 text-sm text-light/60">
-                            You can start whenever you are ready
-                          </span>
+                          <button
+                            type="button"
+                            className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
+                            onClick={closeFlow}
+                          >
+                            Close
+                          </button>
                         </motion.div>
                       </div>
                     </motion.section>
                   )}
 
                   {wizardStep === 1 && (
-                    <motion.section
-                      key="profile"
-                      className="mx-auto w-full max-w-3xl"
-                      variants={stepVariants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{ duration: 0.34, ease: 'easeOut' }}
-                    >
-                      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-secondary">
-                        Create Your Profile
-                      </p>
-                      <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
-                        What should we call you?
-                      </h2>
-                      <p className="mt-4 text-base leading-7 text-light/65">
-                        This secure invite is assigned to your name and email.
-                      </p>
-
-                      <div className="mt-9 grid gap-5">
-                        <label className="space-y-3">
-                          <span className="block text-sm font-semibold text-light">Name</span>
-                          <input
-                            type="text"
-                            name="name"
-                            value={formState.name}
-                            onChange={updateField('name')}
-                            readOnly
-                            placeholder="Alex Johnson"
-                            className="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-5 py-4 text-lg text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
-                          />
-                          {errors.name && <p className="text-sm text-secondary">{errors.name}</p>}
-                        </label>
-
-                        <label className="space-y-3">
-                          <span className="block text-sm font-semibold text-light">Email</span>
-                          <input
-                            type="email"
-                            name="email"
-                            value={formState.email}
-                            onChange={updateField('email')}
-                            readOnly
-                            placeholder="alex@company.com"
-                            className="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-5 py-4 text-lg text-light placeholder:text-light/35 transition focus:border-secondary/70 focus:outline-none focus:ring-4 focus:ring-secondary/10"
-                          />
-                          {errors.email && <p className="text-sm text-secondary">{errors.email}</p>}
-                        </label>
-                      </div>
-
-                      <div className="mt-9 flex flex-wrap items-center gap-3">
-                        <button
-                          type="button"
-                          className="btn-primary bg-secondary text-dark hover:brightness-100"
-                          onClick={handleProfileNext}
-                        >
-                          Continue
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
-                          onClick={() => goToStep(0)}
-                        >
-                          Back
-                        </button>
-                      </div>
-                    </motion.section>
-                  )}
-
-                  {wizardStep === 2 && (
                     <motion.section
                       key="role"
                       className="relative w-full overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.26)] sm:p-7"
@@ -881,7 +987,7 @@ const Careers = () => {
                         <button
                           type="button"
                           className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
-                          onClick={() => goToStep(1)}
+                          onClick={() => goToStep(0)}
                         >
                           Back
                         </button>
@@ -890,7 +996,7 @@ const Careers = () => {
                     </motion.section>
                   )}
 
-                  {wizardStep === 3 && (
+                  {wizardStep === 2 && (
                     <motion.section
                       key="questions"
                       className="mx-auto w-full max-w-5xl"
@@ -923,10 +1029,10 @@ const Careers = () => {
                               {selectedRole?.title || 'Prompt Engineer'} Checkpoint
                             </p>
                             <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-5xl">
-                              Three quick signals.
+                              Three quick questions
                             </h2>
                             <p className="mt-4 text-base leading-7 text-light/65">
-                              Keep it plain and specific. We value clear thinking over perfect jargon. AI-generated answers may be detected.
+                              Keep it concise and human. Show how you think, not just what you know. AI-generated answers may be flagged. AI will score your responses — 70/100 qualifies for the next step.
                             </p>
 
                             <form className="mt-9 space-y-5" onSubmit={handleSubmit}>
@@ -977,7 +1083,7 @@ const Careers = () => {
                                 <button
                                   type="button"
                                   className="btn-secondary-on-dark rounded-full px-6 py-3 text-sm font-semibold"
-                                  onClick={() => goToStep(2)}
+                                  onClick={() => goToStep(1)}
                                   disabled={submitting}
                                 >
                                   Back
@@ -990,7 +1096,7 @@ const Careers = () => {
                     </motion.section>
                   )}
 
-                  {wizardStep === 4 && (
+                  {wizardStep === 3 && (
                     <motion.section
                       key="thanks"
                       className="mx-auto w-full max-w-3xl text-center"
@@ -1015,7 +1121,7 @@ const Careers = () => {
                         Thanks, {formState.name.trim() || 'candidate'}.
                       </h2>
                       <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-light/70">
-                        We received your Prompt Engineer profile. The next step is a human review, then we will reach out if there is a match.
+                        Your Prompt Engineer profile has been received. It will undergo human review, and we will contact you via email for further details if selected.
                       </p>
                       {assessmentResult && (
                         <div className="mx-auto mt-8 max-w-xl rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5 text-left">

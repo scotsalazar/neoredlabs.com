@@ -257,6 +257,11 @@ const JobOfferResponse = () => {
                     <p className="mt-3 text-sm leading-6 text-copy">
                       Status: Job offer {submittedDecision === 'accepted' ? 'accepted' : 'declined'}.
                     </p>
+                    {submittedDecision === 'accepted' && (
+                      <p className="mt-2 text-sm leading-6 text-copy">
+                        Our team will reach out via email for the next steps. Please wait for further updates.
+                      </p>
+                    )}
                   </motion.div>
                 )}
 

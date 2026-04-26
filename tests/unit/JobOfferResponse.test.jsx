@@ -68,6 +68,7 @@ describe('JobOfferResponse page', () => {
       }));
     });
     expect(await screen.findByText(/Job offer accepted/i)).toBeInTheDocument();
+    expect(screen.getByText(/Our team will reach out via email for the next steps/i)).toBeInTheDocument();
   });
 
   it('uses decline as a direct proceed action with confirmation', async () => {

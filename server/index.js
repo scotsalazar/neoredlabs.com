@@ -25,6 +25,14 @@ function normalizeEnvValue(value) {
   return trimmed;
 }
 
+function normalizeAdminTokenInput(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  return normalizeEnvValue(value.replace(/^ADMIN_API_TOKEN\s*=\s*/i, ''));
+}
+
 [
   'DATABASE_URL',
   'ADMIN_API_TOKEN',
@@ -398,7 +406,7 @@ function isAdminTokenValid(token) {
     return false;
   }
 
-  return timingSafeStringEqual(token || '', ADMIN_TOKEN);
+  return timingSafeStringEqual(normalizeAdminTokenInput(token), ADMIN_TOKEN);
 }
 
 function parseCookies(header = '') {
@@ -898,7 +906,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.post('/api/admin/session', (req, res) => {
-  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const token = normalizeAdminTokenInput(req.body?.token);
 
   if (!isAdminTokenValid(token)) {
     clearAdminSessionCookie(res);

@@ -69,6 +69,15 @@ describe('assessment invite token routes', () => {
     expect(response.headers['set-cookie']?.[0]).toContain('HttpOnly');
   });
 
+  it('accepts admin keys pasted from env files', async () => {
+    const response = await request(app)
+      .post('/api/admin/session')
+      .send({ token: 'ADMIN_API_TOKEN="admin-test-token"' })
+      .expect(200);
+
+    expect(response.body).toEqual({ authenticated: true });
+  });
+
   it('allows admin routes with a valid admin session cookie', async () => {
     app.locals.prisma = {
       applicantToken: {

@@ -1366,9 +1366,23 @@ const Careers = () => {
                       <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-6xl">
                         Thanks, {formState.name.trim() || 'candidate'}.
                       </h2>
-                      <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-light/70">
-                        Your Prompt Engineer profile has been received. It will undergo human review, and we will contact you via email for further details if selected.
-                      </p>
+                      {assessmentResult?.passed ? (
+                        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-light/70">
+                          You have passed the Prompt Engineer profile assessment.
+                          <br />
+                          Your application will proceed to human review.
+                          <br />
+                          We will contact you via email for further details if selected.
+                        </p>
+                      ) : (
+                        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-light/70">
+                          You did not pass the Prompt Engineer profile assessment at this time.
+                          <br />
+                          Your application has been placed in our secondary review pool.
+                          <br />
+                          You may contact the administrator via email for inquiries or reconsideration.
+                        </p>
+                      )}
                       {assessmentResult && (
                         <div className="mx-auto mt-8 max-w-xl rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5 text-left">
                           <div className="flex flex-wrap items-center justify-between gap-4">

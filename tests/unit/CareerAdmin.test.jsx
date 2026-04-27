@@ -6,7 +6,8 @@ import {
   createJobOfferFollowUp,
   createApplicantToken,
   fetchCareerApplications,
-  fetchApplicantTokens
+  fetchApplicantTokens,
+  uploadContractAgreement
 } from '../../src/lib/api/careerAdmin.js';
 
 vi.mock('../../src/lib/api/careerAdmin.js', () => ({
@@ -14,7 +15,8 @@ vi.mock('../../src/lib/api/careerAdmin.js', () => ({
   createJobOfferFollowUp: vi.fn(),
   createApplicantToken: vi.fn(),
   fetchCareerApplications: vi.fn(),
-  fetchApplicantTokens: vi.fn()
+  fetchApplicantTokens: vi.fn(),
+  uploadContractAgreement: vi.fn()
 }));
 
 function renderPage() {
@@ -35,6 +37,7 @@ describe('CareerAdmin page', () => {
     createApplicantToken.mockReset();
     fetchCareerApplications.mockReset();
     fetchApplicantTokens.mockReset();
+    uploadContractAgreement.mockReset();
   });
 
   it('loads the admin desk with invites and applicant details', async () => {
@@ -183,6 +186,12 @@ describe('CareerAdmin page', () => {
           concerns: [],
           summary: 'Strong practical answers.',
           applicationStatus: 'assessment_completed',
+          contractAgreement: {
+            fileName: 'contract.pdf',
+            contentType: 'application/pdf',
+            uploadedAt: '2026-04-26T00:00:00.000Z',
+            updatedAt: '2026-04-26T00:00:00.000Z'
+          },
           jobOfferDecision: null,
           createdAt: '2026-04-26T00:00:00.000Z'
         }
@@ -194,7 +203,7 @@ describe('CareerAdmin page', () => {
 
     renderPage();
 
-    fireEvent.click(await screen.findByRole('button', { name: /follow-up sent/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /create offer link/i }));
 
     await waitFor(() => {
       expect(createJobOfferFollowUp).toHaveBeenCalledWith(42, 'admin-test-token');

@@ -337,7 +337,8 @@ describe('assessment invite token routes', () => {
       email: 'alex@example.com',
       role: 'Prompt Engineer',
       passed: true,
-      jobOfferDecision: null
+      jobOfferDecision: null,
+      contractAgreement: { id: 12 }
     };
     const createdOfferToken = {
       id: 81,
@@ -410,7 +411,8 @@ describe('assessment invite token routes', () => {
       name: 'Alex Johnson',
       email: 'alex@example.com',
       role: 'Prompt Engineer',
-      status: 'follow_up_sent'
+      status: 'follow_up_sent',
+      contractAgreement: null
     });
   });
 
@@ -452,6 +454,7 @@ describe('assessment invite token routes', () => {
         earliestStartDate: '2026-05-15',
         mobileNumberGcash: '09171234567',
         hasWorkingComputer: true,
+        contractAgreementAccepted: true,
         decision: 'accepted'
       })
       .expect(200);
@@ -479,6 +482,7 @@ describe('assessment invite token routes', () => {
         gcashAccountNumber: '09171234567',
         mobileNumber: '09171234567',
         hasWorkingComputer: true,
+        contractAgreementAcceptedAt: expect.any(Date),
         jobOfferDecision: 'accepted',
         jobOfferRespondedAt: expect.any(Date)
       })

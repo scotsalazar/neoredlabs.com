@@ -2,11 +2,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import JobOfferResponse from '../../src/pages/JobOfferResponse.jsx';
 import {
+  downloadJobOfferContract,
   submitJobOfferResponse,
   validateJobOfferToken
 } from '../../src/lib/api/jobOfferTokens.js';
 
 vi.mock('../../src/lib/api/jobOfferTokens.js', () => ({
+  downloadJobOfferContract: vi.fn(),
   submitJobOfferResponse: vi.fn(),
   validateJobOfferToken: vi.fn()
 }));
@@ -23,8 +25,11 @@ function renderPage(initialPath = '/offer-response?token=secure-offer-token') {
 
 describe('JobOfferResponse page', () => {
   beforeEach(() => {
+    downloadJobOfferContract.mockReset();
     submitJobOfferResponse.mockReset();
     validateJobOfferToken.mockReset();
+    URL.createObjectURL = vi.fn(() => 'blob:contract-pdf');
+    URL.revokeObjectURL = vi.fn();
   });
 
   it('loads applicant details and submits an accepted job offer response', async () => {
@@ -34,9 +39,16 @@ describe('JobOfferResponse page', () => {
         name: 'Alex Johnson',
         email: 'alex@example.com',
         role: 'Prompt Engineer',
-        status: 'follow_up_sent'
+        status: 'follow_up_sent',
+        contractAgreement: {
+          fileName: 'contract.pdf',
+          contentType: 'application/pdf',
+          uploadedAt: '2026-04-26T00:00:00.000Z',
+          updatedAt: '2026-04-26T00:00:00.000Z'
+        }
       }
     });
+    downloadJobOfferContract.mockResolvedValue(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
     submitJobOfferResponse.mockResolvedValue({
       success: true,
       decision: 'accepted',
@@ -53,6 +65,7 @@ describe('JobOfferResponse page', () => {
       target: { value: '09171234567' }
     });
     fireEvent.click(screen.getByRole('radio', { name: 'Yes' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: /read and understood/i }));
     expect(screen.queryByRole('button', { name: /review and submit/i })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /accept job offer/i }));
     expect(await screen.findByText(/Accept this job offer/i)).toBeInTheDocument();
@@ -64,6 +77,7 @@ describe('JobOfferResponse page', () => {
         earliestStartDate: '2026-05-15',
         mobileNumberGcash: '09171234567',
         hasWorkingComputer: true,
+        contractAgreementAccepted: true,
         decision: 'accepted'
       }));
     });

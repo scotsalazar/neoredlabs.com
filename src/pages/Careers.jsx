@@ -80,7 +80,7 @@ const ownerQuestions = [
   },
   {
     key: 'offsiteSalesFocus',
-    question: 'Can you commit to working off-site at least once per week to focus on outreach, research, and identifying potential SME clients and sales opportunities? Compensation bonus included.'
+    question: 'Can you commit to working off-site at least once per week to focus on training, research, and identifying potential SME clients and sale opportunities? with Compensation bonus'
   },
   {
     key: 'crossFunctionalGrowth',

@@ -8,72 +8,74 @@ generator client {
 }
 
 model SlotAvailability {
-  id           Int            @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   slotDate     DateTime
   slot         String
-  capacity     Int            @default(1)
-  createdAt    DateTime       @default(now())
+  capacity     Int           @default(1)
+  createdAt    DateTime      @default(now())
   appointments Appointment[]
 
   @@unique([slotDate, slot])
 }
 
 model Appointment {
-  id                 Int              @id @default(autoincrement())
+  id                 Int      @id @default(autoincrement())
   fullName           String
   email              String
   notes              String?
   slotAvailabilityId Int
-  createdAt          DateTime         @default(now())
+  createdAt          DateTime @default(now())
 
   slotAvailability SlotAvailability @relation(fields: [slotAvailabilityId], references: [id], onDelete: Cascade)
 }
 
 model BusinessPost {
-  id          Int      @id @default(autoincrement())
-  slug        String   @unique
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
   title       String
   category    String
   summary     String
   content     String
   imageUrl    String
   publishedAt DateTime?
-  isPublished Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isPublished Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([isPublished, publishedAt])
 }
 
 model CareerApplication {
-  id                    Int      @id @default(autoincrement())
-  name                  String
-  email                 String?
-  role                  String
-  answerAiTools         String
-  answerApi             String
-  answerModernWorkflows String
-  score                 Int
-  passed                Boolean
-  passingScore          Int      @default(70)
-  recommendation        String
-  aiGeneratedRisk       String
-  categoryScores        Json
-  strengths             Json
-  concerns              Json
-  summary               String
-  applicationStatus     String   @default("assessment_completed")
-  followUpSentAt        DateTime?
-  earliestStartDate     DateTime?
-  gcashAccountNumber    String?
-  mobileNumber          String?
-  hasWorkingComputer    Boolean?
-  jobOfferDecision      String?
-  jobOfferRespondedAt   DateTime?
-  createdAt             DateTime @default(now())
+  id                          Int       @id @default(autoincrement())
+  name                        String
+  email                       String?
+  role                        String
+  answerAiTools               String
+  answerApi                   String
+  answerModernWorkflows       String
+  score                       Int
+  passed                      Boolean
+  passingScore                Int       @default(70)
+  recommendation              String
+  aiGeneratedRisk             String
+  categoryScores              Json
+  strengths                   Json
+  concerns                    Json
+  summary                     String
+  applicationStatus           String    @default("assessment_completed")
+  followUpSentAt              DateTime?
+  earliestStartDate           DateTime?
+  gcashAccountNumber          String?
+  mobileNumber                String?
+  hasWorkingComputer          Boolean?
+  contractAgreementAcceptedAt DateTime?
+  jobOfferDecision            String?
+  jobOfferRespondedAt         DateTime?
+  createdAt                   DateTime  @default(now())
 
-  applicantTokens ApplicantToken[]
-  jobOfferTokens  JobOfferToken[]
+  applicantTokens   ApplicantToken[]
+  jobOfferTokens    JobOfferToken[]
+  contractAgreement ContractAgreement?
 
   @@index([applicationStatus])
   @@index([role, passed, score])
@@ -81,19 +83,19 @@ model CareerApplication {
 }
 
 model ApplicantToken {
-  id                  Int               @id @default(autoincrement())
+  id                  Int       @id @default(autoincrement())
   careerApplicationId Int?
   applicantName       String
   applicantEmail      String
-  tokenHash           String            @unique
-  resumeTokenHash     String?           @unique
+  tokenHash           String    @unique
+  resumeTokenHash     String?   @unique
   expiresAt           DateTime
   claimedAt           DateTime?
   usedAt              DateTime?
   revokedAt           DateTime?
   sentAt              DateTime?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   careerApplication CareerApplication? @relation(fields: [careerApplicationId], references: [id], onDelete: SetNull)
 
@@ -105,18 +107,33 @@ model ApplicantToken {
 }
 
 model JobOfferToken {
-  id                  Int      @id @default(autoincrement())
+  id                  Int       @id @default(autoincrement())
   careerApplicationId Int
-  tokenHash           String   @unique
+  tokenHash           String    @unique
   expiresAt           DateTime
   usedAt              DateTime?
   revokedAt           DateTime?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   careerApplication CareerApplication @relation(fields: [careerApplicationId], references: [id], onDelete: Cascade)
 
   @@index([careerApplicationId, usedAt, revokedAt])
   @@index([expiresAt])
   @@map("job_offer_tokens")
+}
+
+model ContractAgreement {
+  id                  Int      @id @default(autoincrement())
+  careerApplicationId Int      @unique
+  fileName            String
+  contentType         String   @default("application/pdf")
+  data                Bytes
+  uploadedAt          DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  careerApplication CareerApplication @relation(fields: [careerApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([uploadedAt])
+  @@map("contract_agreements")
 }

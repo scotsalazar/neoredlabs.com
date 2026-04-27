@@ -6,7 +6,8 @@ import {
   createJobOfferFollowUp,
   createApplicantToken,
   fetchCareerApplications,
-  fetchApplicantTokens
+  fetchApplicantTokens,
+  uploadContractAgreement
 } from '../lib/api/careerAdmin.js';
 import { adminTokenStorageKey } from './CareerAdminLogin.jsx';
 
@@ -60,6 +61,8 @@ const CareerAdmin = () => {
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [followUpLink, setFollowUpLink] = useState('');
   const [sendingFollowUp, setSendingFollowUp] = useState(false);
+  const [contractFile, setContractFile] = useState(null);
+  const [uploadingContract, setUploadingContract] = useState(false);
 
   const selectedApplication = useMemo(
     () => applications.find((application) => application.id === selectedApplicationId) || applications[0] || null,
@@ -100,6 +103,11 @@ const CareerAdmin = () => {
       navigate('/admin/login');
     }
   }, []);
+
+  useEffect(() => {
+    setContractFile(null);
+    setFollowUpLink('');
+  }, [selectedApplicationId]);
 
   const handleRefresh = async () => {
     if (typeof window !== 'undefined') {
@@ -164,6 +172,32 @@ const CareerAdmin = () => {
       setError(err.message || 'Unable to create follow-up link.');
     } finally {
       setSendingFollowUp(false);
+    }
+  };
+
+  const handleContractUpload = async (event) => {
+    event.preventDefault();
+    if (!selectedApplication || !contractFile) return;
+
+    if (contractFile.type && contractFile.type !== 'application/pdf') {
+      setError('Upload a PDF contract agreement.');
+      return;
+    }
+
+    setUploadingContract(true);
+    setError('');
+    setMessage('');
+    setFollowUpLink('');
+
+    try {
+      await uploadContractAgreement(selectedApplication.id, contractFile, adminToken);
+      setContractFile(null);
+      setMessage('Contract agreement uploaded. You can now create the secured job offer response link.');
+      await loadDesk(adminToken);
+    } catch (err) {
+      setError(err.message || 'Unable to upload contract agreement.');
+    } finally {
+      setUploadingContract(false);
     }
   };
 
@@ -391,20 +425,49 @@ const CareerAdmin = () => {
 
                   {selectedApplication.passed && !selectedApplication.jobOfferDecision && (
                     <div className="mt-6 rounded-[1.25rem] border border-line bg-page p-5">
-                      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                      <form className="rounded-2xl border border-line bg-white p-4" onSubmit={handleContractUpload}>
+                        <div>
+                          <p className="text-sm font-semibold text-ink-strong">Contract agreement PDF</p>
+                          <p className="mt-2 text-sm leading-6 text-copy">
+                            Upload the applicant's contract PDF before creating the secured job offer response link.
+                          </p>
+                          {selectedApplication.contractAgreement && (
+                            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                              Current: {selectedApplication.contractAgreement.fileName} / uploaded {new Date(selectedApplication.contractAgreement.uploadedAt).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto]">
+                          <input
+                            type="file"
+                            accept="application/pdf,.pdf"
+                            className="w-full rounded-2xl border border-line bg-page px-4 py-3 text-sm text-ink"
+                            onChange={(event) => setContractFile(event.target.files?.[0] || null)}
+                          />
+                          <button
+                            type="submit"
+                            className="btn-secondary self-start"
+                            disabled={uploadingContract || !contractFile}
+                          >
+                            {uploadingContract ? 'Uploading...' : 'Upload PDF'}
+                          </button>
+                        </div>
+                      </form>
+
+                      <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div>
                           <p className="text-sm font-semibold text-ink-strong">Email follow-up</p>
                           <p className="mt-2 text-sm leading-6 text-copy">
-                            Send your email manually with the job offer attached, then include the secured response link generated here.
+                            Send your email manually with the secured response link generated here. The contract PDF will appear on the applicant's offer page.
                           </p>
                         </div>
                         <button
                           type="button"
                           className="btn-primary self-start"
                           onClick={handleFollowUpSent}
-                          disabled={sendingFollowUp}
+                          disabled={sendingFollowUp || !selectedApplication.contractAgreement}
                         >
-                          {sendingFollowUp ? 'Creating...' : 'Follow-up sent'}
+                          {sendingFollowUp ? 'Creating...' : 'Create offer link'}
                         </button>
                       </div>
 

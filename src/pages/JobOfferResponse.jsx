@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import {
+  downloadJobOfferContract,
   submitJobOfferResponse,
   validateJobOfferToken
 } from '../lib/api/jobOfferTokens.js';
@@ -11,6 +12,7 @@ const initialForm = {
   earliestStartDate: '',
   mobileNumberGcash: '',
   hasWorkingComputer: '',
+  contractAgreementAccepted: false,
   decision: 'accepted'
 };
 
@@ -27,7 +29,7 @@ const primaryButtonStyle = {
   color: 'rgb(var(--button-primary-fg))'
 };
 
-const validateOfferForm = (form) => {
+const validateOfferForm = (form, decision = 'accepted') => {
   const errors = {};
   const digitsOnly = form.mobileNumberGcash.replace(/\D/g, '');
 
@@ -45,6 +47,10 @@ const validateOfferForm = (form) => {
     errors.hasWorkingComputer = 'Choose Yes or No.';
   }
 
+  if (decision === 'accepted' && !form.contractAgreementAccepted) {
+    errors.contractAgreementAccepted = 'Confirm that you have read the contract agreement.';
+  }
+
   return errors;
 };
 
@@ -60,11 +66,14 @@ const JobOfferResponse = () => {
   const [error, setError] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingDecision, setPendingDecision] = useState('');
+  const [contractUrl, setContractUrl] = useState('');
+  const [contractLoading, setContractLoading] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const rawToken = params.get('token') || '';
     const controller = new AbortController();
+    let objectUrl = '';
 
     async function validate() {
       if (!rawToken) {
@@ -88,6 +97,14 @@ const JobOfferResponse = () => {
         setToken(rawToken);
         setApplicant(payload.applicant);
 
+        if (payload.applicant?.contractAgreement) {
+          setContractLoading(true);
+          const contractBlob = await downloadJobOfferContract(rawToken, { signal: controller.signal });
+          objectUrl = URL.createObjectURL(contractBlob);
+          setContractUrl(objectUrl);
+          setContractLoading(false);
+        }
+
         if (typeof window !== 'undefined') {
           window.history.replaceState({}, '', '/offer-response');
         }
@@ -95,16 +112,22 @@ const JobOfferResponse = () => {
         if (err.name !== 'AbortError') {
           setError(err.message || 'Unable to validate this job offer link.');
         }
+        setContractLoading(false);
       } finally {
         setLoading(false);
       }
     }
 
     validate();
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
   }, [location.search]);
 
-  const validation = useMemo(() => validateOfferForm(form), [form]);
+  const validation = useMemo(() => validateOfferForm(form, pendingDecision || form.decision), [form, pendingDecision]);
 
   const isFieldValid = (field) => touched[field] && !validation[field] && Boolean(form[field]);
 
@@ -123,14 +146,20 @@ const JobOfferResponse = () => {
     setTouched((prev) => ({ ...prev, hasWorkingComputer: true }));
   };
 
+  const handleContractAgreementChange = (event) => {
+    setForm((prev) => ({ ...prev, contractAgreementAccepted: event.target.checked }));
+    setTouched((prev) => ({ ...prev, contractAgreementAccepted: true }));
+  };
+
   const openConfirmation = (decision) => {
     setError('');
-    const nextValidation = validateOfferForm(form);
+    const nextValidation = validateOfferForm(form, decision);
 
     setTouched({
       earliestStartDate: true,
       mobileNumberGcash: true,
-      hasWorkingComputer: true
+      hasWorkingComputer: true,
+      contractAgreementAccepted: decision === 'accepted'
     });
 
     if (Object.keys(nextValidation).length > 0) {
@@ -153,6 +182,7 @@ const JobOfferResponse = () => {
         earliestStartDate: form.earliestStartDate,
         mobileNumberGcash: form.mobileNumberGcash,
         hasWorkingComputer: form.hasWorkingComputer === 'yes',
+        contractAgreementAccepted: form.contractAgreementAccepted,
         decision: pendingDecision || form.decision
       });
       setSubmittedDecision(payload.decision);
@@ -267,6 +297,57 @@ const JobOfferResponse = () => {
 
                 {!loading && applicant && !submittedDecision && (
                   <form className="grid gap-4" onSubmit={(event) => event.preventDefault()}>
+                    <section className="rounded-3xl border border-line bg-panel-muted p-5">
+                      <div>
+                        <p className="text-sm font-semibold text-ink-strong">Contract agreement</p>
+                        <p className="mt-1 text-xs leading-5 text-copy">
+                          Review the contract agreement before accepting this offer.
+                        </p>
+                      </div>
+
+                      <div className="mt-4 overflow-hidden rounded-2xl border border-line bg-panel">
+                        {contractLoading && (
+                          <p className="px-4 py-5 text-sm text-copy">Loading contract agreement...</p>
+                        )}
+                        {!contractLoading && contractUrl && (
+                          <iframe
+                            title="Contract agreement PDF"
+                            src={contractUrl}
+                            className="h-[28rem] w-full bg-white"
+                          />
+                        )}
+                        {!contractLoading && !contractUrl && (
+                          <p className="px-4 py-5 text-sm text-copy">
+                            Contract agreement PDF is unavailable. Contact the administrator before accepting.
+                          </p>
+                        )}
+                      </div>
+
+                      {contractUrl && (
+                        <a
+                          href={contractUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-3 inline-flex text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                        >
+                          Open contract PDF in a new tab
+                        </a>
+                      )}
+
+                      <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-panel px-4 py-3 text-sm font-semibold text-ink">
+                        <input
+                          type="checkbox"
+                          checked={form.contractAgreementAccepted}
+                          onChange={handleContractAgreementChange}
+                          className="mt-1 h-4 w-4 accent-primary"
+                        />
+                        <span>I have read and understood the contract agreement.</span>
+                      </label>
+                      {validation.contractAgreementAccepted && touched.contractAgreementAccepted && (
+                        <p className="mt-2 text-xs text-red-600">{validation.contractAgreementAccepted}</p>
+                      )}
+                    </section>
+
                     <section className="rounded-3xl border border-line bg-panel-muted p-5">
                       <div>
                         <p className="text-sm font-semibold text-ink-strong">Availability</p>
@@ -420,6 +501,7 @@ const JobOfferResponse = () => {
                 </p>
                 <p className="mt-3 text-sm leading-6 text-copy">
                   This secure link can only be used once. Confirm before sending your decision to NeoLabs.
+                  {pendingDecision === 'accepted' ? ' Your confirmation includes the contract agreement acknowledgement.' : ''}
                 </p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <button

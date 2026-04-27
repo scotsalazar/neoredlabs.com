@@ -93,6 +93,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TOKEN_REGEX = /^[A-Za-z0-9_-]{32,}$/;
 const PHONE_REGEX = /^[+0-9 ()-]{7,24}$/;
 const GCASH_REGEX = /^[0-9 +()-]{7,32}$/;
+const CONTRACT_PDF_MAX_BYTES = 10 * 1024 * 1024;
 const APPLICATION_STATUSES = {
   ASSESSMENT_COMPLETED: 'assessment_completed',
   FOLLOW_UP_SENT: 'follow_up_sent',
@@ -622,6 +623,34 @@ function getApplicantTokenStatus(token) {
   return 'created';
 }
 
+function sanitizeContractFileName(fileName) {
+  const fallback = 'contract-agreement.pdf';
+  const baseName = path.basename(typeof fileName === 'string' ? fileName : fallback)
+    .replace(/[^\w .()-]/g, '_')
+    .trim();
+  const normalized = baseName || fallback;
+  const withExtension = normalized.toLowerCase().endsWith('.pdf')
+    ? normalized
+    : `${normalized}.pdf`;
+
+  return withExtension.slice(0, 160);
+}
+
+function isPdfBuffer(buffer) {
+  return Buffer.isBuffer(buffer) && buffer.length > 4 && buffer.subarray(0, 4).toString('utf8') === '%PDF';
+}
+
+function toContractAgreementResponse(contractAgreement) {
+  if (!contractAgreement) return null;
+
+  return {
+    fileName: contractAgreement.fileName,
+    contentType: contractAgreement.contentType,
+    uploadedAt: contractAgreement.uploadedAt,
+    updatedAt: contractAgreement.updatedAt
+  };
+}
+
 function isApplicantTokenUsable(token, now = new Date()) {
   return Boolean(
     token &&
@@ -675,6 +704,8 @@ function toCareerApplicationResponse(application) {
     gcashAccountNumber: application.gcashAccountNumber,
     mobileNumber: application.mobileNumber,
     hasWorkingComputer: application.hasWorkingComputer,
+    contractAgreement: toContractAgreementResponse(application.contractAgreement),
+    contractAgreementAcceptedAt: application.contractAgreementAcceptedAt,
     jobOfferDecision: application.jobOfferDecision,
     jobOfferRespondedAt: application.jobOfferRespondedAt,
     createdAt: application.createdAt,
@@ -763,13 +794,29 @@ function isJobOfferTokenUsable(token, now = new Date()) {
   );
 }
 
-async function findUsableJobOfferToken(prismaClient, rawToken) {
+async function findUsableJobOfferToken(prismaClient, rawToken, { includeContractData = false } = {}) {
   const tokenHash = hashApplicantToken(rawToken);
   if (!tokenHash) return null;
 
   const token = await prismaClient.jobOfferToken.findUnique({
     where: { tokenHash },
-    include: { careerApplication: true }
+    include: {
+      careerApplication: {
+        include: {
+          contractAgreement: includeContractData
+            ? true
+            : {
+                select: {
+                  id: true,
+                  fileName: true,
+                  contentType: true,
+                  uploadedAt: true,
+                  updatedAt: true
+                }
+              }
+        }
+      }
+    }
   });
 
   return isJobOfferTokenUsable(token) ? token : null;
@@ -780,7 +827,8 @@ function toJobOfferPrefill(application) {
     name: application.name,
     email: application.email,
     role: application.role,
-    status: application.applicationStatus
+    status: application.applicationStatus,
+    contractAgreement: toContractAgreementResponse(application.contractAgreement)
   };
 }
 
@@ -1018,6 +1066,15 @@ app.get('/api/admin/career-applications', requireAdmin, async (req, res) => {
         jobOfferTokens: {
           orderBy: [{ createdAt: 'desc' }],
           take: 1
+        },
+        contractAgreement: {
+          select: {
+            id: true,
+            fileName: true,
+            contentType: true,
+            uploadedAt: true,
+            updatedAt: true
+          }
         }
       }
     });
@@ -1208,6 +1265,72 @@ app.post('/api/admin/career-applications/:id/next-step-email', requireAdmin, asy
   }
 });
 
+app.put(
+  '/api/admin/career-applications/:id/contract',
+  requireAdmin,
+  express.raw({ type: ['application/pdf', 'application/octet-stream'], limit: CONTRACT_PDF_MAX_BYTES }),
+  async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: 'Invalid career application id.' });
+    }
+
+    const pdfBuffer = Buffer.isBuffer(req.body) ? req.body : null;
+    if (!isPdfBuffer(pdfBuffer)) {
+      return res.status(400).json({ error: 'Upload a valid PDF contract agreement.' });
+    }
+
+    const prismaClient = getPrismaClient(req);
+    const fileName = sanitizeContractFileName(req.get('x-contract-filename'));
+
+    try {
+      const application = await prismaClient.careerApplication.findUnique({
+        where: { id },
+        select: { id: true }
+      });
+
+      if (!application) {
+        return res.status(404).json({ error: 'Career application not found.' });
+      }
+
+      const contractAgreement = await prismaClient.contractAgreement.upsert({
+        where: { careerApplicationId: id },
+        create: {
+          careerApplicationId: id,
+          fileName,
+          contentType: 'application/pdf',
+          data: pdfBuffer
+        },
+        update: {
+          fileName,
+          contentType: 'application/pdf',
+          data: pdfBuffer,
+          uploadedAt: new Date()
+        },
+        select: {
+          fileName: true,
+          contentType: true,
+          uploadedAt: true,
+          updatedAt: true
+        }
+      });
+
+      await prismaClient.careerApplication.update({
+        where: { id },
+        data: { contractAgreementAcceptedAt: null }
+      });
+
+      return res.json({
+        success: true,
+        contractAgreement: toContractAgreementResponse(contractAgreement)
+      });
+    } catch (error) {
+      console.error('Failed to upload contract agreement', error);
+      return res.status(500).json({ error: 'Unable to upload contract agreement.' });
+    }
+  }
+);
+
 app.post('/api/admin/career-applications/:id/follow-up', requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {
@@ -1218,7 +1341,12 @@ app.post('/api/admin/career-applications/:id/follow-up', requireAdmin, async (re
 
   try {
     const application = await prismaClient.careerApplication.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        contractAgreement: {
+          select: { id: true }
+        }
+      }
     });
 
     if (!application) {
@@ -1231,6 +1359,10 @@ app.post('/api/admin/career-applications/:id/follow-up', requireAdmin, async (re
 
     if (application.jobOfferDecision) {
       return res.status(400).json({ error: 'This applicant has already responded to the job offer.' });
+    }
+
+    if (!application.contractAgreement) {
+      return res.status(400).json({ error: 'Upload a contract agreement PDF before creating the job offer link.' });
     }
 
     const rawToken = generateApplicantToken();
@@ -1652,10 +1784,38 @@ app.post('/api/job-offer-tokens/validate', async (req, res) => {
   }
 });
 
+app.post('/api/job-offer-tokens/contract', async (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
+  const prismaClient = getPrismaClient(req);
+
+  try {
+    const offerToken = await findUsableJobOfferToken(prismaClient, token, {
+      includeContractData: true
+    });
+
+    if (!offerToken?.careerApplication?.contractAgreement) {
+      return res.status(404).json({ error: 'Contract agreement is not available for this offer.' });
+    }
+
+    const contractAgreement = offerToken.careerApplication.contractAgreement;
+    res.setHeader('Content-Type', contractAgreement.contentType || 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `inline; filename="${sanitizeContractFileName(contractAgreement.fileName).replace(/"/g, '')}"`
+    );
+    res.setHeader('Cache-Control', 'no-store');
+    return res.send(Buffer.from(contractAgreement.data));
+  } catch (error) {
+    console.error('Failed to load job offer contract agreement', error);
+    return res.status(500).json({ error: 'Unable to load contract agreement.' });
+  }
+});
+
 app.post('/api/job-offer-tokens/respond', async (req, res) => {
   const token = typeof req.body?.token === 'string' ? req.body.token.trim() : '';
   const tokenHash = hashApplicantToken(token);
   const decision = typeof req.body?.decision === 'string' ? req.body.decision.trim().toLowerCase() : '';
+  const contractAgreementAccepted = req.body?.contractAgreementAccepted === true;
   const earliestStartDate = parseDateOnly(req.body?.earliestStartDate);
   const mobileNumberGcash = typeof req.body?.mobileNumberGcash === 'string'
     ? req.body.mobileNumberGcash.trim()
@@ -1673,6 +1833,10 @@ app.post('/api/job-offer-tokens/respond', async (req, res) => {
 
   if (!['accepted', 'declined'].includes(decision)) {
     return res.status(400).json({ error: 'Choose whether to accept or decline the job offer.' });
+  }
+
+  if (decision === 'accepted' && !contractAgreementAccepted) {
+    return res.status(400).json({ error: 'Confirm that you have read the contract agreement before accepting.' });
   }
 
   if (!earliestStartDate) {
@@ -1728,6 +1892,7 @@ app.post('/api/job-offer-tokens/respond', async (req, res) => {
           gcashAccountNumber: mobileNumberGcash,
           mobileNumber: mobileNumberGcash,
           hasWorkingComputer,
+          contractAgreementAcceptedAt: decision === 'accepted' ? now : null,
           jobOfferDecision: decision,
           jobOfferRespondedAt: now
         }

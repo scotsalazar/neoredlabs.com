@@ -77,6 +77,22 @@ export async function createJobOfferFollowUp(applicationId, token) {
   return handleResponse(response);
 }
 
+export async function uploadContractAgreement(applicationId, file, token) {
+  const response = await fetch(`${API_BASE}/admin/career-applications/${applicationId}/contract`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/pdf',
+      'x-contract-filename': file.name,
+      ...adminHeaders(token)
+    },
+    body: file
+  });
+
+  return handleResponse(response);
+}
+
 export async function fetchApplicantTokens(token) {
   const response = await fetch(`${API_BASE}/admin/applicant-tokens`, {
     credentials: 'include',
@@ -108,6 +124,7 @@ export default {
   clearAdminSession,
   fetchCareerApplications,
   createJobOfferFollowUp,
+  uploadContractAgreement,
   sendCareerNextStepEmail,
   fetchApplicantTokens,
   createApplicantToken

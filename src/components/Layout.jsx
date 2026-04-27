@@ -5,7 +5,7 @@ import Navbar from './Navbar.jsx';
 import Footer from './Footer.jsx';
 import { useTheme } from './ThemeProvider.jsx';
 
-const Layout = ({ title, description, image, children }) => {
+const Layout = ({ title, description, image, children, minimalHeader = false, hideFooter = false }) => {
   const location = useLocation();
   const { theme } = useTheme();
 
@@ -80,10 +80,10 @@ const Layout = ({ title, description, image, children }) => {
       </Helmet>
 
       <div className="min-h-screen bg-transparent text-ink">
-        <Navbar />
-        <div className="h-24 shrink-0 sm:h-28" aria-hidden />
+        <Navbar minimal={minimalHeader} />
+        <div className={minimalHeader ? 'h-20 shrink-0 sm:h-24' : 'h-24 shrink-0 sm:h-28'} aria-hidden />
         <main>{children}</main>
-        <Footer />
+        {!hideFooter && <Footer />}
       </div>
     </>
   );

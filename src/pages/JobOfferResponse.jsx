@@ -68,6 +68,7 @@ const JobOfferResponse = () => {
   const [pendingDecision, setPendingDecision] = useState('');
   const [contractUrl, setContractUrl] = useState('');
   const [contractLoading, setContractLoading] = useState(false);
+  const [contractOpen, setContractOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -128,6 +129,10 @@ const JobOfferResponse = () => {
   }, [location.search]);
 
   const validation = useMemo(() => validateOfferForm(form, pendingDecision || form.decision), [form, pendingDecision]);
+  const contractViewerUrl = useMemo(
+    () => (contractUrl ? `${contractUrl}#navpanes=0&view=FitH` : ''),
+    [contractUrl]
+  );
 
   const isFieldValid = (field) => touched[field] && !validation[field] && Boolean(form[field]);
 
@@ -212,6 +217,8 @@ const JobOfferResponse = () => {
     <Layout
       title="Job Offer Response | NeoLabs"
       description="Secure job offer response form for NeoLabs applicants."
+      minimalHeader
+      hideFooter
     >
       <section className="min-h-[calc(100vh-7rem)] bg-page-muted text-ink">
         <div className="section-container py-6 sm:py-10">
@@ -297,57 +304,6 @@ const JobOfferResponse = () => {
 
                 {!loading && applicant && !submittedDecision && (
                   <form className="grid gap-4" onSubmit={(event) => event.preventDefault()}>
-                    <section className="rounded-3xl border border-line bg-panel-muted p-5">
-                      <div>
-                        <p className="text-sm font-semibold text-ink-strong">Contract agreement</p>
-                        <p className="mt-1 text-xs leading-5 text-copy">
-                          Review the contract agreement before accepting this offer.
-                        </p>
-                      </div>
-
-                      <div className="mt-4 overflow-hidden rounded-2xl border border-line bg-panel">
-                        {contractLoading && (
-                          <p className="px-4 py-5 text-sm text-copy">Loading contract agreement...</p>
-                        )}
-                        {!contractLoading && contractUrl && (
-                          <iframe
-                            title="Contract agreement PDF"
-                            src={contractUrl}
-                            className="h-[28rem] w-full bg-white"
-                          />
-                        )}
-                        {!contractLoading && !contractUrl && (
-                          <p className="px-4 py-5 text-sm text-copy">
-                            Contract agreement PDF is unavailable. Contact the administrator before accepting.
-                          </p>
-                        )}
-                      </div>
-
-                      {contractUrl && (
-                        <a
-                          href={contractUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-3 inline-flex text-sm font-semibold text-primary underline-offset-4 hover:underline"
-                        >
-                          Open contract PDF in a new tab
-                        </a>
-                      )}
-
-                      <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-panel px-4 py-3 text-sm font-semibold text-ink">
-                        <input
-                          type="checkbox"
-                          checked={form.contractAgreementAccepted}
-                          onChange={handleContractAgreementChange}
-                          className="mt-1 h-4 w-4 accent-primary"
-                        />
-                        <span>I have read and understood the contract agreement.</span>
-                      </label>
-                      {validation.contractAgreementAccepted && touched.contractAgreementAccepted && (
-                        <p className="mt-2 text-xs text-red-600">{validation.contractAgreementAccepted}</p>
-                      )}
-                    </section>
-
                     <section className="rounded-3xl border border-line bg-panel-muted p-5">
                       <div>
                         <p className="text-sm font-semibold text-ink-strong">Availability</p>
@@ -436,6 +392,79 @@ const JobOfferResponse = () => {
                         )}
                       </fieldset>
                     </section>
+
+                    <section className="rounded-3xl border border-line bg-panel-muted p-5">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <p className="text-sm font-semibold text-ink-strong">Contract agreement</p>
+                          <p className="mt-1 text-xs leading-5 text-copy">
+                            Review the contract agreement before accepting this offer.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-bold text-primary transition hover:-translate-y-0.5 hover:bg-primary/15 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/15"
+                          onClick={() => setContractOpen((isOpen) => !isOpen)}
+                          aria-expanded={contractOpen}
+                          aria-controls="contract-agreement-review"
+                        >
+                          {contractOpen ? 'Hide job offer' : 'View and review your job offer'}
+                        </button>
+                      </div>
+
+                      <AnimatePresence initial={false}>
+                        {contractOpen && (
+                          <motion.div
+                            id="contract-agreement-review"
+                            className="mt-4 overflow-hidden rounded-2xl border border-line bg-panel"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.24, ease: 'easeOut' }}
+                          >
+                            {contractLoading && (
+                              <p className="px-4 py-5 text-sm text-copy">Loading contract agreement...</p>
+                            )}
+                            {!contractLoading && contractViewerUrl && (
+                              <iframe
+                                title="Contract agreement PDF"
+                                src={contractViewerUrl}
+                                className="h-[28rem] w-full bg-white"
+                              />
+                            )}
+                            {!contractLoading && !contractViewerUrl && (
+                              <p className="px-4 py-5 text-sm text-copy">
+                                Contract agreement PDF is unavailable. Contact the administrator before accepting.
+                              </p>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {contractUrl && (
+                        <a
+                          href={contractViewerUrl || contractUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-3 inline-flex text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                        >
+                          Open contract PDF in a new tab
+                        </a>
+                      )}
+                    </section>
+
+                    <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-panel-muted px-4 py-3 text-sm font-semibold text-ink">
+                      <input
+                        type="checkbox"
+                        checked={form.contractAgreementAccepted}
+                        onChange={handleContractAgreementChange}
+                        className="mt-1 h-4 w-4 accent-primary"
+                      />
+                      <span>I have read and understood the contract agreement.</span>
+                    </label>
+                    {validation.contractAgreementAccepted && touched.contractAgreementAccepted && (
+                      <p className="-mt-2 text-xs text-red-600">{validation.contractAgreementAccepted}</p>
+                    )}
 
                     <section className="rounded-3xl border border-line bg-panel-muted p-5">
                       <div>

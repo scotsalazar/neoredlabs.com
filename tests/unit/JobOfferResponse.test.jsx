@@ -58,6 +58,9 @@ describe('JobOfferResponse page', () => {
     renderPage();
 
     expect(await screen.findByText('Alex Johnson')).toBeInTheDocument();
+    expect(screen.queryByTitle('Contract agreement PDF')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /view and review your job offer/i }));
+    expect(await screen.findByTitle('Contract agreement PDF')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText(/earliest start date/i), {
       target: { value: '2026-05-15' }
     });

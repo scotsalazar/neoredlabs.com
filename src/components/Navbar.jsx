@@ -22,7 +22,7 @@ const ThemeIcon = ({ theme }) =>
     </svg>
   );
 
-const Navbar = () => {
+const Navbar = ({ minimal = false }) => {
   const { theme, toggleTheme } = useTheme();
   const nextThemeLabel = theme === 'dark' ? 'light' : 'dark';
 
@@ -33,17 +33,22 @@ const Navbar = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.45, ease: 'easeOut' }}
     >
-      <div className="section-container flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-10">
+      <div className={`section-container flex flex-col gap-4 py-4 ${
+        minimal ? 'items-center justify-center' : 'lg:flex-row lg:items-center lg:justify-between'
+      }`}>
+        <div className={`flex flex-col gap-4 ${
+          minimal ? 'items-center' : 'lg:flex-row lg:items-center lg:gap-10'
+        }`}>
           <NavLink
             to="/"
             end
-            className="flex flex-col text-center lg:text-left"
+            className={`flex flex-col text-center ${minimal ? '' : 'lg:text-left'}`}
           >
             <span className="font-display text-3xl font-semibold tracking-tight text-ink-strong">NeoLabs</span>
             <span className="text-xs uppercase tracking-[0.22em] text-copy">Personalized modern apps</span>
           </NavLink>
 
+          {!minimal && (
           <nav aria-label="Primary">
             <ul className="flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-copy lg:justify-start">
               {navLinks.map((link) => (
@@ -65,8 +70,10 @@ const Navbar = () => {
               ))}
             </ul>
           </nav>
+          )}
         </div>
 
+        {!minimal && (
         <div className="flex items-center justify-center gap-3 lg:justify-end">
           <button
             type="button"
@@ -81,6 +88,7 @@ const Navbar = () => {
             Contact Us
           </NavLink>
         </div>
+        )}
       </div>
     </motion.header>
   );

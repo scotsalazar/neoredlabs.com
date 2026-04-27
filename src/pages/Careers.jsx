@@ -76,11 +76,11 @@ const promptEngineerQuestions = [
 const ownerQuestions = [
   {
     key: 'projectOwnership',
-    question: 'Are you comfortable taking ownership of multiple application projects, including planning, coordination, development, and follow-through to launch?'
+    question: 'Are you comfortable taking ownership of application projects, including planning, coordination, development, and follow-through to launch?'
   },
   {
     key: 'offsiteSalesFocus',
-    question: 'Can you commit to working off-site at least once per week to focus on outreach, research, and identifying potential SME clients and application opportunities? Additional compensation may apply after a project is successfully launched and paid.'
+    question: 'Can you commit to working off-site at least once per week to focus on outreach, research, and identifying potential SME clients and sale opportunities? with Compensation bonus'
   },
   {
     key: 'crossFunctionalGrowth',

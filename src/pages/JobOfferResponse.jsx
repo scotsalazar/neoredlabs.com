@@ -295,9 +295,38 @@ const JobOfferResponse = () => {
                       Status: Job offer {submittedDecision === 'accepted' ? 'accepted' : 'declined'}.
                     </p>
                     {submittedDecision === 'accepted' && (
-                      <p className="mt-2 text-sm leading-6 text-copy">
-                        Our team will reach out via email for the next steps. Please wait for further updates.
-                      </p>
+                      <>
+                        <p className="mt-2 text-sm leading-6 text-copy">
+                          Our team will reach out via email for the next steps. Please wait for further updates.
+                        </p>
+                        {contractUrl && (
+                          <div className="mt-5 rounded-2xl border border-primary/20 bg-panel/70 p-4">
+                            <p className="text-sm font-semibold text-ink-strong">
+                              Job offer agreement PDF
+                            </p>
+                            <p className="mt-2 text-sm leading-6 text-copy">
+                              Kindly print, sign, scan, and email the agreement form to admin@neoredlabs.com.
+                            </p>
+                            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                              <a
+                                href={contractViewerUrl || contractUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-bold text-primary transition hover:-translate-y-0.5 hover:bg-primary/15 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/15"
+                              >
+                                Review job offer agreement PDF
+                              </a>
+                              <a
+                                href={contractUrl}
+                                download={applicant?.contractAgreement?.fileName || 'job-offer-agreement.pdf'}
+                                className="inline-flex items-center justify-center rounded-full border border-line bg-panel px-4 py-2.5 text-sm font-semibold text-ink transition hover:-translate-y-0.5 hover:border-primary/40 hover:bg-page focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/15"
+                              >
+                                Download job offer agreement PDF
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </motion.div>
                 )}

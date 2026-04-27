@@ -84,7 +84,7 @@ const ownerQuestions = [
   },
   {
     key: 'crossFunctionalGrowth',
-    question: 'Are you willing to grow into adjacent responsibilities such as marketing, sales, client discovery, and delivery support while continuing to build as a Prompt Engineer?'
+    question: 'Are you comfortable proceeding on a contract basis for now, with employment-like benefits preserved and no impact on your taxes or net earnings?'
   }
 ];
 

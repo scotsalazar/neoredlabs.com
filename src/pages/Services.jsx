@@ -5,19 +5,19 @@ import Layout from '../components/Layout.jsx';
 const services = [
   {
     title: 'Personalized app development',
-    image: '/assets/images/generated/service-custom-app.png',
+    visual: 'app',
     summary: 'Replace scattered manual steps with a working app built around how your team already operates.',
     proof: 'Built around your approvals, users, dashboards, and internal workflows.',
   },
   {
     title: 'Automation and integrations',
-    image: '/assets/images/generated/service-automation-integrations.png',
+    visual: 'automation',
     summary: 'Reduce repetitive work and missed handoffs by connecting tasks, approvals, and system triggers.',
     proof: 'Ideal for teams that need fewer manual interventions across daily work.',
   },
   {
     title: 'Reporting and operational visibility',
-    image: '/assets/images/generated/service-reporting-visibility.png',
+    visual: 'reporting',
     summary: 'Give owners and teams clearer visibility with dashboards, reporting layers, and alerts that surface issues sooner.',
     proof: 'Built for operations that need 24/7 visibility instead of delayed updates.',
   }
@@ -28,6 +28,117 @@ const deliveryPoints = [
   'Fast shipping with steady weekly progress',
   'Support that stays close after rollout'
 ];
+
+const ServiceVisual = ({ type, title }) => (
+  <div className={`service-card-visual service-card-visual-${type}`} role="img" aria-label={`${title} technical service visual`}>
+    <div className="service-card-grid" aria-hidden="true" />
+    <div className="service-card-glow" aria-hidden="true" />
+
+    {type === 'app' && (
+      <div className="service-app-frame" aria-hidden="true">
+        <div className="service-window-dots">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="service-app-sidebar">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="service-app-workspace">
+          <span className="service-app-toolbar" />
+          <span className="service-app-hero" />
+          <span className="service-app-card service-app-card-one" />
+          <span className="service-app-card service-app-card-two" />
+          <span className="service-app-card service-app-card-three" />
+        </div>
+        <div className="service-app-device">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+    )}
+
+    {type === 'automation' && (
+      <div className="service-order-flow" aria-hidden="true">
+        <div className="service-order-depth" />
+        <div className="service-order-road">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="service-order-progress" />
+        <span className="service-order-particle service-order-particle-one" />
+        <span className="service-order-particle service-order-particle-two" />
+        <span className="service-order-particle service-order-particle-three" />
+
+        <div className="service-order-po">
+          <div className="service-order-po-header">
+            <span />
+            <span />
+          </div>
+          <div className="service-order-po-items">
+            <span />
+            <span />
+            <span />
+          </div>
+          <i className="service-order-po-check" />
+        </div>
+
+        <div className="service-order-package">
+          <span className="service-order-package-lid" />
+          <div className="service-order-label">
+            <span />
+            <span />
+            <i />
+          </div>
+        </div>
+
+        <div className="service-order-truck">
+          <b className="service-order-truck-trail" />
+          <span className="service-order-truck-cargo" />
+          <span className="service-order-truck-cab" />
+          <i className="service-order-truck-wheel-one" />
+          <i className="service-order-truck-wheel-two" />
+        </div>
+
+        <div className="service-order-client">
+          <span />
+          <i />
+        </div>
+      </div>
+    )}
+
+    {type === 'reporting' && (
+      <div className="service-reporting-board" aria-hidden="true">
+        <div className="service-reporting-panel service-reporting-panel-wide">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="service-reporting-panel service-reporting-panel-ring">
+          <span />
+        </div>
+        <div className="service-reporting-panel service-reporting-panel-bars">
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="service-reporting-panel service-reporting-panel-lines">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+    )}
+  </div>
+);
 
 const Services = () => (
   <Layout
@@ -49,12 +160,26 @@ const Services = () => (
             </div>
           </div>
 
-          <div className="surface-panel aspect-[16/10] overflow-hidden">
+          <div className="service-stack-visual min-h-[27rem] overflow-hidden sm:aspect-[16/10] sm:min-h-0">
             <img
               src="/assets/images/generated/services-ai-platform-logos.png"
               alt="AI and creative platform integrations supported by NeoLabs"
-              className="h-full w-full bg-black object-contain"
+              className="service-stack-logos"
             />
+            <div className="service-stack-scanline" aria-hidden="true" />
+            <div className="service-orbit" aria-hidden="true">
+              <div className="service-orbit-ring service-orbit-ring-one" />
+              <div className="service-orbit-ring service-orbit-ring-two" />
+              <div className="service-orbit-beam service-orbit-beam-one" />
+              <div className="service-orbit-beam service-orbit-beam-two" />
+              <div className="service-orbit-core" />
+              <div className="service-orbit-node service-orbit-node-one" />
+              <div className="service-orbit-node service-orbit-node-two" />
+              <div className="service-orbit-node service-orbit-node-three" />
+              <div className="service-orbit-node service-orbit-node-four" />
+              <div className="service-orbit-node service-orbit-node-five" />
+              <div className="service-orbit-node service-orbit-node-six" />
+            </div>
           </div>
         </div>
       </div>
@@ -66,7 +191,7 @@ const Services = () => (
           {services.map((service, index) => (
             <article key={service.title} className="grid gap-6 border-b border-line pb-10 last:border-b-0 last:pb-0 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
               <div className={`${index % 2 === 1 ? 'lg:order-2' : ''} surface-panel aspect-[16/10] overflow-hidden`}>
-                <img src={service.image} alt={service.title} className="h-full w-full object-cover" />
+                <ServiceVisual type={service.visual} title={service.title} />
               </div>
               <div className={`${index % 2 === 1 ? 'lg:order-1' : ''} space-y-4`}>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Core service</p>

@@ -882,7 +882,7 @@ const Careers = () => {
                             id="career-flow-title"
                             className="mt-3 max-w-xl font-display text-5xl font-semibold leading-none text-light sm:text-6xl"
                           >
-                            Welcome to the assessment room
+                            Welcome, let’s get started
                           </h2>
                         </motion.div>
                       </div>
@@ -902,7 +902,7 @@ const Careers = () => {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.16 }}
                         >
-                          Review your invite and begin interview.
+                          Access your invite and begin interview
                         </motion.h3>
                         <motion.p
                           className="mt-5 text-lg leading-8 text-light/70"

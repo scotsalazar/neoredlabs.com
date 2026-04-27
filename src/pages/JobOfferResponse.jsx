@@ -133,6 +133,9 @@ const JobOfferResponse = () => {
     () => (contractUrl ? `${contractUrl}#navpanes=0&view=FitH` : ''),
     [contractUrl]
   );
+  const offerStepText = submittedDecision ? 'Step 3 of 3' : 'Step 2 of 3';
+  const offerStepLabel = submittedDecision ? 'Complete' : 'Offer';
+  const offerStepProgress = submittedDecision ? 'w-full' : 'w-2/3';
 
   const isFieldValid = (field) => touched[field] && !validation[field] && Boolean(form[field]);
 
@@ -240,11 +243,11 @@ const JobOfferResponse = () => {
                 </div>
                 <div className="min-w-[12rem] rounded-2xl border border-line bg-panel px-4 py-3">
                   <div className="flex items-center justify-between gap-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-copy">
-                    <span>Step 2 of 3</span>
-                    <span>Offer</span>
+                    <span>{offerStepText}</span>
+                    <span>{offerStepLabel}</span>
                   </div>
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-line">
-                    <span className="block h-full w-2/3 rounded-full bg-primary" />
+                    <span className={`block h-full rounded-full bg-primary transition-all duration-300 ${offerStepProgress}`} />
                   </div>
                 </div>
               </div>

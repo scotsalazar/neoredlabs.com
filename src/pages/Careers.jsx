@@ -80,7 +80,7 @@ const ownerQuestions = [
   },
   {
     key: 'offsiteSalesFocus',
-    question: 'Can you commit to working off-site at least once per week to focus on outreach, research, and identifying potential SME clients and sale opportunities? with Compensation bonus'
+    question: 'Can you commit to working off-site at least once per week to focus on outreach, research, and identifying potential SME clients and sales opportunities? Compensation bonus included.'
   },
   {
     key: 'crossFunctionalGrowth',
@@ -209,6 +209,33 @@ const Careers = () => {
     window.localStorage.setItem(assessmentSessionStorageKey, JSON.stringify(session));
   };
 
+  const restoreStoredResumeToken = async ({ signal, stageMessage } = {}) => {
+    const storedSession = readStoredAssessmentSession();
+    if (!storedSession?.resumeToken) return '';
+
+    if (stageMessage) {
+      setSubmissionStage(stageMessage);
+    }
+
+    const payload = await resumeApplicantToken(storedSession.resumeToken, { signal });
+
+    if (!payload?.valid) {
+      clearAssessmentSession();
+      return '';
+    }
+
+    const nextApplicant = payload.applicant || storedSession.applicant;
+    setResumeToken(storedSession.resumeToken);
+    setInviteToken('');
+    setInviteApplicant(nextApplicant);
+    setInviteError('');
+
+    return {
+      resumeToken: storedSession.resumeToken,
+      applicant: nextApplicant
+    };
+  };
+
   const clearAssessmentSession = () => {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(assessmentSessionStorageKey);
@@ -244,39 +271,45 @@ const Careers = () => {
     const controller = new AbortController();
 
     async function validateInvite() {
-      if (!token) {
-        const storedSession = readStoredAssessmentSession();
+      const storedSession = readStoredAssessmentSession();
 
-        if (storedSession?.resumeToken) {
+      const resumeStoredAssessment = async () => {
+        try {
           setInviteLoading(true);
           setInviteMessage('Resuming your saved assessment...');
           setInviteError('');
 
-          try {
-            const payload = await resumeApplicantToken(storedSession.resumeToken, {
-              signal: controller.signal
-            });
+          const restoredSession = await restoreStoredResumeToken({
+            signal: controller.signal
+          });
 
-            if (payload?.valid) {
-              const nextApplicant = payload.applicant || storedSession.applicant;
-              setResumeToken(storedSession.resumeToken);
-              setInviteApplicant(nextApplicant);
-              setFormState(mergeStoredFormState(storedSession.formState, nextApplicant));
-              setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 3));
-              setShowApplicationFlow(true);
-              setInviteMessage(`Assessment resumed for ${nextApplicant?.name || 'this applicant'}.`);
-              return;
+          if (restoredSession?.resumeToken) {
+            const nextApplicant = restoredSession.applicant || storedSession.applicant;
+            setFormState(mergeStoredFormState(storedSession.formState, nextApplicant));
+            setWizardStep(Math.min(Math.max(Number(storedSession.wizardStep) || 1, 1), 3));
+            setShowApplicationFlow(true);
+            setInviteMessage(`Assessment resumed for ${nextApplicant?.name || 'this applicant'}.`);
+            setInviteError('');
+
+            if (typeof window !== 'undefined') {
+              window.history.replaceState({}, '', '/careers');
             }
 
-            clearAssessmentSession();
-          } catch (error) {
-            if (error.name !== 'AbortError') {
-              clearAssessmentSession();
-            }
-          } finally {
-            setInviteLoading(false);
+            return true;
           }
+        } catch (error) {
+          if (error.name !== 'AbortError') {
+            clearAssessmentSession();
+          }
+        } finally {
+          setInviteLoading(false);
         }
+
+        return false;
+      };
+
+      if (!token) {
+        if (await resumeStoredAssessment()) return;
 
         setInviteToken('');
         setInviteApplicant(null);
@@ -293,6 +326,8 @@ const Careers = () => {
         const payload = await validateApplicantToken(token, { signal: controller.signal });
 
         if (!payload?.valid) {
+          if (await resumeStoredAssessment()) return;
+
           setInviteToken('');
           setInviteApplicant(null);
           setInviteMessage('');
@@ -302,6 +337,7 @@ const Careers = () => {
 
         setInviteToken(token);
         setResumeToken('');
+        clearAssessmentSession();
         setInviteApplicant(payload.applicant);
         setFormState({
           ...initialFormState,
@@ -410,6 +446,7 @@ const Careers = () => {
       setFormState(nextFormState);
       saveAssessmentSession({
         resumeToken: payload.resumeToken,
+        inviteToken,
         applicant: nextApplicant,
         formState: nextFormState,
         wizardStep: 1
@@ -595,14 +632,37 @@ const Careers = () => {
     const questionsAreValid = validateQuestionsStep();
     const ownerQuestionsAreValid = validateOwnerQuestionsStep();
 
-    if (!profileIsValid || !roleIsValid || !questionsAreValid || !ownerQuestionsAreValid) return;
-    if (!resumeToken) {
-      setFormMessage('This assessment session is invalid or has expired.');
+    setSubmitting(true);
+    setFormMessage('');
+    setSubmissionStage('');
+
+    let activeResumeToken = resumeToken;
+
+    if (!profileIsValid || !roleIsValid || !questionsAreValid || !ownerQuestionsAreValid) {
+      setSubmitting(false);
       return;
     }
 
-    setSubmitting(true);
-    setFormMessage('');
+    if (!activeResumeToken) {
+      try {
+        const restoredSession = await restoreStoredResumeToken({
+          stageMessage: 'Restoring your saved assessment session...'
+        });
+        activeResumeToken = restoredSession?.resumeToken || '';
+      } catch (error) {
+        activeResumeToken = '';
+      }
+    }
+
+    if (!activeResumeToken) {
+      setFormMessage(
+        'We could not restore this assessment session. Please reopen your invite link in this same browser or ask NeoLabs for a fresh invite.'
+      );
+      setSubmitting(false);
+      setSubmissionStage('');
+      return;
+    }
+
     setSubmissionStage('Scoring your answers...');
 
     const webhookUrl = 'https://shezzo.app.n8n.cloud/webhook/cv-upload';
@@ -612,7 +672,7 @@ const Careers = () => {
       name: formState.name.trim(),
       email: formState.email.trim(),
       role: formState.role,
-      resumeToken,
+      resumeToken: activeResumeToken,
       answers: {
         q1: formState.answers.q1.trim(),
         q2: formState.answers.q2.trim(),
@@ -673,16 +733,20 @@ const Careers = () => {
       formData.append('assessment[strengths]', JSON.stringify(assessment.strengths));
       formData.append('assessment[concerns]', JSON.stringify(assessment.concerns));
 
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json'
-        },
-        body: formData
-      });
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json'
+          },
+          body: formData
+        });
 
-      if (!response.ok) {
-        console.warn('Career webhook submission failed after assessment was saved.');
+        if (!response.ok) {
+          console.warn('Career webhook submission failed after assessment was saved.');
+        }
+      } catch (webhookError) {
+        console.warn('Career webhook submission failed after assessment was saved.', webhookError);
       }
 
       setBannerMessage('Application received. We will be in touch soon.');
@@ -755,9 +819,9 @@ const Careers = () => {
               type="button"
               className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
               onClick={openFlow}
-              disabled={!inviteToken || inviteLoading}
+              disabled={(!inviteToken && !resumeToken) || inviteLoading}
             >
-              {inviteToken ? 'Apply Now' : 'Apply Now requires invite'}
+              {resumeToken ? 'Resume Assessment' : inviteToken ? 'Apply Now' : 'Apply Now requires invite'}
             </button>
           </div>
         </div>

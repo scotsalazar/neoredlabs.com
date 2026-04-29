@@ -126,12 +126,12 @@ describe('Careers assessment invite flow', () => {
       .mockResolvedValueOnce(new Response(JSON.stringify({
         assessment: {
           applicationId: 42,
-          score: 88,
-          passed: true,
+          score: 55,
+          passed: false,
           passingScore: 60,
-          recommendation: 'pass',
-          aiGeneratedRisk: 'low',
-          summary: 'Strong practical answers.',
+          recommendation: 'manual_review',
+          aiGeneratedRisk: 'medium',
+          summary: 'Needs human review.',
           categoryScores: {},
           strengths: [],
           concerns: []
@@ -157,6 +157,8 @@ describe('Careers assessment invite flow', () => {
       );
     });
     expect(await screen.findByText(/Application Received/i)).toBeInTheDocument();
+    expect(await screen.findAllByText(/Manual review/i)).toHaveLength(2);
+    expect(await screen.findByText(/marked for manual review/i)).toBeInTheDocument();
     expect(screen.queryByText(/session is invalid/i)).not.toBeInTheDocument();
   });
 });

@@ -73,6 +73,48 @@ const promptEngineerQuestions = [
   'Have you worked on mobile applications, chatbots, automations, or AI workflows before?'
 ];
 
+const manualReviewMinimumScore = 50;
+
+function getAssessmentOutcome(assessment) {
+  if (!assessment) {
+    return null;
+  }
+
+  if (assessment.passed) {
+    return {
+      label: 'Passed',
+      tone: 'text-secondary',
+      message: [
+        'You have passed the Prompt Engineer profile assessment.',
+        'Your application will proceed to human review.',
+        'We will contact you via email for further details if selected.'
+      ]
+    };
+  }
+
+  if (assessment.score >= manualReviewMinimumScore) {
+    return {
+      label: 'Manual review',
+      tone: 'text-secondary',
+      message: [
+        'Your Prompt Engineer profile assessment is marked for manual review.',
+        'Your score is close enough for a human reviewer to inspect your answers.',
+        'We will contact you via email if you are selected for the next step.'
+      ]
+    };
+  }
+
+  return {
+    label: 'Below benchmark',
+    tone: 'text-light/60',
+    message: [
+      'Your Prompt Engineer profile is below the assessment benchmark at this time.',
+      'Your application has been placed in our secondary review pool.',
+      'You may contact the administrator via email for inquiries or reconsideration.'
+    ]
+  };
+}
+
 const ownerQuestions = [
   {
     key: 'projectOwnership',
@@ -166,6 +208,7 @@ const Careers = () => {
     () => roleCards.find((role) => role.title === formState.role),
     [formState.role]
   );
+  const assessmentOutcome = useMemo(() => getAssessmentOutcome(assessmentResult), [assessmentResult]);
   const getInitialInviteFormState = () => ({
     ...initialFormState,
     name: inviteApplicant?.name || '',
@@ -1373,21 +1416,14 @@ const Careers = () => {
                       <h2 className="mt-4 font-heading text-4xl font-bold text-light sm:text-6xl">
                         Thanks, {formState.name.trim() || 'candidate'}.
                       </h2>
-                      {assessmentResult?.passed ? (
+                      {assessmentOutcome && (
                         <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-light/70">
-                          You have passed the Prompt Engineer profile assessment.
-                          <br />
-                          Your application will proceed to human review.
-                          <br />
-                          We will contact you via email for further details if selected.
-                        </p>
-                      ) : (
-                        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-light/70">
-                          You did not pass the Prompt Engineer profile assessment at this time.
-                          <br />
-                          Your application has been placed in our secondary review pool.
-                          <br />
-                          You may contact the administrator via email for inquiries or reconsideration.
+                          {assessmentOutcome.message.map((line) => (
+                            <React.Fragment key={line}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))}
                         </p>
                       )}
                       {assessmentResult && (
@@ -1405,10 +1441,8 @@ const Careers = () => {
                               <p className="font-heading text-5xl font-bold text-light">
                                 {assessmentResult.score}
                               </p>
-                              <p className={`text-sm font-semibold ${
-                                assessmentResult.passed ? 'text-secondary' : 'text-light/60'
-                              }`}>
-                                {assessmentResult.passed ? 'Passed' : 'Below benchmark'}
+                              <p className={`text-sm font-semibold ${assessmentOutcome?.tone || 'text-light/60'}`}>
+                                {assessmentOutcome?.label || 'Below benchmark'}
                               </p>
                             </div>
                           </div>

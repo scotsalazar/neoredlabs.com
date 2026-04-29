@@ -145,6 +145,39 @@ describe('CareerAdmin page', () => {
     expect(await screen.findByDisplayValue('https://careers.neoredlabs.com/careers?token=secure-token')).toBeInTheDocument();
   });
 
+  it('labels close non-passing scores as manual review', async () => {
+    fetchApplicantTokens.mockResolvedValue({ tokens: [] });
+    fetchCareerApplications.mockResolvedValue({
+      applications: [
+        {
+          id: 43,
+          name: 'Joanna Santos',
+          email: 'joanna@example.com',
+          role: 'Prompt Engineer',
+          answers: {},
+          ownerAnswers: {},
+          score: 55,
+          passed: false,
+          passingScore: 60,
+          recommendation: 'manual_review',
+          aiGeneratedRisk: 'medium',
+          categoryScores: {},
+          strengths: [],
+          concerns: [],
+          summary: 'Close score for human review.',
+          applicationStatus: 'assessment_completed',
+          jobOfferDecision: null,
+          createdAt: '2026-04-26T00:00:00.000Z'
+        }
+      ]
+    });
+
+    renderPage();
+
+    expect(await screen.findAllByText('Manual review')).toHaveLength(2);
+    expect(screen.queryByText('Below benchmark')).not.toBeInTheDocument();
+  });
+
   it('keeps the generated invite visible when a post-create refresh returns an empty payload', async () => {
     fetchApplicantTokens
       .mockResolvedValueOnce({ tokens: [] })

@@ -60,6 +60,7 @@ const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY?.trim() || '';
 const OPENAI_ASSESSMENT_MODEL = process.env.OPENAI_ASSESSMENT_MODEL?.trim() || 'gpt-5.4-nano';
 const CAREER_ASSESSMENT_PASSING_SCORE = 60;
+const CAREER_ASSESSMENT_MANUAL_REVIEW_SCORE = 50;
 const APPLICANT_TOKEN_HASH_SECRET =
   process.env.APPLICANT_TOKEN_HASH_SECRET?.trim() ||
   ADMIN_TOKEN ||
@@ -196,6 +197,7 @@ function normalizeCareerAssessment(rawAssessment) {
   const computedScore = Object.values(categoryScores).reduce((sum, value) => sum + value, 0);
   const score = clampInteger(computedScore || rawAssessment?.score, 1, 100);
   const passed = score >= CAREER_ASSESSMENT_PASSING_SCORE;
+  const requiresManualReview = !passed && score >= CAREER_ASSESSMENT_MANUAL_REVIEW_SCORE;
 
   return {
     score,
@@ -207,9 +209,11 @@ function normalizeCareerAssessment(rawAssessment) {
       : 'medium',
     recommendation: passed
       ? 'pass'
-      : rawAssessment?.recommendation === 'decline'
-        ? 'decline'
-        : 'manual_review',
+      : requiresManualReview
+        ? 'manual_review'
+        : rawAssessment?.recommendation === 'decline'
+          ? 'decline'
+          : 'manual_review',
     summary: typeof rawAssessment?.summary === 'string'
       ? rawAssessment.summary.slice(0, 320)
       : 'Assessment completed.',
@@ -317,7 +321,7 @@ async function scoreCareerAssessment({ name, role, answers }) {
             text: [
               'You are assessing a junior Prompt Engineer application for Neo Redlabs Studio.',
               'Return only the structured JSON requested by the schema.',
-              'Score from 1 to 100. A score of 60 or higher passes.',
+              'Score from 1 to 100. A score of 60 or higher passes. Scores from 50 to 59 should be treated as manual_review, not a final fail.',
               'Use these five 20-point categories: authenticity, detail, structure, processThinking, modernTechExperience.',
               'Authenticity means the answer sounds specific, personal, and non-generic. You may estimate AI-generated risk from style and specificity, but do not claim certainty.',
               'Reward clear process thinking, concrete examples, actual experience with modern tools, and practical understanding of APIs, AI tools, mobile apps, chatbots, automations, or workflows.',

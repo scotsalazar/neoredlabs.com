@@ -28,7 +28,7 @@ function buildToken(rawToken, overrides = {}) {
   };
 }
 
-function mockOpenAiScore() {
+function mockOpenAiScore(overrides = {}) {
   global.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: vi.fn().mockResolvedValue({
@@ -45,7 +45,8 @@ function mockOpenAiScore() {
         recommendation: 'pass',
         summary: 'Strong practical answers.',
         strengths: ['Specific examples'],
-        concerns: ['None']
+        concerns: ['None'],
+        ...overrides
       })
     })
   });
@@ -534,7 +535,18 @@ describe('assessment invite token routes', () => {
       },
       $transaction: vi.fn((callback) => callback(tx))
     };
-    mockOpenAiScore();
+    mockOpenAiScore({
+      score: 55,
+      categoryScores: {
+        authenticity: 11,
+        detail: 11,
+        structure: 11,
+        processThinking: 11,
+        modernTechExperience: 11
+      },
+      recommendation: 'decline',
+      summary: 'Close score for human review.'
+    });
 
     const response = await request(app)
       .post('/api/career-assessment')
@@ -581,7 +593,10 @@ describe('assessment invite token routes', () => {
           offsiteSalesFocus: 'I can commit to off-site training and SME sales research weekly.',
           crossFunctionalGrowth: 'Part-time terms are workable for me.',
           passions: 'I enjoy business systems, automations, and practical AI tools.'
-        }
+        },
+        passed: false,
+        recommendation: 'manual_review',
+        score: 55
       })
     }));
   });

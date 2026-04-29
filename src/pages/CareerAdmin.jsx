@@ -54,6 +54,14 @@ const applicationStatusLabels = {
   job_offer_declined: 'Job Offer declined'
 };
 
+const manualReviewMinimumScore = 50;
+
+function getAssessmentLabel(application) {
+  if (application?.passed) return 'Passed';
+  if ((application?.score || 0) >= manualReviewMinimumScore) return 'Manual review';
+  return 'Below benchmark';
+}
+
 const CareerAdmin = () => {
   const navigate = useNavigate();
   const [tokens, setTokens] = useState([]);
@@ -381,9 +389,9 @@ const CareerAdmin = () => {
                         <p className="mt-1 text-sm text-copy">{application.email}</p>
                       </div>
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        application.passed ? 'bg-secondary/15 text-primary' : 'bg-line text-copy'
+                        application.passed || application.score >= manualReviewMinimumScore ? 'bg-secondary/15 text-primary' : 'bg-line text-copy'
                       }`}>
-                        {application.passed ? 'Passed' : 'Review'}
+                        {getAssessmentLabel(application)}
                       </span>
                     </div>
                     <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-copy">
@@ -425,7 +433,7 @@ const CareerAdmin = () => {
                       <p className={`text-sm font-semibold ${
                         selectedApplication.passed ? 'text-primary' : 'text-copy'
                       }`}>
-                        {selectedApplication.passed ? 'Passed' : 'Below benchmark'}
+                        {getAssessmentLabel(selectedApplication)}
                       </p>
                     </div>
                   </div>

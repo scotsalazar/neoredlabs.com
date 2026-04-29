@@ -32,6 +32,13 @@ const answerLabels = {
   modernWorkflows: 'Modern workflows'
 };
 
+const ownerAnswerLabels = {
+  projectOwnership: 'Project ownership',
+  offsiteSalesFocus: 'Off-site sales focus',
+  crossFunctionalGrowth: 'Part-time role fit',
+  passions: 'Passions and interests'
+};
+
 const categoryLabels = {
   authenticity: 'Authenticity',
   detail: 'Detail',
@@ -596,6 +603,28 @@ const CareerAdmin = () => {
                         <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-copy">{value}</p>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="mt-6 grid gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                        Owner questions
+                      </p>
+                    </div>
+                    {Object.entries(selectedApplication.ownerAnswers || {}).length > 0 ? (
+                      Object.entries(selectedApplication.ownerAnswers || {}).map(([key, value]) => (
+                        <div key={key} className="rounded-[1.25rem] border border-line bg-page p-5">
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copy">
+                            {ownerAnswerLabels[key] || key}
+                          </p>
+                          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-copy">{value}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-[1.25rem] border border-line bg-page p-5">
+                        <p className="text-sm leading-7 text-copy">No owner question answers stored for this submission.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

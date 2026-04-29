@@ -547,6 +547,12 @@ describe('assessment invite token routes', () => {
           q1: 'I have used OpenAI to build workflow prompts.',
           q2: 'An API is a contract for systems to exchange data.',
           q3: 'I have worked on automations and chatbot prototypes.'
+        },
+        ownerAnswers: {
+          projectOwnership: 'I can own planning, coordination, delivery, and launch.',
+          offsiteSalesFocus: 'I can commit to off-site training and SME sales research weekly.',
+          crossFunctionalGrowth: 'Part-time terms are workable for me.',
+          passions: 'I enjoy business systems, automations, and practical AI tools.'
         }
       })
       .expect(200);
@@ -567,6 +573,16 @@ describe('assessment invite token routes', () => {
     }));
     expect(tx.applicantToken.update).toHaveBeenCalledWith(expect.objectContaining({
       data: { careerApplicationId: 101 }
+    }));
+    expect(tx.careerApplication.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        ownerAnswers: {
+          projectOwnership: 'I can own planning, coordination, delivery, and launch.',
+          offsiteSalesFocus: 'I can commit to off-site training and SME sales research weekly.',
+          crossFunctionalGrowth: 'Part-time terms are workable for me.',
+          passions: 'I enjoy business systems, automations, and practical AI tools.'
+        }
+      })
     }));
   });
 

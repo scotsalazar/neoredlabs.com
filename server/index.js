@@ -689,6 +689,7 @@ function toCareerApplicationResponse(application) {
       api: application.answerApi,
       modernWorkflows: application.answerModernWorkflows
     },
+    ownerAnswers: application.ownerAnswers || {},
     score: application.score,
     passed: application.passed,
     passingScore: application.passingScore,
@@ -1543,6 +1544,7 @@ app.post('/api/career-assessment', async (req, res) => {
           answerAiTools: normalizedAnswers.q1,
           answerApi: normalizedAnswers.q2,
           answerModernWorkflows: normalizedAnswers.q3,
+          ownerAnswers: normalizedOwnerAnswers,
           score: assessment.score,
           passed: assessment.passed,
           passingScore: assessment.passingScore,

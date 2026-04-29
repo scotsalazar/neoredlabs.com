@@ -53,6 +53,7 @@ model CareerApplication {
   answerAiTools               String
   answerApi                   String
   answerModernWorkflows       String
+  ownerAnswers                Json      @default("{}")
   score                       Int
   passed                      Boolean
   passingScore                Int       @default(70)

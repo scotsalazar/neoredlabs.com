@@ -66,6 +66,12 @@ describe('CareerAdmin page', () => {
             api: 'An API lets systems exchange data through a contract.',
             modernWorkflows: 'I have built chatbot and automation prototypes.'
           },
+          ownerAnswers: {
+            projectOwnership: 'I can own project planning, delivery, and launch follow-through.',
+            offsiteSalesFocus: 'I can commit to weekly off-site training and sales research.',
+            crossFunctionalGrowth: 'Part-time terms are workable for me.',
+            passions: 'I like business systems, automation, and practical AI tools.'
+          },
           score: 88,
           passed: true,
           passingScore: 70,
@@ -100,6 +106,10 @@ describe('CareerAdmin page', () => {
     expect(screen.getAllByText('Passed')).toHaveLength(3);
     expect(screen.getByText(/Strong practical answers/i)).toBeInTheDocument();
     expect(screen.getByText(/I use OpenAI/i)).toBeInTheDocument();
+    expect(screen.getByText(/I can own project planning/i)).toBeInTheDocument();
+    expect(screen.getByText(/weekly off-site training/i)).toBeInTheDocument();
+    expect(screen.getByText(/Part-time terms are workable/i)).toBeInTheDocument();
+    expect(screen.getByText(/business systems, automation/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Assessment Completed/i)).toHaveLength(2);
   });
 

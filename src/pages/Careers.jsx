@@ -80,11 +80,15 @@ const ownerQuestions = [
   },
   {
     key: 'offsiteSalesFocus',
-    question: 'Can you commit to working off-site at least once per week to focus on training, research, and identifying potential SME clients and sale opportunities? with Compensation bonus'
+    question: 'Can you commit to working off-site at least once per week to focus on training, research, and identifying potential SME clients and sale opportunities? with Commission'
   },
   {
     key: 'crossFunctionalGrowth',
     question: 'Are you comfortable proceeding on a contract basis for now, with employment-like benefits preserved and no impact on your taxes or net earnings?'
+  },
+  {
+    key: 'passions',
+    question: 'What topics, interests, or activities are you most passionate about?'
   }
 ];
 
@@ -120,7 +124,8 @@ const initialFormState = {
   ownerAnswers: {
     projectOwnership: '',
     offsiteSalesFocus: '',
-    crossFunctionalGrowth: ''
+    crossFunctionalGrowth: '',
+    passions: ''
   }
 };
 
@@ -681,7 +686,8 @@ const Careers = () => {
       ownerAnswers: {
         projectOwnership: formState.ownerAnswers.projectOwnership.trim(),
         offsiteSalesFocus: formState.ownerAnswers.offsiteSalesFocus.trim(),
-        crossFunctionalGrowth: formState.ownerAnswers.crossFunctionalGrowth.trim()
+        crossFunctionalGrowth: formState.ownerAnswers.crossFunctionalGrowth.trim(),
+        passions: formState.ownerAnswers.passions.trim()
       }
     };
     const assessmentSubmission = {
@@ -722,6 +728,7 @@ const Careers = () => {
       formData.append('ownerQuestions[projectOwnership]', normalizedSubmission.ownerAnswers.projectOwnership);
       formData.append('ownerQuestions[offsiteSalesFocus]', normalizedSubmission.ownerAnswers.offsiteSalesFocus);
       formData.append('ownerQuestions[crossFunctionalGrowth]', normalizedSubmission.ownerAnswers.crossFunctionalGrowth);
+      formData.append('ownerQuestions[passions]', normalizedSubmission.ownerAnswers.passions);
       formData.append('assessment[score]', String(assessment.score));
       formData.append('assessment[applicationId]', String(assessment.applicationId || ''));
       formData.append('assessment[passed]', String(assessment.passed));

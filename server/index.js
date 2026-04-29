@@ -1483,6 +1483,9 @@ app.post('/api/career-assessment', async (req, res) => {
       : '',
     crossFunctionalGrowth: typeof req.body?.ownerAnswers?.crossFunctionalGrowth === 'string'
       ? req.body.ownerAnswers.crossFunctionalGrowth.trim()
+      : '',
+    passions: typeof req.body?.ownerAnswers?.passions === 'string'
+      ? req.body.ownerAnswers.passions.trim()
       : ''
   };
 

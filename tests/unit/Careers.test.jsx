@@ -53,7 +53,8 @@ describe('Careers assessment invite flow', () => {
           ownerAnswers: {
             projectOwnership: '',
             offsiteSalesFocus: '',
-            crossFunctionalGrowth: ''
+            crossFunctionalGrowth: '',
+            passions: ''
           }
         },
         wizardStep: 2
@@ -106,7 +107,8 @@ describe('Careers assessment invite flow', () => {
           ownerAnswers: {
             projectOwnership: 'Yes, I can own delivery and follow-through.',
             offsiteSalesFocus: 'Yes, I can commit to weekly outreach focus.',
-            crossFunctionalGrowth: 'Yes, contract terms are workable for me.'
+            crossFunctionalGrowth: 'Yes, contract terms are workable for me.',
+            passions: 'I am passionate about business systems, education, and practical AI tools.'
           }
         },
         wizardStep: 3

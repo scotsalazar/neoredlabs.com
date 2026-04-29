@@ -382,6 +382,73 @@ describe('assessment invite token routes', () => {
     }));
   });
 
+  it('creates a secured job offer follow-up link for manual-review applicants', async () => {
+    const application = {
+      id: 102,
+      name: 'Manual Review Applicant',
+      email: 'manual@example.com',
+      role: 'Prompt Engineer',
+      score: 55,
+      passed: false,
+      jobOfferDecision: null,
+      contractAgreement: { id: 13 }
+    };
+    const createdOfferToken = {
+      id: 82,
+      careerApplicationId: 102,
+      expiresAt: new Date(Date.now() + 60_000)
+    };
+    const tx = {
+      jobOfferToken: {
+        updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+        create: vi.fn().mockResolvedValue(createdOfferToken)
+      },
+      careerApplication: {
+        update: vi.fn().mockResolvedValue({})
+      }
+    };
+    app.locals.prisma = {
+      careerApplication: {
+        findUnique: vi.fn().mockResolvedValue(application)
+      },
+      $transaction: vi.fn((callback) => callback(tx))
+    };
+
+    const response = await request(app)
+      .post('/api/admin/career-applications/102/follow-up')
+      .set('x-admin-token', 'admin-test-token')
+      .expect(201);
+
+    expect(response.body.offerUrl).toContain('/offer-response?token=');
+    expect(tx.jobOfferToken.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        careerApplicationId: 102,
+        tokenHash: expect.any(String)
+      })
+    }));
+  });
+
+  it('rejects job offer follow-up links for below-benchmark applicants', async () => {
+    app.locals.prisma = {
+      careerApplication: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: 103,
+          score: 45,
+          passed: false,
+          jobOfferDecision: null,
+          contractAgreement: { id: 14 }
+        })
+      }
+    };
+
+    const response = await request(app)
+      .post('/api/admin/career-applications/103/follow-up')
+      .set('x-admin-token', 'admin-test-token')
+      .expect(400);
+
+    expect(response.body.error).toBe('Only passed or manual-review applicants can receive a job offer follow-up link.');
+  });
+
   it('validates a usable job offer response token', async () => {
     const rawToken = app.generateApplicantToken();
     app.locals.prisma = {

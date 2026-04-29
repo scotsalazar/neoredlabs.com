@@ -104,6 +104,8 @@ describe('CareerAdmin page', () => {
     expect(await screen.findAllByText('Alex Johnson')).toHaveLength(3);
     expect(screen.getByText(/Open - Candidate to take Exam/i)).toBeInTheDocument();
     expect(screen.getAllByText('Passed')).toHaveLength(3);
+    expect(screen.getByText(/Score 88\/100 \/ Prompt Engineer/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Score 88\/60 \/ Prompt Engineer/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Strong practical answers/i)).toBeInTheDocument();
     expect(screen.getByText(/I use OpenAI/i)).toBeInTheDocument();
     expect(screen.getByText(/I can own project planning/i)).toBeInTheDocument();
@@ -175,7 +177,54 @@ describe('CareerAdmin page', () => {
     renderPage();
 
     expect(await screen.findAllByText('Manual review')).toHaveLength(2);
+    expect(screen.getByText('Contract agreement PDF')).toBeInTheDocument();
     expect(screen.queryByText('Below benchmark')).not.toBeInTheDocument();
+  });
+
+  it('creates offer links for manual-review applicants with uploaded contracts', async () => {
+    fetchApplicantTokens.mockResolvedValue({ tokens: [] });
+    fetchCareerApplications.mockResolvedValue({
+      applications: [
+        {
+          id: 43,
+          name: 'Joanna Santos',
+          email: 'joanna@example.com',
+          role: 'Prompt Engineer',
+          answers: {},
+          ownerAnswers: {},
+          score: 55,
+          passed: false,
+          passingScore: 60,
+          recommendation: 'manual_review',
+          aiGeneratedRisk: 'medium',
+          categoryScores: {},
+          strengths: [],
+          concerns: [],
+          summary: 'Close score for human review.',
+          applicationStatus: 'assessment_completed',
+          contractAgreement: {
+            fileName: 'contract.pdf',
+            contentType: 'application/pdf',
+            uploadedAt: '2026-04-26T00:00:00.000Z',
+            updatedAt: '2026-04-26T00:00:00.000Z'
+          },
+          jobOfferDecision: null,
+          createdAt: '2026-04-26T00:00:00.000Z'
+        }
+      ]
+    });
+    createJobOfferFollowUp.mockResolvedValue({
+      offerUrl: 'https://careers.neoredlabs.com/offer-response?token=manual-review-token'
+    });
+
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: /create offer link/i }));
+
+    await waitFor(() => {
+      expect(createJobOfferFollowUp).toHaveBeenCalledWith(43, 'admin-test-token');
+    });
+    expect(await screen.findByDisplayValue('https://careers.neoredlabs.com/offer-response?token=manual-review-token')).toBeInTheDocument();
   });
 
   it('keeps the generated invite visible when a post-create refresh returns an empty payload', async () => {

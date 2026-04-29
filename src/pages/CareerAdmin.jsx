@@ -62,6 +62,10 @@ function getAssessmentLabel(application) {
   return 'Below benchmark';
 }
 
+function canReceiveOffer(application) {
+  return Boolean(application?.passed || (application?.score || 0) >= manualReviewMinimumScore);
+}
+
 const CareerAdmin = () => {
   const navigate = useNavigate();
   const [tokens, setTokens] = useState([]);
@@ -395,7 +399,7 @@ const CareerAdmin = () => {
                       </span>
                     </div>
                     <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-copy">
-                      Score {application.score}/{application.passingScore} / {application.role}
+                      Score {application.score}/100 / {application.role}
                     </p>
                     <p className="mt-2 text-xs font-medium text-copy">
                       {applicationStatusLabels[application.applicationStatus] || application.applicationStatus}
@@ -438,7 +442,7 @@ const CareerAdmin = () => {
                     </div>
                   </div>
 
-                  {selectedApplication.passed && !selectedApplication.jobOfferDecision && (
+                  {canReceiveOffer(selectedApplication) && !selectedApplication.jobOfferDecision && (
                     <div className="mt-6 rounded-[1.25rem] border border-line bg-page p-5">
                       <form className="rounded-2xl border border-line bg-white p-4" onSubmit={handleContractUpload}>
                         <div>

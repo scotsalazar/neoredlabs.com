@@ -226,6 +226,13 @@ function normalizeCareerAssessment(rawAssessment) {
   };
 }
 
+function isCareerApplicationOfferEligible(application) {
+  return Boolean(
+    application?.passed ||
+    Number(application?.score || 0) >= CAREER_ASSESSMENT_MANUAL_REVIEW_SCORE
+  );
+}
+
 function buildDevPassingAssessment() {
   return {
     score: 88,
@@ -1358,8 +1365,8 @@ app.post('/api/admin/career-applications/:id/follow-up', requireAdmin, async (re
       return res.status(404).json({ error: 'Career application not found.' });
     }
 
-    if (!application.passed) {
-      return res.status(400).json({ error: 'Only passed applicants can receive a job offer follow-up link.' });
+    if (!isCareerApplicationOfferEligible(application)) {
+      return res.status(400).json({ error: 'Only passed or manual-review applicants can receive a job offer follow-up link.' });
     }
 
     if (application.jobOfferDecision) {

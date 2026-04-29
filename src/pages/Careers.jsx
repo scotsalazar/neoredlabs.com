@@ -953,7 +953,7 @@ const Careers = () => {
                             id="career-flow-title"
                             className="mt-3 max-w-xl font-display text-5xl font-semibold leading-none text-light sm:text-6xl"
                           >
-                            Welcome, let’s get started
+                            Welcome to the application room
                           </h2>
                         </motion.div>
                       </div>

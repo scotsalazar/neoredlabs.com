@@ -1206,7 +1206,7 @@ const Careers = () => {
                               Three quick questions
                             </h2>
                             <p className="mt-4 text-base leading-7 text-light/65">
-                              Keep it concise and human. Show how you think, not just what you know. AI-generated answers may be flagged. AI will score your responses — 70/100 qualifies for the next step.
+                              Keep it concise and human. AI will score your responses — 60/100 qualifies for the next step. Include specific examples from school, internship, personal projects, or work so we can see what you actually did.
                             </p>
 
                             <form className="mt-9 space-y-5" onSubmit={handleQuestionsNext}>

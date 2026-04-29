@@ -59,7 +59,7 @@ const ADMIN_SESSION_COOKIE = 'neolabs_admin_session';
 const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY?.trim() || '';
 const OPENAI_ASSESSMENT_MODEL = process.env.OPENAI_ASSESSMENT_MODEL?.trim() || 'gpt-5.4-nano';
-const CAREER_ASSESSMENT_PASSING_SCORE = 70;
+const CAREER_ASSESSMENT_PASSING_SCORE = 60;
 const APPLICANT_TOKEN_HASH_SECRET =
   process.env.APPLICANT_TOKEN_HASH_SECRET?.trim() ||
   ADMIN_TOKEN ||
@@ -317,7 +317,7 @@ async function scoreCareerAssessment({ name, role, answers }) {
             text: [
               'You are assessing a junior Prompt Engineer application for Neo Redlabs Studio.',
               'Return only the structured JSON requested by the schema.',
-              'Score from 1 to 100. A score of 70 or higher passes.',
+              'Score from 1 to 100. A score of 60 or higher passes.',
               'Use these five 20-point categories: authenticity, detail, structure, processThinking, modernTechExperience.',
               'Authenticity means the answer sounds specific, personal, and non-generic. You may estimate AI-generated risk from style and specificity, but do not claim certainty.',
               'Reward clear process thinking, concrete examples, actual experience with modern tools, and practical understanding of APIs, AI tools, mobile apps, chatbots, automations, or workflows.',

@@ -278,7 +278,7 @@ describe('assessment invite token routes', () => {
       role: 'Prompt Engineer',
       score: 88,
       passed: true,
-      passingScore: 70,
+      passingScore: 60,
       recommendation: 'pass',
       aiGeneratedRisk: 'low',
       categoryScores: {

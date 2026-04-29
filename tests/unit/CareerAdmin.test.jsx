@@ -74,7 +74,7 @@ describe('CareerAdmin page', () => {
           },
           score: 88,
           passed: true,
-          passingScore: 70,
+          passingScore: 60,
           recommendation: 'pass',
           aiGeneratedRisk: 'low',
           categoryScores: {
@@ -188,7 +188,7 @@ describe('CareerAdmin page', () => {
           answers: {},
           score: 88,
           passed: true,
-          passingScore: 70,
+          passingScore: 60,
           recommendation: 'pass',
           aiGeneratedRisk: 'low',
           categoryScores: {},

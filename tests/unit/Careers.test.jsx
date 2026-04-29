@@ -128,7 +128,7 @@ describe('Careers assessment invite flow', () => {
           applicationId: 42,
           score: 88,
           passed: true,
-          passingScore: 70,
+          passingScore: 60,
           recommendation: 'pass',
           aiGeneratedRisk: 'low',
           summary: 'Strong practical answers.',

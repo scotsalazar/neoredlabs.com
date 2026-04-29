@@ -56,7 +56,7 @@ model CareerApplication {
   ownerAnswers                Json      @default("{}")
   score                       Int
   passed                      Boolean
-  passingScore                Int       @default(70)
+  passingScore                Int       @default(60)
   recommendation              String
   aiGeneratedRisk             String
   categoryScores              Json

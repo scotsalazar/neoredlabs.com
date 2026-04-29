@@ -84,7 +84,7 @@ const ownerQuestions = [
   },
   {
     key: 'crossFunctionalGrowth',
-    question: 'Are you comfortable proceeding on a contract basis for now, with employment-like benefits preserved and no impact on your taxes or net earnings?'
+    question: 'Are you comfortable starting in a part-time role for now, with aligned benefits and no impact on your taxes or net earnings?'
   },
   {
     key: 'passions',

@@ -35,7 +35,7 @@ export async function clearAdminSession(token) {
   return handleResponse(response);
 }
 
-export async function fetchCareerApplications(token, { passed = true } = {}) {
+export async function fetchCareerApplications(token, { passed } = {}) {
   const search = new URLSearchParams();
   if (passed !== undefined) {
     search.set('passed', String(passed));

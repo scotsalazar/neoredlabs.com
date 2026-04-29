@@ -42,7 +42,7 @@ const Hero = () => (
             Personalized modern apps
           </p>
           <h1 className="font-display text-5xl font-semibold leading-[0.95] tracking-tight text-light sm:text-6xl lg:text-[5.35rem]">
-            Modern apps built fast and shaped around your operations.
+            Modern apps shaped around your operations.
           </h1>
           <p className="max-w-xl text-lg leading-8 text-light/75">
             We help businesses build modern applications, connect existing tools, and apply AI-powered automation for clearer, more efficient operations.

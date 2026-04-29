@@ -11,7 +11,7 @@ describe('Hero component', () => {
     );
     // The hero headline should be present
     const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent(/modern apps built fast/i);
+    expect(heading).toHaveTextContent(/modern apps shaped around your operations/i);
     // The call-to-action button should exist and link to /contact
     const consultationLink = screen.getByRole('link', { name: /schedule a consultation/i });
     expect(consultationLink).toHaveAttribute('href', '/contact');

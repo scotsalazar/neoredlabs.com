@@ -150,7 +150,7 @@ const Services = () => (
         <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">Services</p>
-            <h1 className="section-title">Our platform leverages the latest AI and LLM technologies, integrated across most modern applications to deliver intelligent, automated solutions.</h1>
+            <h1 className="section-title">Our platform leverages the latest AI and LLM technologies to deliver intelligent, automated solutions.</h1>
             <p className="lede">
               Each service is designed to fit your existing operations, connect your tools, and create smoother, more intelligent workflows.
             </p>

@@ -27,7 +27,7 @@ const About = () => (
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">About NeoLabs</p>
-            <h1 className="section-title">A delivery partner trusted to make operations clearer, faster, and easier to manage.</h1>
+            <h1 className="section-title">A delivery partner trusted to make operations easier to manage.</h1>
             <p className="lede">
               NeoLabs works with teams that need more than a generic app. We build modern operational systems that combine tailored software, connected tools, and intelligent automation.
             </p>

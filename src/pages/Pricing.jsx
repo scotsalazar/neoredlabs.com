@@ -100,7 +100,7 @@ const Pricing = () => (
         <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <div className="space-y-5">
             <p className="eyebrow">Pricing</p>
-            <h1 className="section-title">Pricing shaped by the level of workflow, automation, and operational responsibility involved.</h1>
+            <h1 className="section-title">Pricing shaped by the level of workflow.</h1>
             <p className="lede">
               Each package reflects how much of the business workflow needs to be replaced, connected, automated, and supported.
             </p>
